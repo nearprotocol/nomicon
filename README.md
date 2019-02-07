@@ -1,4 +1,4 @@
-# Rustonomicon
+# Nearnomicon
 
 Implementation details of the NearProtocol client.
 
