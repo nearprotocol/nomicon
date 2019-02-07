@@ -1,0 +1,10 @@
+[book]
+authors = ["Near Inc <hello@nearprotocol.com>"]
+multilingual = false
+src = "src"
+title = "The Nearnomicon"
+description = "Implementation details of the NearProtocol client"
+
+[output.html]
+additional-css = ["mermaid.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
