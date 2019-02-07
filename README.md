@@ -30,3 +30,6 @@ mdbook serve
 
 ## Adding new chapters
 Adding new chapters requires updating `src/SUMMARY.md` file.
+
+## Diagrams
+See [mermaid.js](https://github.com/knsv/mermaid) for writing diagrams.
