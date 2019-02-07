@@ -5,6 +5,9 @@ src = "src"
 title = "The Nearnomicon"
 description = "Implementation details of the NearProtocol client"
 
+[build]
+build-dir = "docs"
+
 [output.html]
 additional-css = ["mermaid.css"]
 additional-js = ["mermaid.min.js", "mermaid-init.js"]

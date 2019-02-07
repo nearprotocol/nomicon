@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Network - The Nearnomicon</title>
+        <title>Data Structures - The Nearnomicon</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -77,7 +77,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Intoduction</a></li><li><a href="../Network/Network.html" class="active"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">2.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Intoduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li></ol></li><li><a href="../DataStructures/DataStructures.html" class="active"><strong aria-hidden="true">2.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -142,47 +142,96 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#network" id="network"><h1>Network</h1></a>
-<p>The network crate has two levels of abstractions:</p>
-<ol>
-<li><strong>Peer management</strong> is a low-level code that only works with discovering peers and connecting to them. It is not domain-specific, meaning it does not care about the content of the messages that it receives from the peers;</li>
-<li><strong>Protocol</strong> is a higher-level code that understands the content of incoming and outgoing messages and communicates them with the corresponding parts of the infrastructure.</li>
-</ol>
-<a class="header" href="#current-state" id="current-state"><h2>Current state</h2></a>
-<p>Our current implementation of the network is the minimal one for running nodes locally, on AWS, or in integration tests.
-It contains the following functionality:</p>
-<ul>
-<li><strong>Peer discovery through the gossip.</strong> Peers periodically exchange information with each other about other peers that they know allowing all peers to gradually discover each other;</li>
-<li><strong>Booting from the boot nodes.</strong> Peers start discovering of other peers by initially connecting to the boot nodes;</li>
-<li><strong>Handshake.</strong> Peers that establish the connection with each other are required to perform a handshake that involves exchanging certain information, like information about other peers;</li>
-<li><strong>Unique connection.</strong> We guarantee that there is at most one connection between two peers, by breaking a tie when they try to connect to each other simultaneously;</li>
-<li><strong>Timeouts.</strong> Certain operations, like establishing a connection or performing a handshake are limited by a timeout;</li>
-<li><strong>Reconnection.</strong> Peers that have some connections dropped will try to re-establish them after a certain period of time.</li>
-</ul>
-<p>The following functionality is not implemented yet:</p>
-<ul>
-<li><strong>Relays.</strong> The peers that are behind the NAT cannot have a direct communication and have to use relays. Our current code does not implement that;</li>
-<li><strong>Broadcasting.</strong> We need a broadcasting for announcements over the network;</li>
-<li><strong>Encryption.</strong> Currently our messages are not encrypted;</li>
-<li><strong>Verification.</strong> During the handshake we should verify that the other peer is not an impostor, by verifying their signed handshake;</li>
-<li><strong>Connection limit.</strong> We need to limit the number of connections a single peer can have. When we try to establish a connection with a maxed-out boot node it should redirect us to other nodes;</li>
-<li><strong>Tight coupling between gossip and relaying.</strong> Our consensus algorithms use gossip, since we want them to adversary-proof the relaying should be adversary-proof too.</li>
-</ul>
+                        <a class="header" href="#data-structures" id="data-structures"><h1>Data Structures</h1></a>
+<p>The following is a list of standard data-structures.</p>
+<a class="header" href="#transaction" id="transaction"><h2>Transaction</h2></a>
+<pre><code class="language-rust ignored">struct Transaction {
+    originator: AccountId,
+    receiver: AccountId,
+    nonce: u64,
+    method_name: Vec&lt;u8&gt;,
+    args: Vec&lt;u8&gt;,
+    amount: Balance,
+}
+
+struct ReceiptBlock {
+    header: SignedShardBlockHeader,
+    path: Vec&lt;Hash&gt;,
+    receipts: Vec&lt;Receipt&gt;,
+}
+</code></pre>
+<a class="header" href="#shard" id="shard"><h2>Shard</h2></a>
+<pre><code class="language-rust ignored">struct ShardBlockHeader {
+    parent: Hash,
+    index: u64,
+    shard_id: u64,
+    // State trie
+    merkle_root_state: Hash,
+    // Transactions Trie
+    merkle_root_tx: Hash,
+    // Receipt blocks Trie
+    merkle_root_receipt: Hash,
+    // Transaction result Trie
+    merkle_root_tx_result: Hash,
+    // Receipt result Trie
+    merkle_root_receipt_result: Hash,
+}
+
+struct tShardBlockBody {
+    receipts: Vec&lt;ReceiptBlock&gt;,
+    transactions: Vec&lt;SignedTransaction&gt;,
+}
+
+struct SignedShardBlock {
+    header: ShardHeader,
+    body: ShardBody,
+    signature: BLS,
+    authority_mask: Vec&lt;bool&gt;,
+}
+
+// ShardBlock Extra (Index?)
+// 	TransactionAddress
+// 		BlockId
+// 		Index
+// 	Receipts
+// 		HashMap&lt;ShardId, Vec&lt;Receipt&gt;&gt;
+// 	Hash -&gt; Transaction/Receipt Result // or should we put into two Vec that align with transactions/receipts?
+// 		Status (Completed, Failed)
+// 		Gas
+// 		Receipts ids of receipts
+// 		Logs
+
+
+struct ShardClient {
+    chain: Chain&lt;SignedShardBlock&gt;,
+    runtime: Runtime,
+    state: StateDb,
+}
+    
+fn to_shard_receipt_blocks(ShardBlockExtra) -&gt; Vec&lt;ReceiptBlock&gt; { 
+   
+}
+</code></pre>
+<a class="header" href="#beacon" id="beacon"><h2>Beacon</h2></a>
+<pre><code class="language-rust ignored">//System extension to every contract/account
+//	send_money(to, value)
+//	swap_keys(old_public_key, new_public_key)
+//
+//Transaction(orignator=me, receiver=account, method=”system::swap_keys”, args={...})
+//
+//Transaction(originator=me, receiver=system, method=send_money, args={...})
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../Network/PeerManagement.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
-                        
-                            <a rel="next" href="../Network/PeerManagement.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -192,35 +241,16 @@ It contains the following functionality:</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../Network/PeerManagement.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="../Network/PeerManagement.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
-                
             </nav>
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         

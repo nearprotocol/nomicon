@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Peer Management - The Nearnomicon</title>
+        <title>Network - The Nearnomicon</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -77,7 +77,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Intoduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html" class="active"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">2.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Intoduction</a></li><li><a href="../Network/Network.html" class="active"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">2.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -142,44 +142,45 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#peer-management" id="peer-management"><h1>Peer Management</h1></a>
-<p>As discussed before, peer management takes care of peers and does not work with the content of the
-messages sent between the peers.</p>
-<p>Each peer in peer management is represented by a state-machine, represented by <code>Peer</code> object. Peer can then be in
-multiple states:</p>
+                        <a class="header" href="#network" id="network"><h1>Network</h1></a>
+<p>The network crate has two levels of abstractions:</p>
+<ol>
+<li><strong>Peer management</strong> is a low-level code that only works with discovering peers and connecting to them. It is not domain-specific, meaning it does not care about the content of the messages that it receives from the peers;</li>
+<li><strong>Protocol</strong> is a higher-level code that understands the content of incoming and outgoing messages and communicates them with the corresponding parts of the infrastructure.</li>
+</ol>
+<a class="header" href="#current-state" id="current-state"><h2>Current state</h2></a>
+<p>Our current implementation of the network is the minimal one for running nodes locally, on AWS, or in integration tests.
+It contains the following functionality:</p>
 <ul>
-<li><strong>Unconnected</strong> -- we know that peer's info but we have not established a connection yet;</li>
-<li><strong>Connecting</strong> -- we are in process of connecting to a peer;</li>
-<li><strong>Connected</strong> -- we have sent a handshake and are waiting for a response handshake;</li>
-<li><strong>Ready</strong> -- we are exchanging domain-specific messages with the peer, like block announcements, gossip, etc;</li>
-<li><strong>Incoming</strong> -- someone, we do not know who, has established a incoming connection with us. We are waiting for a handshake;</li>
+<li><strong>Peer discovery through the gossip.</strong> Peers periodically exchange information with each other about other peers that they know allowing all peers to gradually discover each other;</li>
+<li><strong>Booting from the boot nodes.</strong> Peers start discovering of other peers by initially connecting to the boot nodes;</li>
+<li><strong>Handshake.</strong> Peers that establish the connection with each other are required to perform a handshake that involves exchanging certain information, like information about other peers;</li>
+<li><strong>Unique connection.</strong> We guarantee that there is at most one connection between two peers, by breaking a tie when they try to connect to each other simultaneously;</li>
+<li><strong>Timeouts.</strong> Certain operations, like establishing a connection or performing a handshake are limited by a timeout;</li>
+<li><strong>Reconnection.</strong> Peers that have some connections dropped will try to re-establish them after a certain period of time.</li>
 </ul>
-<p>Here is an example of Alice establishing connection with a boot node, Bob.</p>
-<div class="mermaid">
-sequenceDiagram
-    Note over Alice: Alice has Bob's state as Unconnected
-    Alice->>Alice: Connection timeout expires
-    Note over Alice: Alice switches Bob's state to Connecting
-    Alice->>+Bob: Opening connection
-    Note over Alice,Bob: Bob adds a peer with the state Incoming. Alice switches Bob's state to Connected
-    Alice->>Bob: Sending handshake
-    Note over Bob: Bob switches Alice's state to Ready.
-    Bob->>-Alice: Replying with handshake
-    Note over Alice: Alice switches Bob's state to Ready.
-</div>
+<p>The following functionality is not implemented yet:</p>
+<ul>
+<li><strong>Relays.</strong> The peers that are behind the NAT cannot have a direct communication and have to use relays. Our current code does not implement that;</li>
+<li><strong>Broadcasting.</strong> We need a broadcasting for announcements over the network;</li>
+<li><strong>Encryption.</strong> Currently our messages are not encrypted;</li>
+<li><strong>Verification.</strong> During the handshake we should verify that the other peer is not an impostor, by verifying their signed handshake;</li>
+<li><strong>Connection limit.</strong> We need to limit the number of connections a single peer can have. When we try to establish a connection with a maxed-out boot node it should redirect us to other nodes;</li>
+<li><strong>Tight coupling between gossip and relaying.</strong> Our consensus algorithms use gossip, since we want them to adversary-proof the relaying should be adversary-proof too.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../Network/Network.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="../DataStructures/DataStructures.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../Network/PeerManagement.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -191,13 +192,13 @@ sequenceDiagram
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../Network/Network.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="../DataStructures/DataStructures.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../Network/PeerManagement.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
@@ -205,21 +206,6 @@ sequenceDiagram
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Data Structures - The Nearnomicon</title>
+        <title>Peer Management - The Nearnomicon</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -77,7 +77,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Intoduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li></ol></li><li><a href="../DataStructures/DataStructures.html" class="active"><strong aria-hidden="true">2.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Intoduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html" class="active"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">2.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -142,96 +142,46 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#data-structures" id="data-structures"><h1>Data Structures</h1></a>
-<p>The following is a list of standard data-structures.</p>
-<a class="header" href="#transaction" id="transaction"><h2>Transaction</h2></a>
-<pre><code class="language-rust ignored">struct Transaction {
-    originator: AccountId,
-    receiver: AccountId,
-    nonce: u64,
-    method_name: Vec&lt;u8&gt;,
-    args: Vec&lt;u8&gt;,
-    amount: Balance,
-}
-
-struct ReceiptBlock {
-    header: SignedShardBlockHeader,
-    path: Vec&lt;Hash&gt;,
-    receipts: Vec&lt;Receipt&gt;,
-}
-</code></pre>
-<a class="header" href="#shard" id="shard"><h2>Shard</h2></a>
-<pre><code class="language-rust ignored">struct ShardBlockHeader {
-    parent: Hash,
-    index: u64,
-    shard_id: u64,
-    // State trie
-    merkle_root_state: Hash,
-    // Transactions Trie
-    merkle_root_tx: Hash,
-    // Receipt blocks Trie
-    merkle_root_receipt: Hash,
-    // Transaction result Trie
-    merkle_root_tx_result: Hash,
-    // Receipt result Trie
-    merkle_root_receipt_result: Hash,
-}
-
-struct tShardBlockBody {
-    receipts: Vec&lt;ReceiptBlock&gt;,
-    transactions: Vec&lt;SignedTransaction&gt;,
-}
-
-struct SignedShardBlock {
-    header: ShardHeader,
-    body: ShardBody,
-    signature: BLS,
-    authority_mask: Vec&lt;bool&gt;,
-}
-
-// ShardBlock Extra (Index?)
-// 	TransactionAddress
-// 		BlockId
-// 		Index
-// 	Receipts
-// 		HashMap&lt;ShardId, Vec&lt;Receipt&gt;&gt;
-// 	Hash -&gt; Transaction/Receipt Result // or should we put into two Vec that align with transactions/receipts?
-// 		Status (Completed, Failed)
-// 		Gas
-// 		Receipts ids of receipts
-// 		Logs
-
-
-struct ShardClient {
-    chain: Chain&lt;SignedShardBlock&gt;,
-    runtime: Runtime,
-    state: StateDb,
-}
-    
-fn to_shard_receipt_blocks(ShardBlockExtra) -&gt; Vec&lt;ReceiptBlock&gt; { 
-   
-}
-</code></pre>
-<a class="header" href="#beacon" id="beacon"><h2>Beacon</h2></a>
-<pre><code class="language-rust ignored">//System extension to every contract/account
-//	send_money(to, value)
-//	swap_keys(old_public_key, new_public_key)
-//
-//Transaction(orignator=me, receiver=account, method=”system::swap_keys”, args={...})
-//
-//Transaction(originator=me, receiver=system, method=send_money, args={...})
-</code></pre>
+                        <a class="header" href="#peer-management" id="peer-management"><h1>Peer Management</h1></a>
+<p>As discussed before, peer management takes care of peers and does not work with the content of the
+messages sent between the peers.</p>
+<p>Each peer in peer management is represented by a state-machine, represented by <code>Peer</code> object. Peer can then be in
+multiple states:</p>
+<ul>
+<li><strong>Unconnected</strong> -- we know that peer's info but we have not established a connection yet;</li>
+<li><strong>Connecting</strong> -- we are in process of connecting to a peer;</li>
+<li><strong>Connected</strong> -- we have sent a handshake and are waiting for a response handshake;</li>
+<li><strong>Ready</strong> -- we are exchanging domain-specific messages with the peer, like block announcements, gossip, etc;</li>
+<li><strong>Incoming</strong> -- someone, we do not know who, has established a incoming connection with us. We are waiting for a handshake;</li>
+</ul>
+<p>Here is an example of Alice establishing connection with a boot node, Bob.</p>
+<div class="mermaid">
+sequenceDiagram
+    Note over Alice: Alice has Bob's state as Unconnected
+    Alice->>Alice: Connection timeout expires
+    Note over Alice: Alice switches Bob's state to Connecting
+    Alice->>+Bob: Opening connection
+    Note over Alice,Bob: Bob adds a peer with the state Incoming. Alice switches Bob's state to Connected
+    Alice->>Bob: Sending handshake
+    Note over Bob: Bob switches Alice's state to Ready.
+    Bob->>-Alice: Replying with handshake
+    Note over Alice: Alice switches Bob's state to Ready.
+</div>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../Network/PeerManagement.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../Network/Network.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
+                        
+                            <a rel="next" href="../DataStructures/DataStructures.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -241,31 +191,20 @@ fn to_shard_receipt_blocks(ShardBlockExtra) -&gt; Vec&lt;ReceiptBlock&gt; {
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../Network/PeerManagement.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../Network/Network.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
+                    <a href="../DataStructures/DataStructures.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
             </nav>
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         
