@@ -22,3 +22,4 @@ The following functionality is not implemented yet:
 * **Verification.** During the handshake we should verify that the other peer is not an impostor, by verifying their signed handshake;
 * **Connection limit.** We need to limit the number of connections a single peer can have. When we try to establish a connection with a maxed-out boot node it should redirect us to other nodes;
 * **Tight coupling between gossip and relaying.** Our consensus algorithms use gossip, since we want them to adversary-proof the relaying should be adversary-proof too.
+* **DNS.** DNS resolution.
