@@ -31,5 +31,8 @@ mdbook serve
 ## Adding new chapters
 Adding new chapters requires updating `src/SUMMARY.md` file.
 
+## Latex
+See [mdBook and MathJax](https://rust-lang-nursery.github.io/mdBook/format/mathjax.html) for using Latex.
+
 ## Diagrams
 See [mermaid.js](https://github.com/knsv/mermaid) for writing diagrams.
