@@ -31,6 +31,9 @@
         
 
         
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
     </head>
     <body class="light">
         <!-- Provide site root to javascript -->
@@ -77,7 +80,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.1.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html" class="active"><strong aria-hidden="true">2.2.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html" class="active"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -144,14 +147,19 @@
                     <main>
                         <a class="header" href="#cryptography" id="cryptography"><h1>Cryptography</h1></a>
 <p>Participant should sign every message they sent through the network using its public key.</p>
+<a class="header" href="#a-hrefhttpsgithubcomexonumexonum_sodiumoxideed25519a" id="a-hrefhttpsgithubcomexonumexonum_sodiumoxideed25519a"><h2><a href="https://github.com/exonum/exonum_sodiumoxide">ed25519</a></h2></a>
+<p>This scheme is used to sign gossip in the network layer. This are fast verifiable signatures.</p>
 <ul>
-<li><a href="https://github.com/exonum/exonum_sodiumoxide">ed25519</a> signature is used for gossips, it is very fast signing/verifying.</li>
-<li><a href="https://en.wikipedia.org/wiki/Boneh%E2%80%93Lynn%E2%80%93Shacham">BLS</a> to sign triplets inside Nigthshade Consensus.
-<ul>
-<li>Useful because it allow us to run a <a href="https://en.wikipedia.org/wiki/Threshold_cryptosystem">threshold scheme</a>.</li>
-<li>Slow signing/verifying.</li>
+<li>Gossips with invalid signatures are discarded</li>
+<li>Gossips with valid signatures are processed. If they contain invalid content (deviating from the protocol in anyway), the signature and the content of the gossip is used as evidence for the sender as malicious actor.</li>
 </ul>
-</li>
+<a class="header" href="#a-hrefhttpsenwikipediaorgwikibonehe28093lynne28093shachamblsa" id="a-hrefhttpsenwikipediaorgwikibonehe28093lynne28093shachamblsa"><h2><a href="https://en.wikipedia.org/wiki/Boneh%E2%80%93Lynn%E2%80%93Shacham">BLS</a></h2></a>
+<p>BLS is used to sign triplets in <a href="Nightshade/Nightshade.html">Nightshade Consensus</a>.</p>
+<ul>
+<li>Each triplet contain the BLS signature of the holder.</li>
+<li>The proof for the triplets are the aggregated signatures of the participants.</li>
+<li>Useful because it allow us to run a <a href="https://en.wikipedia.org/wiki/Threshold_cryptosystem">threshold scheme</a>.</li>
+<li>Slow signing/verifying. TODO: Link our benchmark.</li>
 </ul>
 
                     </main>

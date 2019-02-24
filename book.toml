@@ -11,3 +11,4 @@ build-dir = "docs"
 [output.html]
 additional-css = ["mermaid.css"]
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
+mathjax-support = true

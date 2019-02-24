@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Transaction Propagation - The Nearnomicon</title>
+        <title>State - The Nearnomicon</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,7 +80,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html" class="active"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html" class="active"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -145,24 +145,14 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#transaction-propagation" id="transaction-propagation"><h1>Transaction propagation</h1></a>
-<p>It is essential for all nodes participating in the network having well synchronized their sets of unused transactions, and have an efficient mechanism to propagate them without decreasing transactions throughput. When a transaction is included in a block, every participant should forget(remove) this transaction.</p>
-<a class="header" href="#strategies" id="strategies"><h2>Strategies</h2></a>
+                        <a class="header" href="#state" id="state"><h1>State</h1></a>
+<p>The state of each participant is the triplet:</p>
+<p><code>(Primary Confidence, Outcome, Secondary Confidence)</code></p>
+<p>TODO:</p>
 <ul>
-<li>
-<p>Dummy Strategy: Each participant has the set of transactions of every other participant from its point of view. This set is always a subset of the real set of transactions. When Alice and Bob want to sync their transactions, Alice will only send to Bob tx that she believes he doesn't have. After sending the transactions she will update her believes from Bob set.</p>
-<ul>
-<li>PRO: It is easy to implement. <strong>(We will use this strategy for alphanet)</strong></li>
-<li>CONS: We are sending the same transactions many times overloading the network.</li>
-<li>Details: Instead of keeping a set per participant explicitly, we will add a bitmask to each transaction of size the number of participants in the network. (What if participants goes in-n-out?)</li>
-</ul>
-</li>
-<li>
-<p>Bloom Filters:</p>
-</li>
-<li>
-<p><a href="https://medium.com/harmony-one/block-syncing-in-1-36s-with-harmonys-adaptive-ida-protocol-de5da398569e">Block Syncing in 1.36s with Harmony’s Adaptive IDA Protocol</a></p>
-</li>
+<li>Describe how <code>update_state</code> (inside <code>Nigthshade</code> works). Assumptions. Examples and corner cases</li>
+<li>When we receive a state update from a participant that we don't have its payload we discard it (maybe we don't wanth to do this)</li>
+<li>All posible ways an authority can become an adversary from the point of view of other authority (currently one authority can't frame another as an adversary, but maybe is something we would like to add)</li>
 </ul>
 
                     </main>
@@ -170,13 +160,13 @@
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../Network/PeerManagement.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../Nightshade/Nightshade.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="../Nightshade/Nightshade.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../Nightshade/VerifyError.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -188,13 +178,13 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../Network/PeerManagement.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../Nightshade/Nightshade.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="../Nightshade/Nightshade.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../Nightshade/VerifyError.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

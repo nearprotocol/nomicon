@@ -31,6 +31,9 @@
         
 
         
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
     </head>
     <body class="light">
         <!-- Provide site root to javascript -->
@@ -77,7 +80,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="../Nightshade/Nightshade.html" class="active"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.1.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.2.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="../Nightshade/Nightshade.html" class="active"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -143,12 +146,59 @@
                 <div id="content" class="content">
                     <main>
                         <a class="header" href="#nightshade" id="nightshade"><h1>Nightshade</h1></a>
-<p><strong>Nightshade</strong> is the core algorithm of <em>NEAR-Blockchain</em> that allows a set of participants achieve consensus on byzantine environment. <strong>Nightshade</strong> tolerates up to 1 / 3 (not inclusive) of participants having byzantine behaviour.</p>
-<a class="header" href="#the-prototocol" id="the-prototocol"><h2>The Prototocol</h2></a>
-<p><strong>TODO</strong> Technical explanation of nightshade.</p>
-<a class="header" href="#byzantine-behaviour" id="byzantine-behaviour"><h3>Byzantine behaviour</h3></a>
+<p><strong>Nightshade</strong> is the Byzantine-fault tolerant consensus protocol used at the core of <em>NEAR PROTOCOL</em>.</p>
+<p>Important features:</p>
 <ul>
-<li>Failing in unexpected ways. <em>This is not penalized</em>. It is expected that nodes go in-n-out of the network at will, and network failures might occur.</li>
+<li>Tolerates up to \( \frac 1 3 \) Byzantine participants.</li>
+<li>It is not DAG-Based and the space complexity growth linear with respect to the number of participants.</li>
+<li>It only requires from 3 to 4 rounds of communication (where one round involves \( O(n) \) participants hearing from \( O(n) \) participants via the gossip network, so total of \( O(n^2) \) communication).
+<ul>
+<li>This is not true when malicious actor adaptatively try to break liveness.</li>
+<li>We need to measure properly expected number of rounds if we change the gossiping mechanism.</li>
+</ul>
+</li>
+<li>It is guaranteed that after one honest participant commits to some value, other honest participants will not commit to a different value.</li>
+</ul>
+<a class="header" href="#the-prototocol" id="the-prototocol"><h2>The Prototocol</h2></a>
+<p>This protocol allows <code>N</code> participants achieving consensus on one proposal. At the beginning of the protocol, each participant makes a proposal (proposals can coincide) and gossip it through the network.</p>
+<p>Each participant (or node) maintain the prefered proposal in the form of a triplet:</p>
+<p><code>(primary confidence, outcome, secondary confidence)</code></p>
+<p>They have for every proposal a confidence (which is not explicetily stored). At the begining of the protocol, every proposal have confidence 0. The triplet stands for:</p>
+<ul>
+<li><code>primary confidence</code>: Highest confidence among all proposals.</li>
+<li><code>outcome</code>: Proposal with highest confidence.</li>
+<li><code>secondary confidence</code>: Highest confidence among all proposals differents from <code>outcome</code> (It can be equal to <code>primary confidence</code>).</li>
+</ul>
+<p>Triplet with highest primary_confidence is prefered, highest secondary confidence is used as first tie-breeaker, and order defined between outcomes is used as final tie-breaker. Among all seen triplets participants state will be the prefered triplet. At the begining of the protocol each node state is (0, v_i, 0), where v_i is its own proposal.</p>
+<p>It is important to define a complete and unbiased order for proposals so <code>outcome</code> can be uniquely chosen when there are several values with the same highest confidence. In the current implementation each participant have an ID, and their proposal has the form of the tuple <code>(ID, value)</code>. <code>value</code> can be anything (for example the hash of a block to append in the chain). This works if participants ID are assigned randomly without malicious actor having the chance to bias this assignment.</p>
+<p>Using a gossiping mechanism each node shares it current state with other nodes, and after collecting the same prefered state from more than \( \frac 2 3 \)  of the total number of participants, the confidence on this <code>outcome</code> is increased by 1 and the triplet transfroms from <code>(A, O, B)</code> into <code>(A + 1, O, B)</code>.</p>
+<p>Participants will update its own state after receiving triplets from other participants if the proposed triplet is better than the current triplet, or second highest confidence can increase. If current triplet is <code>(3, A, 1)</code> and a node receive triplet <code>(2, B, 0)</code> then the next state will be <code>(3, A, 2)</code> (Secondary confidence is set to two). We will see specific details about state <a href="State.html">later</a>.</p>
+<a class="header" href="#proofs-secure-and-verifiable-triplets" id="proofs-secure-and-verifiable-triplets"><h2>Proofs. Secure and verifiable triplets</h2></a>
+<p>In order for a triplet to be valid, it must carry a proof for both confidences (primary and secondary). Each triplet endorsed by some participant will be signed using BLS signature scheme. This scheme, despite being slow to sign/verify, allows to aggregate signatures fast and verify easily aggregated signatures.</p>
+<p>The proof for primary confidence for a triplet <code>(A, O, B)</code> consist on the aggregated BLS signature from more than \( \frac 2 3 \) of the participants on triplet <code>(A - 1, O, B)</code> and the mask that points who were the participants who signed this message. Triplet with zero primary confidence don't require such proof. Since public keys are ... well, public, everyone having the aggregated signature and the mask can verify that the proof is correct.</p>
+<p>The proof for secondary confidence is the proof for primary confidence of the state that was responsible of the last secodary confidence update.</p>
+<a class="header" href="#commit" id="commit"><h2>Commit</h2></a>
+<p>Participants will commit to some outcome after its primary confidence exceed the secondary confidence by 3 or more margin. Read <a href="https://www.overleaf.com/read/snswgqkjvwvy">Nightshade Whitepaper</a> to see why this gap of 3 is enough to guarantee that after some node commit to a value, no other node will commit to a different value.</p>
+<p>Even if a node have enough evidence to commit soon for some outcome <code>O</code> it must remain participating in the protocol, until at least \( \frac 2 3 \) of other nodes have committed too. Early exit for the protocol disallow remaining participants from committing, since they will stop receiving updates from some participants.</p>
+<p>It is also necessary that participants who have already committed, not only gossip its own state but keep updating it from external gossip as established in the protocol (even if they transition to a non commit state).</p>
+<a class="header" href="#non-blocking-state-example" id="non-blocking-state-example"><h3>Non blocking state example</h3></a>
+<p>This is an example of why participants must follow the protcol even after committing.</p>
+<ul>
+<li>Participant 1, State <code>(4, A, 1)</code>: She can already commit to outcome A.</li>
+<li>Participant 2, State <code>(2, B, 0)</code>: He can't get from this state to <code>(4, A, 1)</code>, because after changing outcome its secondary confidence will be always grater than or equal to 2.</li>
+<li>Participant 1, State <code>(4, A, 2)</code>: She must update the secondary confidence after receiving state update from participant 2. Notice that after doing that she has not a committing triplet. But <strong>Nightshade</strong> guarantees that it is not possible for them committing to a different outcome.</li>
+<li>Both participants will commit on triplet on outcome A after arriving at state <code>(5, A, 2)</code>.</li>
+</ul>
+<a class="header" href="#details" id="details"><h2>Details</h2></a>
+<ul>
+<li>This protocol works with less than \( \frac 1 3 \) of byzantine participants.</li>
+<li>We assume that a message sent between a pair of non-byzantines peers will arrive on a finite time (maybe after resending it).</li>
+<li>Since the expected primary confidence to commit should be no much larger than 3, if at some point the confidence for some outcome is greater than \( (C &gt; 5) \) and it have not committed yet, participants know almost surely that something is not going well.</li>
+<li>Liveness is an issue in the current protocol, since malicious actors can stall the protocol creating a metastable situation. TODO: Describe how they can move the consensus toward such situation and how we address this problem (wait randoms delay without updating the state for message of several participants).</li>
+</ul>
+<a class="header" href="#byzantine-behaviour" id="byzantine-behaviour"><h2>Byzantine behaviour</h2></a>
+<ul>
+<li>Failing in unexpected ways. <em>This is not penalized</em>. It is expected that nodes go in-n-out of the network: because of network failures, shutting down the node, hardware issues and more.</li>
 <li>Deviating from the protocol. <em>This should be penalized whenever detected and concrete evidence exists</em>.</li>
 </ul>
 
@@ -163,7 +213,7 @@
                         
 
                         
-                            <a rel="next" href="../Nightshade/VerifyError.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../Nightshade/State.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -181,7 +231,7 @@
                 
 
                 
-                    <a href="../Nightshade/VerifyError.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../Nightshade/State.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
