@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>State - The Nearnomicon</title>
+        <title>Consensus - The Nearnomicon</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,7 +80,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li><li><a href="../Network/Consensus.html"><strong aria-hidden="true">1.3.</strong> Consensus</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html" class="active"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li><li><a href="../Network/Consensus.html" class="active"><strong aria-hidden="true">1.3.</strong> Consensus</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -145,14 +145,40 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#state" id="state"><h1>State</h1></a>
-<p>The state of each participant is the triplet:</p>
-<p><code>(Primary Confidence, Outcome, Secondary Confidence)</code></p>
-<p>TODO:</p>
+                        <a class="header" href="#blockchain-protocol-overview" id="blockchain-protocol-overview"><h1>Blockchain protocol overview</h1></a>
+<a class="header" href="#consensus" id="consensus"><h2>Consensus</h2></a>
+<p>Participants will try to agree on the next block, to do that each participant will propose a block. <code>Proposal</code> in this diagram is the hash of the proposed block.</p>
+<div class="mermaid">
+sequenceDiagram
+    participant Mempool
+    participant Nightshade
+    participant Network
+    Mempool->>Nightshade: Send RESET signal.
+    Note over Nightshade: Start running consensus on confirmed proposals.
+    loop Do for every other participant async.
+        Nightshade->>Network: Gossip signed proposal [1].
+        Network->>Nightshade: Receive signed proposal [2].
+        Nightshade->>Mempool: Request confirmation.
+        Mempool-->Network: Sync mempool until this proposal is valid [4].
+        Mempool->>Nightshade: Send confirmation.
+        Note over Nightshade: Set proposal as confirmed.
+    end
+    loop Consensus not achieved
+        Nightshade->>Network: Gossip current state.
+        Network->>Nightshade: Receive state update.
+        alt missing proposal
+            Nightshade->>Network: Request signed proposal [3].
+        else achieve consensus
+            Note over Nightshade: Send consensus.
+        end
+    end
+</div>
+<p>Notes:</p>
 <ul>
-<li>Describe how <code>update_state</code> (inside <code>Nigthshade</code> works). Assumptions. Examples and corner cases</li>
-<li>When we receive a state update from a participant that we don't have its payload we discard it (maybe we don't wanth to do this)</li>
-<li>All posible ways an authority can become an adversary from the point of view of other authority (currently one authority can't frame another as an adversary, but maybe is something we would like to add)</li>
+<li>[1] This can fail. Network fails or participant is offline.</li>
+<li>[2] If we fail to receive a proposal and we need it later for consensus it will be requested in [3]</li>
+<li>[3] Request missing proposal.</li>
+<li>[4] A <code>proposal</code> is valid if the block proposed can be fetched from the mempool.</li>
 </ul>
 
                     </main>
@@ -160,13 +186,13 @@
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../Nightshade/Nightshade.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../Network/TransactionPropagation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="../Nightshade/VerifyError.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../Nightshade/Nightshade.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -178,13 +204,13 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../Nightshade/Nightshade.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../Network/TransactionPropagation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="../Nightshade/VerifyError.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../Nightshade/Nightshade.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

@@ -80,7 +80,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="index.html">Introduction</a></li><li><a href="Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li></ol></li><li><a href="Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
+            <ol class="chapter"><li class="affix"><a href="index.html">Introduction</a></li><li><a href="Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li><li><a href="Network/Consensus.html"><strong aria-hidden="true">1.3.</strong> Consensus</a></li></ol></li><li><a href="Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -224,6 +224,41 @@ sequenceDiagram
 <li>
 <p><a href="https://medium.com/harmony-one/block-syncing-in-1-36s-with-harmonys-adaptive-ida-protocol-de5da398569e">Block Syncing in 1.36s with Harmony’s Adaptive IDA Protocol</a></p>
 </li>
+</ul>
+<a class="header" href="#blockchain-protocol-overview" id="blockchain-protocol-overview"><h1>Blockchain protocol overview</h1></a>
+<a class="header" href="#consensus" id="consensus"><h2>Consensus</h2></a>
+<p>Participants will try to agree on the next block, to do that each participant will propose a block. <code>Proposal</code> in this diagram is the hash of the proposed block.</p>
+<div class="mermaid">
+sequenceDiagram
+    participant Mempool
+    participant Nightshade
+    participant Network
+    Mempool->>Nightshade: Send RESET signal.
+    Note over Nightshade: Start running consensus on confirmed proposals.
+    loop Do for every other participant async.
+        Nightshade->>Network: Gossip signed proposal [1].
+        Network->>Nightshade: Receive signed proposal [2].
+        Nightshade->>Mempool: Request confirmation.
+        Mempool-->Network: Sync mempool until this proposal is valid [4].
+        Mempool->>Nightshade: Send confirmation.
+        Note over Nightshade: Set proposal as confirmed.
+    end
+    loop Consensus not achieved
+        Nightshade->>Network: Gossip current state.
+        Network->>Nightshade: Receive state update.
+        alt missing proposal
+            Nightshade->>Network: Request signed proposal [3].
+        else achieve consensus
+            Note over Nightshade: Send consensus.
+        end
+    end
+</div>
+<p>Notes:</p>
+<ul>
+<li>[1] This can fail. Network fails or participant is offline.</li>
+<li>[2] If we fail to receive a proposal and we need it later for consensus it will be requested in [3]</li>
+<li>[3] Request missing proposal.</li>
+<li>[4] A <code>proposal</code> is valid if the block proposed can be fetched from the mempool.</li>
 </ul>
 <a class="header" href="#nightshade" id="nightshade"><h1>Nightshade</h1></a>
 <p><strong>Nightshade</strong> is the Byzantine-fault tolerant consensus protocol used at the core of <em>NEAR PROTOCOL</em>.</p>
