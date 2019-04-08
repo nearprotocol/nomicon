@@ -151,22 +151,6 @@ and how these blocks are used by the peers.</p>
 <p>As in a classic block chain each block has exactly one parent block and is signed by the validators.
 Validators sign the block using BLS signatures only once, i.e. there is no double-signing.
 The block can have different states of readiness, depending on the number of signatures and the state of the next block.</p>
-<p>To understand the classification of the blocks we need to first see how they are constructed.</p>
-<p>Classification of the blocks in the shard chain:</p>
-<ul>
-<li><strong>Unfinalized block</strong> -- has \( &lt;2N/3 \) signatures. The next block is not allowed to refer to it as a parent;</li>
-<li><strong>Semi-finalized block</strong> -- has \( \geq 2N/3 \) signatures but it is not canonical.<br/> The next block is not finished yet.</li>
-<li><strong>Finalized</strong> -- when there is \( \geq 2N/3 \) signatures and the block is canonical.<br/>
-Other validators have agreed on the given set of signatures,</li>
-</ul>
-<p>where \( N \) is the number of validators.</p>
-<p>The desire to have canonical set of signatures that sign the block and to not have multi-stage consensus
-poses engineering difficulties. Specifically a group of validators that work on block X+1 have to agree on the following:</p>
-<ol>
-<li>Set of transactions that will go into block X+1;</li>
-<li>State induced by the transactions of the previous block X (We need to counter adversaries that can produce an invalid state);</li>
-<li>Set of signatures that signed transactions included in block X (We want this set to be canonical);</li>
-</ol>
 
                     </main>
 
