@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Construction - The Nearnomicon</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Implementation details of the NearProtocol client">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+        <link rel="stylesheet" href="../mermaid.css">
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li><li><a href="../Network/Consensus.html"><strong aria-hidden="true">1.3.</strong> Consensus</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li><li><a href="../Mempool/Mempool.html"><strong aria-hidden="true">4.</strong> Mempool</a></li><li><a href="../BlockChain/BlockChain.html"><strong aria-hidden="true">5.</strong> Block Chain</a></li><li><ol class="section"><li><a href="../BlockChain/Construction.html" class="active"><strong aria-hidden="true">5.1.</strong> Construction</a></li><li><a href="../BlockChain/BlockStructure.html"><strong aria-hidden="true">5.2.</strong> Block Structure</a></li></ol></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">The Nearnomicon</h1> 
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <a class="header" href="#construction" id="construction"><h1>Construction</h1></a>
+<p>Each validator performs the following tasks:</p>
+<ol>
+<li>Collects transactions by accepting incoming transactions from the peers and through the gossip from the validators;</li>
+<li>Runs consensus with other validators to agree on a set of transactions that will be used for the block.
+The consensus also includes agreeing on the previous state see (3), and the previous set of signatures see (4);</li>
+<li>Computes the new state from the set of transactions and the previous state;</li>
+<li>Collects BLS signatures for the given block.</li>
+</ol>
+<a class="header" href="#the-challenges" id="the-challenges"><h2>The challenges</h2></a>
+<p>We want our block chain to have the following properties that make the design challenging:</p>
+<ol>
+<li>Each block is signed only once by a BLS signature;</li>
+<li>BLS signature of the given block is canonical
+(Recall, that the block is valid when it is signed by \( &gt; 2N/3 \) validators. However, in a general block chain,
+this set of validators does not have to be the same as known by the peers in the network. In our design we want this
+set to be canonical, i.e. agreed upon by the network, and therefore unique.);</li>
+<li>Each block is self-contained, i.e. we do not need to have another block to verify it.</li>
+</ol>
+<a class="header" href="#the-invariant" id="the-invariant"><h2>The invariant</h2></a>
+<p>The general invariant for most of the PoS block chains, is that for transactions to be incorporated into a block chain
+the following must be performed:</p>
+<ul>
+<li>The transactions are collected;</li>
+<li>The transactions are executed;</li>
+<li>The set of transactions is agreed on through a consensus;</li>
+<li>The execution result is agreed on through a consensus.</li>
+</ul>
+<p>Additionally, as discussed in the previous section, we want the following:</p>
+<ul>
+<li>The set of BLS parts that sign the given block is agreed on through a consensus.</li>
+</ul>
+<p>In our design, the set of transactions, the execution result (the new state), and the BLS parts are agreed on
+simultaneously through a single consensus.
+Specifically, the consensus agrees on the following:</p>
+<ul>
+<li>Set of transactions for block \( X + 1 \);</li>
+<li>Execution result of the transactions from the block \( X \);</li>
+<li>BLS parts of block \( X \) .</li>
+</ul>
+<a class="header" href="#the-state-machine" id="the-state-machine"><h2>The state machine</h2></a>
+<p>The block chain logic of a validator is implemented as a state-machine with three &quot;states&quot;:</p>
+<ol>
+<li>Collecting transactions for block \( X + 1 \);</li>
+<li>Computing state from transactions of block \( X \) and continuing collecting transactions for block \( X + 1 \);</li>
+<li>Running consensus to agree on a set of transactions for block \( X + 1\) .</li>
+</ol>
+<p>(1) is initiated when the validator receives the announcement of the block \( X - 1 \);<br/>
+(2) is initiated when the validator receives the announcement of the block \( X \);<br/>
+(1) + (2) terminate and (3) is initiated when the state computation is finished;<br/>
+(3) terminates when the consensus is finished.<br/></p>
+<p>See the flow diagram and the state machine diagram below:
+<img src="../img/block_production.jpg" /></p>
+<p>Interestingly, the transaction collection state has nuances. Specifically, transaction collection happens passively
+through the maintenance of a mempool the collects transactions. While a newly-joining validator that wants to build
+block \( X \) has to start collecting transactions when it gets announcement of block \( X - 2 \), the validator
+that was already building block \( X \) will collect transactions only during its state (3) while building consensus.</p>
+<a class="header" href="#submitting-transactions" id="submitting-transactions"><h2>Submitting transactions</h2></a>
+<p>The user that wants to send a transactions must then send it to validators that are currently in state (1) or (2) by
+anticipating when they might have received the corresponding block announcements and started listening to transactions.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../BlockChain/BlockChain.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../BlockChain/BlockStructure.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../BlockChain/BlockChain.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../BlockChain/BlockStructure.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+        <script type="text/javascript" src="../mermaid.min.js"></script>
+        
+        <script type="text/javascript" src="../mermaid-init.js"></script>
+        
+        <script type="text/javascript" src="../mermaid.js"></script>
+        
+
+        
+
+    </body>
+</html>
