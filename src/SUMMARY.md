@@ -12,3 +12,6 @@
     * [Cryptography](Nightshade/Cryptography.md)
 * [Data Structures](DataStructures/DataStructures.md)
 * [Mempool](Mempool/Mempool.md)
+* [Block Chain](BlockChain/BlockChain.md)
+    * [Construction](BlockChain/Construction.md)
+    * [Block Structure](BlockChain/BlockStructure.md)
