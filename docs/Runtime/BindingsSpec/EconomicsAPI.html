@@ -3,31 +3,29 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Network - The Nearnomicon</title>
+        <title>Economics API - The Nearnomicon</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
-        <link rel="stylesheet" href="../mermaid.css">
         
 
         
@@ -38,7 +36,7 @@
     <body class="light">
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
-            var path_to_root = "../";
+            var path_to_root = "../../";
             var default_theme = "light";
         </script>
 
@@ -80,7 +78,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../index.html">Introduction</a></li><li><a href="../Network/Network.html" class="active"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="../Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="../Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li><li><a href="../Network/Consensus.html"><strong aria-hidden="true">1.3.</strong> Consensus</a></li></ol></li><li><a href="../Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="../Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="../Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="../Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="../DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li><li><a href="../Mempool/Mempool.html"><strong aria-hidden="true">4.</strong> Mempool</a></li><li><a href="../BlockChain/BlockChain.html"><strong aria-hidden="true">5.</strong> Block Chain</a></li><li><ol class="section"><li><a href="../BlockChain/Construction.html"><strong aria-hidden="true">5.1.</strong> Construction</a></li><li><a href="../BlockChain/BlockStructure.html"><strong aria-hidden="true">5.2.</strong> Block Structure</a></li></ol></li></ol>
+            <ol class="chapter"><li class="affix"><a href="../../index.html">Introduction</a></li><li><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">1.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">1.1.1.</strong> Registers API</a></li><li><a href="../../Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">1.1.2.</strong> Trie API</a></li><li><a href="../../Runtime/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">1.1.3.</strong> Promises API</a></li><li><a href="../../Runtime/BindingsSpec/EconomicsAPI.html" class="active"><strong aria-hidden="true">1.1.4.</strong> Economics API</a></li><li><a href="../../Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">1.1.5.</strong> Math API</a></li><li><a href="../../Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">1.1.6.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -113,7 +111,7 @@
                         <h1 class="menu-title">The Nearnomicon</h1> 
 
                         <div class="right-buttons">
-                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <a href="../../print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
@@ -145,46 +143,57 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#network" id="network"><h1>Network</h1></a>
-<p>The network crate has two levels of abstractions:</p>
-<ol>
-<li><strong>Peer management</strong> is a low-level code that only works with discovering peers and connecting to them. It is not domain-specific, meaning it does not care about the content of the messages that it receives from the peers;</li>
-<li><strong>Protocol</strong> is a higher-level code that understands the content of incoming and outgoing messages and communicates them with the corresponding parts of the infrastructure.</li>
-</ol>
-<a class="header" href="#current-state" id="current-state"><h2>Current state</h2></a>
-<p>Our current implementation of the network is the minimal one for running nodes locally, on AWS, or in integration tests.
-It contains the following functionality:</p>
+                        <a class="header" href="#economics-api" id="economics-api"><h1>Economics API</h1></a>
+<p>Accounts own certain balance; and each transaction and each receipt have certain amount of balance and prepaid gas
+attached to them.
+During the contract execution, the contract has access to the following <code>u128</code> values:</p>
 <ul>
-<li><strong>Peer discovery through the gossip.</strong> Peers periodically exchange information with each other about other peers that they know allowing all peers to gradually discover each other;</li>
-<li><strong>Booting from the boot nodes.</strong> Peers start discovering of other peers by initially connecting to the boot nodes;</li>
-<li><strong>Handshake.</strong> Peers that establish the connection with each other are required to perform a handshake that involves exchanging certain information, like information about other peers;</li>
-<li><strong>Unique connection.</strong> We guarantee that there is at most one connection between two peers, by breaking a tie when they try to connect to each other simultaneously;</li>
-<li><strong>Timeouts.</strong> Certain operations, like establishing a connection or performing a handshake are limited by a timeout;</li>
-<li><strong>Reconnection.</strong> Peers that have some connections dropped will try to re-establish them after a certain period of time.</li>
+<li><code>account_balance</code> -- the balance attached to the given account. This includes the <code>attached_deposit</code> that was attached
+to the transaction;</li>
+<li><code>attached_deposit</code> -- the balance that was attached to the call that will be immediately deposited before
+the contract execution starts;</li>
+<li><code>prepaid_gas</code> -- the tokens attached to the call that can be used to pay for the gas;</li>
+<li><code>used_gas</code> -- the gas that was already burnt during the contract execution and attached to promises (cannot exceed <code>prepaid_gas</code>);</li>
 </ul>
-<p>The following functionality is not implemented yet:</p>
+<p>If contract execution fails <code>prepaid_gas - used_gas</code> is refunded back to <code>signer_account_id</code> and <code>attached_balance</code>
+is refunded back to <code>predecessor_account_id</code>.</p>
+<p>The following spec is the same for all functions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+account_balance(balance_ptr: u64)
+attached_deposit(balance_ptr: u64)
+
+#}</code></pre></pre>
+<p>-- writes the value into the <code>u128</code> variable pointed by <code>balance_ptr</code>.</p>
+<a class="header" href="#panics" id="panics"><h6>Panics</h6></a>
 <ul>
-<li><strong>Relays.</strong> The peers that are behind the NAT cannot have a direct communication and have to use relays. Our current code does not implement that;</li>
-<li><strong>Broadcasting.</strong> We need a broadcasting for announcements over the network;</li>
-<li><strong>Encryption.</strong> Currently our messages are not encrypted;</li>
-<li><strong>Verification.</strong> During the handshake we should verify that the other peer is not an impostor, by verifying their signed handshake;</li>
-<li><strong>Connection limit.</strong> We need to limit the number of connections a single peer can have. When we try to establish a connection with a maxed-out boot node it should redirect us to other nodes;</li>
-<li><strong>Tight coupling between gossip and relaying.</strong> Our consensus algorithms use gossip, since we want them to adversary-proof the relaying should be adversary-proof too.</li>
-<li><strong>DNS.</strong> DNS resolution.</li>
+<li>If <code>balance_ptr + 16</code> points outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
 </ul>
+<a class="header" href="#current-bugs" id="current-bugs"><h6>Current bugs</h6></a>
+<ul>
+<li>Use a different name;</li>
+</ul>
+<hr />
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+prepaid_gas() -&gt; u64
+used_gas() -&gt; u64
+#}</code></pre></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../Runtime/BindingsSpec/PromisesAPI.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="../Network/PeerManagement.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../Runtime/BindingsSpec/MathAPI.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -196,13 +205,13 @@ It contains the following functionality:</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a href="../../Runtime/BindingsSpec/PromisesAPI.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="../Network/PeerManagement.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="../../Runtime/BindingsSpec/MathAPI.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
@@ -211,28 +220,37 @@ It contains the following functionality:</p>
         </div>
 
         
+        <!-- Livereload script (if served using the cli tool) -->
+        <script type="text/javascript">
+            var socket = new WebSocket("ws://localhost:3001");
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload(true); // force reload from server (not from cache)
+                }
+            };
 
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
         
 
         
 
         
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+
+        
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
         
 
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
-        <script type="text/javascript" src="../mermaid.min.js"></script>
-        
-        <script type="text/javascript" src="../mermaid-init.js"></script>
-        
-        <script type="text/javascript" src="../mermaid.js"></script>
         
 
         

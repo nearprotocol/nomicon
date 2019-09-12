@@ -27,8 +27,6 @@
 
         <!-- Custom theme stylesheets -->
         
-        <link rel="stylesheet" href="mermaid.css">
-        
 
         
         <!-- MathJax -->
@@ -80,7 +78,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="index.html">Introduction</a></li><li><a href="Network/Network.html"><strong aria-hidden="true">1.</strong> Network</a></li><li><ol class="section"><li><a href="Network/PeerManagement.html"><strong aria-hidden="true">1.1.</strong> Peer Management</a></li><li><a href="Network/TransactionPropagation.html"><strong aria-hidden="true">1.2.</strong> Transaction Propagation</a></li><li><a href="Network/Consensus.html"><strong aria-hidden="true">1.3.</strong> Consensus</a></li></ol></li><li><a href="Nightshade/Nightshade.html"><strong aria-hidden="true">2.</strong> Nightshade</a></li><li><ol class="section"><li><a href="Nightshade/State.html"><strong aria-hidden="true">2.1.</strong> State</a></li><li><a href="Nightshade/VerifyError.html"><strong aria-hidden="true">2.2.</strong> State Verifying Errors</a></li><li><a href="Nightshade/Cryptography.html"><strong aria-hidden="true">2.3.</strong> Cryptography</a></li></ol></li><li><a href="DataStructures/DataStructures.html"><strong aria-hidden="true">3.</strong> Data Structures</a></li><li><a href="Mempool/Mempool.html"><strong aria-hidden="true">4.</strong> Mempool</a></li><li><a href="BlockChain/BlockChain.html"><strong aria-hidden="true">5.</strong> Block Chain</a></li><li><ol class="section"><li><a href="BlockChain/Construction.html"><strong aria-hidden="true">5.1.</strong> Construction</a></li><li><a href="BlockChain/BlockStructure.html"><strong aria-hidden="true">5.2.</strong> Block Structure</a></li></ol></li></ol>
+            <ol class="chapter"><li class="affix"><a href="index.html">Introduction</a></li><li><a href="Runtime/Runtime.html"><strong aria-hidden="true">1.</strong> Runtime</a></li><li><ol class="section"><li><a href="Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">1.1.1.</strong> Registers API</a></li><li><a href="Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">1.1.2.</strong> Trie API</a></li><li><a href="Runtime/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">1.1.3.</strong> Promises API</a></li><li><a href="Runtime/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">1.1.4.</strong> Economics API</a></li><li><a href="Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">1.1.5.</strong> Math API</a></li><li><a href="Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">1.1.6.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -177,6 +175,21 @@ with the collaboration:</p>
         </div>
 
         
+        <!-- Livereload script (if served using the cli tool) -->
+        <script type="text/javascript">
+            var socket = new WebSocket("ws://localhost:3001");
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload(true); // force reload from server (not from cache)
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+        
 
         
 
@@ -193,12 +206,6 @@ with the collaboration:</p>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
-        <script type="text/javascript" src="mermaid.min.js"></script>
-        
-        <script type="text/javascript" src="mermaid-init.js"></script>
-        
-        <script type="text/javascript" src="mermaid.js"></script>
         
 
         
