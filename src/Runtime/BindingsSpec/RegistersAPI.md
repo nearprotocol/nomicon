@@ -1,4 +1,4 @@
-# Registers
+# Registers API
 Registers allow the host function to return the data into a buffer located inside the host oppose to the buffer
 located on the client. A special operation can be used to copy the content of the buffer into the host. Memory pointers
 can then be used to point either to the memory on the guest or the memory on the host, see below. Benefits:

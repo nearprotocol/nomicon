@@ -1,4 +1,4 @@
-# Math
+# Math API
 
 ```rust
 random_seed(register_id: u64)
