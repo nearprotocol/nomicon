@@ -16,6 +16,7 @@ Creates a promise that will execute a method on account with given arguments and
 ###### Panics
 * If `account_id_len + account_id_ptr` or `method_name_len + method_name_ptr` or `arguments_len + arguments_ptr`
 or `amount_ptr + 16` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Returns
 * Index of the new promise that uniquely identifies it within the current execution of the method.
@@ -39,6 +40,7 @@ Attaches the callback that is executed after promise pointed by `promise_idx` is
 * If `promise_idx` does not correspond to an existing promise panics with `InvalidPromiseIndex`.
 * If `account_id_len + account_id_ptr` or `method_name_len + method_name_ptr` or `arguments_len + arguments_ptr`
 or `amount_ptr + 16` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Returns
 * Index of the new promise that uniquely identifies it within the current execution of the method.
@@ -54,6 +56,7 @@ The array contains indices of promises that need to be waited on jointly.
 ###### Panics
 * If `promise_ids_ptr + 8 * promise_idx_count` extend outside the guest memory with `MemoryAccessViolation`;
 * If any of the promises in the array do not correspond to existing promises panics with `InvalidPromiseIndex`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Returns
 * Index of the new promise that uniquely identifies it within the current execution of the method.
@@ -71,6 +74,8 @@ Note, we are only going to have incomplete callbacks once we have `promise_or` c
 * If there are multiple callbacks (e.g. created through `promise_and`) `promise_results_count()` returns their number.
 * If the function was called not through the callback `promise_results_count()` returns `0`.
 
+###### Panics
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 ```rust
@@ -91,6 +96,7 @@ caused the callback. This function returns the result in blob format and places 
 ###### Panics
 * If `result_idx` does not correspond to an existing result panics with `InvalidResultIndex`.
 * If copying the blob exhausts the memory limit it panics with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Current bugs
 * We currently have two separate functions to check for result completion and copy it.
@@ -114,6 +120,7 @@ Creates a new promise towards given `account_id` without any actions attached to
 
 ###### Panics
 * If `account_id_len + account_id_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Returns
 * Index of the new promise that uniquely identifies it within the current execution of the method.
@@ -128,6 +135,7 @@ Attaches a new empty promise that is executed after promise pointed by `promise_
 ###### Panics
 * If `promise_idx` does not correspond to an existing promise panics with `InvalidPromiseIndex`.
 * If `account_id_len + account_id_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Returns
 * Index of the new promise that uniquely identifies it within the current execution of the method.
@@ -143,6 +151,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 ###### Panics
 * If `promise_idx` does not correspond to an existing promise panics with `InvalidPromiseIndex`.
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -156,6 +165,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 * If `promise_idx` does not correspond to an existing promise panics with `InvalidPromiseIndex`.
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If `code_len + code_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -178,6 +188,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If `account_id_len + account_id_ptr` or `method_name_len + method_name_ptr` or `arguments_len + arguments_ptr`
 or `amount_ptr + 16` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -191,6 +202,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 * If `promise_idx` does not correspond to an existing promise panics with `InvalidPromiseIndex`.
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If `amount_ptr + 16` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -208,6 +220,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If the given public key is not a valid public key (e.g. wrong length) `InvalidPublicKey`.
 * If `amount_ptr + 16` or `public_key_len + public_key_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -226,6 +239,7 @@ The access key will have `FullAccess` permission, details: https://github.com/ne
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If the given public key is not a valid public key (e.g. wrong length) `InvalidPublicKey`.
 * If `public_key_len + public_key_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -254,6 +268,7 @@ The access key will have `FunctionCall` permission, details: https://github.com/
 * if `method_names` is not a valid `utf-8` string, fails with `BadUTF8`.
 * If `public_key_len + public_key_ptr`, `allowance_ptr + 16`, `receiver_id_len + receiver_id_ptr` or 
 `method_names_len + method_names_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -270,6 +285,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If the given public key is not a valid public key (e.g. wrong length) `InvalidPublicKey`.
 * If `public_key_len + public_key_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.
 
 ---
 
@@ -286,3 +302,4 @@ insufficient funds to pay rent. Takes `beneficiary_id` to indicate where to send
 * If `promise_idx` does not correspond to an existing promise panics with `InvalidPromiseIndex`.
 * If the promise pointed by the `promise_idx` is an ephemeral promise created by `promise_and`.
 * If `beneficiary_id_len + beneficiary_id_ptr` points outside the memory of the guest or host, with `MemoryAccessViolation`.
+* If called in a view function panics with `ProhibitedInView`.

@@ -21,3 +21,30 @@ on it it causes overflow or underflow;
 * `GasLimitExceeded` -- happens when the execution uses more gas than allowed by the global limit imposed in the economics
 config;
 * `StorageError` -- happens when method fails to do some operation on the trie.
+
+The following binding methods cannot be invoked in a view call:
+* `signer_account_id`
+* `signer_account_pk`
+* `predecessor_account_id`
+* `attached_deposit`
+* `prepaid_gas`
+* `used_gas`
+* `promise_create`
+* `promise_then`
+* `promise_and`
+* `promise_batch_create`
+* `promise_batch_then`
+* `promise_batch_action_create_account`
+* `promise_batch_action_deploy_account`
+* `promise_batch_action_function_call`
+* `promise_batch_action_transfer`
+* `promise_batch_action_stake`
+* `promise_batch_action_add_key_with_full_access`
+* `promise_batch_action_add_key_with_function_call`
+* `promise_batch_action_delete_key`
+* `promise_batch_action_delete_account`
+* `promise_results_count`
+* `promise_result`
+* `promise_return`
+
+If they are invoked the smart contract execution will panic with `ProhibitedInView(<method name>)`.

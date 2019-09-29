@@ -37,6 +37,7 @@ some access key and submitted into a memory pool (either through the wallet usin
 
 ###### Panics
 * If the registers exceed the memory limit panics with `MemoryAccessViolation`;
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Current bugs
 * Currently we conflate `originator_id` and `sender_id` in our code base.
@@ -51,7 +52,7 @@ e.g. to increase the allowance or manipulate with the public key.
 
 ###### Panics
 * If the registers exceed the memory limit panics with `MemoryAccessViolation`;
-
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Current bugs
 * Not implemented.
@@ -68,6 +69,7 @@ that does function invocation on the contract or another contract as a result of
 
 ###### Panics
 * If the registers exceed the memory limit panics with `MemoryAccessViolation`;
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Current bugs
 * Not implemented.

@@ -22,6 +22,7 @@ attached_deposit(balance_ptr: u64)
 
 ###### Panics
 * If `balance_ptr + 16` points outside the memory of the guest with `MemoryAccessViolation`;
+* If called in a view function panics with `ProhibitedInView`.
 
 ###### Current bugs
 * Use a different name;
@@ -31,3 +32,6 @@ attached_deposit(balance_ptr: u64)
 prepaid_gas() -> u64
 used_gas() -> u64
 ```
+
+###### Panics
+* If called in a view function panics with `ProhibitedInView`.
