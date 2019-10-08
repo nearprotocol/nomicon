@@ -4,6 +4,10 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>The Nearnomicon</title>
+        
+        <meta name="robots" content="noindex" />
+        
+
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -59,7 +63,7 @@
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script type="text/javascript">
             var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
@@ -78,7 +82,10 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="index.html">Introduction</a></li><li><a href="Runtime/Runtime.html"><strong aria-hidden="true">1.</strong> Runtime</a></li><li><ol class="section"><li><a href="Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">1.1.1.</strong> Registers API</a></li><li><a href="Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">1.1.2.</strong> Trie API</a></li><li><a href="Runtime/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">1.1.3.</strong> Promises API</a></li><li><a href="Runtime/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">1.1.4.</strong> Context API</a></li><li><a href="Runtime/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">1.1.5.</strong> Economics API</a></li><li><a href="Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">1.1.6.</strong> Math API</a></li><li><a href="Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">1.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="index.html">Introduction</a></li><li><a href="Runtime/Runtime.html"><strong aria-hidden="true">1.</strong> Runtime</a></li><li><ol class="section"><li><a href="Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">1.1.1.</strong> Registers API</a></li><li><a href="Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">1.1.2.</strong> Trie API</a></li><li><a href="Runtime/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">1.1.3.</strong> Promises API</a></li><li><a href="Runtime/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">1.1.4.</strong> Context API</a></li><li><a href="Runtime/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">1.1.5.</strong> Economics API</a></li><li><a href="Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">1.1.6.</strong> Math API</a></li><li><a href="Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">1.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -108,7 +115,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">The Nearnomicon</h1> 
+                        <h1 class="menu-title">The Nearnomicon</h1>
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -143,7 +150,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#the-nearnomicon" id="the-nearnomicon"><h1>The Nearnomicon</h1></a>
+                        <h1><a class="header" href="#the-nearnomicon" id="the-nearnomicon">The Nearnomicon</a></h1>
 <p>Nearnomicon contains the following information about the components of the NearProtocol client, with the goal to help
 with the collaboration:</p>
 <ul>
@@ -152,7 +159,7 @@ with the collaboration:</p>
 <li>Things that are not yet implemented or replaced with temporary solutions;</li>
 <li>Assumptions that each component makes.</li>
 </ul>
-<a class="header" href="#runtime" id="runtime"><h1>Runtime</h1></a>
+<h1><a class="header" href="#runtime" id="runtime">Runtime</a></h1>
 <p>Near node consists roughly of a Blockchain layer and a Runtime layer.
 This section is mostly concerned with the Runtime layer.</p>
 <p>Runtime layer is used to execute smart contracts written by users and preserve the state between the executions.
@@ -167,7 +174,7 @@ interface provided by <code>near-vm-logic</code> to the smart contract;</li>
 <li><code>store</code> crate -- interfaces with the KV databases and implements a trie on the top of it that smart contracts interface
 through <code>near-vm-logic</code>.</li>
 </ul>
-<a class="header" href="#bindings-specification" id="bindings-specification"><h1>Bindings Specification</h1></a>
+<h1><a class="header" href="#bindings-specification" id="bindings-specification">Bindings Specification</a></h1>
 <p>This is the low-level interface available to the smart contracts, it consists of the functions that the host (represented by
 Wasmer inside near-vm-runner) exposes to the guest (the smart contract compiled to Wasm).</p>
 <p>Due to Wasm restrictions the methods operate only with primitive types, like <code>u64</code>.</p>
@@ -192,7 +199,34 @@ on it it causes overflow or underflow;</li>
 config;</li>
 <li><code>StorageError</code> -- happens when method fails to do some operation on the trie.</li>
 </ul>
-<a class="header" href="#registers-api" id="registers-api"><h1>Registers API</h1></a>
+<p>The following binding methods cannot be invoked in a view call:</p>
+<ul>
+<li><code>signer_account_id</code></li>
+<li><code>signer_account_pk</code></li>
+<li><code>predecessor_account_id</code></li>
+<li><code>attached_deposit</code></li>
+<li><code>prepaid_gas</code></li>
+<li><code>used_gas</code></li>
+<li><code>promise_create</code></li>
+<li><code>promise_then</code></li>
+<li><code>promise_and</code></li>
+<li><code>promise_batch_create</code></li>
+<li><code>promise_batch_then</code></li>
+<li><code>promise_batch_action_create_account</code></li>
+<li><code>promise_batch_action_deploy_account</code></li>
+<li><code>promise_batch_action_function_call</code></li>
+<li><code>promise_batch_action_transfer</code></li>
+<li><code>promise_batch_action_stake</code></li>
+<li><code>promise_batch_action_add_key_with_full_access</code></li>
+<li><code>promise_batch_action_add_key_with_function_call</code></li>
+<li><code>promise_batch_action_delete_key</code></li>
+<li><code>promise_batch_action_delete_account</code></li>
+<li><code>promise_results_count</code></li>
+<li><code>promise_result</code></li>
+<li><code>promise_return</code></li>
+</ul>
+<p>If they are invoked the smart contract execution will panic with <code>ProhibitedInView(&lt;method name&gt;)</code>.</p>
+<h1><a class="header" href="#registers-api" id="registers-api">Registers API</a></h1>
 <p>Registers allow the host function to return the data into a buffer located inside the host oppose to the buffer
 located on the client. A special operation can be used to copy the content of the buffer into the host. Memory pointers
 can then be used to point either to the memory on the guest or the memory on the host, see below. Benefits:</p>
@@ -208,7 +242,7 @@ from the storage and insert it into under a different key;</li>
 SNARK-like computations in Wasm by exposing a bignum library through stack-like interface to the guest. The guest
 can manipulate then with the stack of 256-bit numbers that is located on the host.</li>
 </ul>
-<a class="header" href="#host--host-blob-passing" id="host--host-blob-passing"><h4>Host → host blob passing</h4></a>
+<h4><a class="header" href="#host--host-blob-passing" id="host--host-blob-passing">Host → host blob passing</a></h4>
 <p>The registers can be used to pass the blobs between host functions. For any function that
 takes a pair of arguments <code>*_len: u64, *_ptr: u64</code> this pair is pointing to a region of memory either on the guest or
 the host:</p>
@@ -223,19 +257,19 @@ value is read from register 1, and result is saved to register 2.</p>
 <code>register_id == u64::MAX</code> then the copying does not happen. This allows some micro-optimizations in the future.</p>
 <p>Note, we allow multiple registers on the host, identified with <code>u64</code> number. The guest does not have to use them in
 order and can for instance save some blob in register <code>5000</code> and another value in register <code>1</code>.</p>
-<a class="header" href="#specification" id="specification"><h4>Specification</h4></a>
+<h4><a class="header" href="#specification" id="specification">Specification</a></h4>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 read_register(register_id: u64, ptr: u64)
 #}</code></pre></pre>
 <p>Writes the entire content from the register <code>register_id</code> into the memory of the guest starting with <code>ptr</code>.</p>
-<a class="header" href="#panics" id="panics"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
 <li>If the content extends outside the memory allocated to the guest. In Wasmer, it returns <code>MemoryAccessViolation</code> error message;</li>
 <li>If <code>register_id</code> is pointing to unused register returns <code>InvalidRegisterId</code> error message.</li>
 </ul>
-<a class="header" href="#undefined-behavior" id="undefined-behavior"><h6>Undefined Behavior</h6></a>
+<h6><a class="header" href="#undefined-behavior" id="undefined-behavior">Undefined Behavior</a></h6>
 <ul>
 <li>If the content of register extends outside the preallocated memory on the host side, or the pointer points to a
 wrong location this function will overwrite memory that it is not supposed to overwrite causing an undefined behavior.</li>
@@ -247,12 +281,12 @@ wrong location this function will overwrite memory that it is not supposed to ov
 register_len(register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Returns the size of the blob stored in the given register.</p>
-<a class="header" href="#normal-operation" id="normal-operation"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation" id="normal-operation">Normal operation</a></h6>
 <ul>
 <li>If register is used, then returns the size, which can potentially be zero;</li>
 <li>If register is not used, returns <code>u64::MAX</code></li>
 </ul>
-<a class="header" href="#trie-api" id="trie-api"><h1>Trie API</h1></a>
+<h1><a class="header" href="#trie-api" id="trie-api">Trie API</a></h1>
 <p>Here we provide a specification of trie API. After this NEP is merged, the cases where our current implementation does
 not follow the specification are considered to be bugs that need to be fixed.</p>
 <hr />
@@ -262,24 +296,24 @@ not follow the specification are considered to be bugs that need to be fixed.</p
 storage_write(key_len: u64, key_ptr: u64, value_len: u64, value_ptr: u64, register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Writes key-value into storage.</p>
-<a class="header" href="#normal-operation-1" id="normal-operation-1"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-1" id="normal-operation-1">Normal operation</a></h6>
 <ul>
 <li>If key is not in use it inserts the key-value pair and does not modify the register;</li>
 <li>If key is in use it inserts the key-value and copies the old value into the <code>register_id</code>.</li>
 </ul>
-<a class="header" href="#returns" id="returns"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns" id="returns">Returns</a></h6>
 <ul>
 <li>If key was not used returns <code>0</code>;</li>
 <li>If key was used returns <code>1</code>.</li>
 </ul>
-<a class="header" href="#panics-1" id="panics-1"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-1" id="panics-1">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> or <code>value_len + value_ptr</code> exceeds the memory container or points to an unused register it panics
 with <code>MemoryAccessViolation</code>. (When we say that something panics with the given error we mean that we use Wasmer API to
 create this error and terminate the execution of VM. For mocks of the host that would only cause a non-name panic.)</li>
 <li>If returning the preempted value into the registers exceed the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs" id="current-bugs"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs" id="current-bugs">Current bugs</a></h6>
 <ul>
 <li><code>External::storage_set</code> trait can return an error which is then converted to a generic non-descriptive
 <code>StorageUpdateError</code>, <a href="https://github.com/nearprotocol/nearcore/blob/942bd7bdbba5fb3403e5c2f1ee3c08963947d0c6/runtime/wasm/src/runtime.rs#L210">here</a>
@@ -293,22 +327,22 @@ however the actual implementation does not return error at all, <a href="https:/
 storage_read(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Reads the value stored under the given key.</p>
-<a class="header" href="#normal-operation-2" id="normal-operation-2"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-2" id="normal-operation-2">Normal operation</a></h6>
 <ul>
 <li>If key is used copies the content of the value into the <code>register_id</code>, even if the content is zero bytes;</li>
 <li>If key is not present then does not modify the register.</li>
 </ul>
-<a class="header" href="#returns-1" id="returns-1"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-1" id="returns-1">Returns</a></h6>
 <ul>
 <li>If key was not present returns <code>0</code>;</li>
 <li>If key was present returns <code>1</code>.</li>
 </ul>
-<a class="header" href="#panics-2" id="panics-2"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-2" id="panics-2">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 <li>If returning the preempted value into the registers exceed the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs-1" id="current-bugs-1"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-1" id="current-bugs-1">Current bugs</a></h6>
 <ul>
 <li>This function currently does not exist.</li>
 </ul>
@@ -319,24 +353,24 @@ storage_read(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
 storage_remove(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Removes the value stored under the given key.</p>
-<a class="header" href="#normal-operation-3" id="normal-operation-3"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-3" id="normal-operation-3">Normal operation</a></h6>
 <p>Very similar to <code>storage_read</code>:</p>
 <ul>
 <li>If key is used, removes the key-value from the trie and copies the content of the value into the <code>register_id</code>, even if the content is zero bytes.</li>
 <li>If key is not present then does not modify the register.</li>
 </ul>
-<a class="header" href="#returns-2" id="returns-2"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-2" id="returns-2">Returns</a></h6>
 <ul>
 <li>If key was not present returns <code>0</code>;</li>
 <li>If key was present returns <code>1</code>.</li>
 </ul>
-<a class="header" href="#panics-3" id="panics-3"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-3" id="panics-3">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 <li>If returning the preempted value into the registers exceed the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs-2" id="current-bugs-2"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-2" id="current-bugs-2">Current bugs</a></h6>
 <ul>
 <li>Does not return into the registers.</li>
 </ul>
@@ -347,12 +381,12 @@ storage_remove(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
 storage_has_key(key_len: u64, key_ptr: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Checks if there is a key-value pair.</p>
-<a class="header" href="#normal-operation-4" id="normal-operation-4"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-4" id="normal-operation-4">Normal operation</a></h6>
 <ul>
 <li>If key is used returns <code>1</code>, even if the value is zero bytes;</li>
 <li>Otherwise returns <code>0</code>.</li>
 </ul>
-<a class="header" href="#panics-4" id="panics-4"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-4" id="panics-4">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> exceeds the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -365,12 +399,12 @@ storage_iter_prefix(prefix_len: u64, prefix_ptr: u64) -&gt; u64
 <p>Creates an iterator object inside the host.
 Returns the identifier that uniquely differentiates the given iterator from other iterators that can be simultaneously
 created.</p>
-<a class="header" href="#normal-operation-5" id="normal-operation-5"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-5" id="normal-operation-5">Normal operation</a></h6>
 <ul>
 <li>It iterates over the keys that have the provided prefix. The order of iteration is defined by the lexicographic
 order of the bytes in the keys. If there are no keys, it creates an empty iterator, see below on empty iterators;</li>
 </ul>
-<a class="header" href="#panics-5" id="panics-5"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-5" id="panics-5">Panics</a></h6>
 <ul>
 <li>If <code>prefix_len + prefix_ptr</code> exceeds the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -382,11 +416,11 @@ storage_iter_range(start_len: u64, start_ptr: u64, end_len: u64, end_ptr: u64) -
 #}</code></pre></pre>
 <p>Similarly to <code>storage_iter_prefix</code>
 creates an iterator object inside the host.</p>
-<a class="header" href="#normal-operation-6" id="normal-operation-6"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-6" id="normal-operation-6">Normal operation</a></h6>
 <p>Unless lexicographically <code>start &lt; end</code>, it creates an empty iterator.
 Iterates over all key-values such that keys are between <code>start</code> and <code>end</code>, where <code>start</code> is inclusive and <code>end</code> is exclusive.</p>
 <p>Note, this definition allows for <code>start</code> or <code>end</code> keys to not actually exist on the given trie.</p>
-<a class="header" href="#panics-6" id="panics-6"><h6>Panics:</h6></a>
+<h6><a class="header" href="#panics-6" id="panics-6">Panics:</a></h6>
 <ul>
 <li>If <code>start_len + start_ptr</code> or <code>end_len + end_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -397,13 +431,13 @@ Iterates over all key-values such that keys are between <code>start</code> and <
 storage_iter_next(iterator_id: u64, key_register_id: u64, value_register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Advances iterator and saves the next key and value in the register.</p>
-<a class="header" href="#normal-operation-7" id="normal-operation-7"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-7" id="normal-operation-7">Normal operation</a></h6>
 <ul>
 <li>If iterator is not empty (after calling next it points to a key-value), copies the key into <code>key_register_id</code> and value into <code>value_register_id</code> and returns <code>1</code>;</li>
 <li>If iterator is empty returns <code>0</code>.</li>
 </ul>
 <p>This allows us to iterate over the keys that have zero bytes stored in values.</p>
-<a class="header" href="#panics-7" id="panics-7"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-7" id="panics-7">Panics</a></h6>
 <ul>
 <li>If <code>key_register_id == value_register_id</code> panics with <code>MemoryAccessViolation</code>;</li>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
@@ -411,12 +445,12 @@ storage_iter_next(iterator_id: u64, key_register_id: u64, value_register_id: u64
 <li>If between the creation of the iterator and calling <code>storage_iter_next</code> any modification to storage was done through
 <code>storage_write</code> or <code>storage_remove</code> the iterator is invalidated and the error message is <code>IteratorWasInvalidated</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-3" id="current-bugs-3"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-3" id="current-bugs-3">Current bugs</a></h6>
 <ul>
 <li>Not implemented, currently we have <code>storage_iter_next</code> and <code>data_read</code> + <code>DATA_TYPE_STORAGE_ITER</code> that together fulfill
 the purpose, but have unspecified behavior.</li>
 </ul>
-<a class="header" href="#promises-api" id="promises-api"><h1>Promises API</h1></a>
+<h1><a class="header" href="#promises-api" id="promises-api">Promises API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -431,12 +465,13 @@ promise_create(account_id_len: u64,
 #}</code></pre></pre>
 <p>Creates a promise that will execute a method on account with given arguments and attaches the given amount.
 <code>amount_ptr</code> point to slices of bytes representing <code>u128</code>.</p>
-<a class="header" href="#panics-8" id="panics-8"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-8" id="panics-8">Panics</a></h6>
 <ul>
 <li>If <code>account_id_len + account_id_ptr</code> or <code>method_name_len + method_name_ptr</code> or <code>arguments_len + arguments_ptr</code>
 or <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-3" id="returns-3"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-3" id="returns-3">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -455,13 +490,14 @@ promise_then(promise_idx: u64,
              gas: u64) -&gt; u64            
 #}</code></pre></pre>
 <p>Attaches the callback that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
-<a class="header" href="#panics-9" id="panics-9"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-9" id="panics-9">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If <code>account_id_len + account_id_ptr</code> or <code>method_name_len + method_name_ptr</code> or <code>arguments_len + arguments_ptr</code>
 or <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-4" id="returns-4"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-4" id="returns-4">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -474,12 +510,13 @@ promise_and(promise_idx_ptr: u64, promise_idx_count: u64) -&gt; u64
 <p>Creates a new promise which completes when time all promises passed as arguments complete. Cannot be used with registers.
 <code>promise_idx_ptr</code> points to an array of <code>u64</code> elements, with <code>promise_idx_count</code> denoting the number of elements.
 The array contains indices of promises that need to be waited on jointly.</p>
-<a class="header" href="#panics-10" id="panics-10"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-10" id="panics-10">Panics</a></h6>
 <ul>
 <li>If <code>promise_ids_ptr + 8 * promise_idx_count</code> extend outside the guest memory with <code>MemoryAccessViolation</code>;</li>
 <li>If any of the promises in the array do not correspond to existing promises panics with <code>InvalidPromiseIndex</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-5" id="returns-5"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-5" id="returns-5">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -492,11 +529,15 @@ promise_results_count() -&gt; u64
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the number of complete and incomplete callbacks.</p>
 <p>Note, we are only going to have incomplete callbacks once we have <code>promise_or</code> combinator.</p>
-<a class="header" href="#normal-execution" id="normal-execution"><h6>Normal execution</h6></a>
+<h6><a class="header" href="#normal-execution" id="normal-execution">Normal execution</a></h6>
 <ul>
 <li>If there is only one callback <code>promise_results_count()</code> returns <code>1</code>;</li>
 <li>If there are multiple callbacks (e.g. created through <code>promise_and</code>) <code>promise_results_count()</code> returns their number.</li>
 <li>If the function was called not through the callback <code>promise_results_count()</code> returns <code>0</code>.</li>
+</ul>
+<h6><a class="header" href="#panics-11" id="panics-11">Panics</a></h6>
+<ul>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -506,23 +547,24 @@ promise_result(result_idx: u64, register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the result in blob format and places it into the register.</p>
-<a class="header" href="#normal-execution-1" id="normal-execution-1"><h6>Normal execution</h6></a>
+<h6><a class="header" href="#normal-execution-1" id="normal-execution-1">Normal execution</a></h6>
 <ul>
 <li>If promise result is complete and successful copies its blob into the register;</li>
 <li>If promise result is complete and failed or incomplete keeps register unused;</li>
 </ul>
-<a class="header" href="#returns-6" id="returns-6"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-6" id="returns-6">Returns</a></h6>
 <ul>
 <li>If promise result is not complete returns <code>0</code>;</li>
 <li>If promise result is complete and successful returns <code>1</code>;</li>
 <li>If promise result is complete and failed returns <code>2</code>.</li>
 </ul>
-<a class="header" href="#panics-11" id="panics-11"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-12" id="panics-12">Panics</a></h6>
 <ul>
 <li>If <code>result_idx</code> does not correspond to an existing result panics with <code>InvalidResultIndex</code>.</li>
 <li>If copying the blob exhausts the memory limit it panics with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-4" id="current-bugs-4"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-4" id="current-bugs-4">Current bugs</a></h6>
 <ul>
 <li>We currently have two separate functions to check for result completion and copy it.</li>
 </ul>
@@ -533,11 +575,11 @@ caused the callback. This function returns the result in blob format and places 
 promise_return(promise_idx: u64)
 #}</code></pre></pre>
 <p>When promise <code>promise_idx</code> finishes executing its result is considered to be the result of the current function.</p>
-<a class="header" href="#panics-12" id="panics-12"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-13" id="panics-13">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-5" id="current-bugs-5"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-5" id="current-bugs-5">Current bugs</a></h6>
 <ul>
 <li>The current name <code>return_promise</code> is inconsistent with the naming convention of Promise API.</li>
 </ul>
@@ -547,11 +589,12 @@ promise_return(promise_idx: u64)
 promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Creates a new promise towards given <code>account_id</code> without any actions attached to it.</p>
-<a class="header" href="#panics-13" id="panics-13"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-14" id="panics-14">Panics</a></h6>
 <ul>
 <li>If <code>account_id_len + account_id_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-7" id="returns-7"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-7" id="returns-7">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -562,12 +605,13 @@ promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
 #}</code></pre></pre>
 <p>Attaches a new empty promise that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
-<a class="header" href="#panics-14" id="panics-14"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-15" id="panics-15">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If <code>account_id_len + account_id_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-8" id="returns-8"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-8" id="returns-8">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -579,10 +623,11 @@ promise_batch_action_create_account(promise_idx: u64)
 #}</code></pre></pre>
 <p>Appends <code>CreateAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R48</p>
-<a class="header" href="#panics-15" id="panics-15"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-16" id="panics-16">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -592,11 +637,12 @@ promise_batch_action_deploy_contract(promise_idx: u64, code_len: u64, code_ptr: 
 #}</code></pre></pre>
 <p>Appends <code>DeployContract</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R49</p>
-<a class="header" href="#panics-16" id="panics-16"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-17" id="panics-17">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>code_len + code_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -613,12 +659,13 @@ promise_batch_action_function_call(promise_idx: u64,
 <p>Appends <code>FunctionCall</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R50</p>
 <p><em>NOTE: Calling <code>promise_batch_create</code> and then <code>promise_batch_action_function_call</code> will produce the same promise as calling <code>promise_create</code> directly.</em></p>
-<a class="header" href="#panics-17" id="panics-17"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-18" id="panics-18">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>account_id_len + account_id_ptr</code> or <code>method_name_len + method_name_ptr</code> or <code>arguments_len + arguments_ptr</code>
 or <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -628,11 +675,12 @@ promise_batch_action_transfer(promise_idx: u64, amount_ptr: u64)
 #}</code></pre></pre>
 <p>Appends <code>Transfer</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R51</p>
-<a class="header" href="#panics-18" id="panics-18"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-19" id="panics-19">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -640,17 +688,18 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 #fn main() {
 promise_batch_action_stake(promise_idx: u64,
                            amount_ptr: u64,
-                           public_key_len: u64,
-                           public_key_ptr: u64)
+                           bls_public_key_len: u64,
+                           bls_public_key_ptr: u64)
 #}</code></pre></pre>
 <p>Appends <code>Stake</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R52</p>
-<a class="header" href="#panics-19" id="panics-19"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-20" id="panics-20">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
-<li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
-<li>If <code>amount_ptr + 16</code> or <code>public_key_len + public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If the given BLS public key is not a valid BLS public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
+<li>If <code>amount_ptr + 16</code> or <code>bls_public_key_len + bls_public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -664,12 +713,13 @@ promise_batch_action_add_key_with_full_access(promise_idx: u64,
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FullAccess</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
-<a class="header" href="#panics-20" id="panics-20"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-21" id="panics-21">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>If <code>public_key_len + public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -692,14 +742,15 @@ The access key will have <code>FunctionCall</code> permission, details: https://
 <li>If the <code>allowance</code> value (not the pointer) is <code>0</code>, the allowance is set to <code>None</code> (which means unlimited allowance). And positive value represents a <code>Some(...)</code> allowance.</li>
 <li>Given <code>method_names</code> is a <code>utf-8</code> string with <code>,</code> used as a separator. The vm will split the given string into a vector of strings.</li>
 </ul>
-<a class="header" href="#panics-21" id="panics-21"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-22" id="panics-22">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>if <code>method_names</code> is not a valid <code>utf-8</code> string, fails with <code>BadUTF8</code>.</li>
-<li>If <code>public_key_len + public_key_ptr</code>, <code>allowance_ptr + 16</code>, <code>receiver_id_len + receiver_id_ptr</code> or
+<li>If <code>public_key_len + public_key_ptr</code>, <code>allowance_ptr + 16</code>, <code>receiver_id_len + receiver_id_ptr</code> or 
 <code>method_names_len + method_names_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -711,12 +762,13 @@ promise_batch_action_delete_key(promise_idx: u64,
 #}</code></pre></pre>
 <p>Appends <code>DeleteKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R55</p>
-<a class="header" href="#panics-22" id="panics-22"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-23" id="panics-23">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>If <code>public_key_len + public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -729,13 +781,14 @@ promise_batch_action_delete_account(promise_idx: u64,
 <p>Appends <code>DeleteAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Action is used to delete an account. It can be performed on a newly created account, on your own account or an account with
 insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate where to send the remaining funds.</p>
-<a class="header" href="#panics-23" id="panics-23"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-24" id="panics-24">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>beneficiary_id_len + beneficiary_id_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#context-api" id="context-api"><h1>Context API</h1></a>
+<h1><a class="header" href="#context-api" id="context-api">Context API</a></h1>
 <p>Context API mostly provides read-only functions that access current information about the blockchain, the accounts
 (that originally initiated the chain of cross-contract calls, the immediate contract that called the current one, the account of the current contract),
 other important information like storage usage.</p>
@@ -758,7 +811,7 @@ execute anyway.</li>
 current_account_id(register_id: u64)
 #}</code></pre></pre>
 <p>Saves the account id of the current contract that we execute into the register.</p>
-<a class="header" href="#panics-24" id="panics-24"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-25" id="panics-25">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -770,15 +823,16 @@ signer_account_id(register_id: u64)
 #}</code></pre></pre>
 <p>All contract calls are a result of some transaction that was signed by some account using
 some access key and submitted into a memory pool (either through the wallet using RPC or by a node itself). This function returns the id of that account.</p>
-<a class="header" href="#normal-operation-8" id="normal-operation-8"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-8" id="normal-operation-8">Normal operation</a></h6>
 <ul>
 <li>Saves the bytes of the signer account id into the register.</li>
 </ul>
-<a class="header" href="#panics-25" id="panics-25"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-26" id="panics-26">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-6" id="current-bugs-6"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-6" id="current-bugs-6">Current bugs</a></h6>
 <ul>
 <li>Currently we conflate <code>originator_id</code> and <code>sender_id</code> in our code base.</li>
 </ul>
@@ -791,11 +845,12 @@ signer_account_pk(register_id: u64)
 <p>Saves the public key fo the access key that was used by the signer into the register.
 In rare situations smart contract might want to know the exact access key that was used to send the original transaction,
 e.g. to increase the allowance or manipulate with the public key.</p>
-<a class="header" href="#panics-26" id="panics-26"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-27" id="panics-27">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-7" id="current-bugs-7"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-7" id="current-bugs-7">Current bugs</a></h6>
 <ul>
 <li>Not implemented.</li>
 </ul>
@@ -807,15 +862,16 @@ predecessor_account_id(register_id: u64)
 #}</code></pre></pre>
 <p>All contract calls are a result of a receipt, this receipt might be created by a transaction
 that does function invocation on the contract or another contract as a result of cross-contract call.</p>
-<a class="header" href="#normal-operation-9" id="normal-operation-9"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-9" id="normal-operation-9">Normal operation</a></h6>
 <ul>
 <li>Saves the bytes of the predecessor account id into the register.</li>
 </ul>
-<a class="header" href="#panics-27" id="panics-27"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-28" id="panics-28">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-8" id="current-bugs-8"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-8" id="current-bugs-8">Current bugs</a></h6>
 <ul>
 <li>Not implemented.</li>
 </ul>
@@ -826,21 +882,21 @@ that does function invocation on the contract or another contract as a result of
 input(register_id: u64)
 #}</code></pre></pre>
 <p>Reads input to the contract call into the register. Input is expected to be in JSON-format.</p>
-<a class="header" href="#normal-operation-10" id="normal-operation-10"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-10" id="normal-operation-10">Normal operation</a></h6>
 <ul>
 <li>If input is provided saves the bytes (potentially zero) of input into register.</li>
 <li>If input is not provided does not modify the register.</li>
 </ul>
-<a class="header" href="#returns-9" id="returns-9"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-9" id="returns-9">Returns</a></h6>
 <ul>
 <li>If input was not provided returns <code>0</code>;</li>
 <li>If input was provided returns <code>1</code>; If input is zero bytes returns <code>1</code>, too.</li>
 </ul>
-<a class="header" href="#panics-28" id="panics-28"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-29" id="panics-29">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs-9" id="current-bugs-9"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-9" id="current-bugs-9">Current bugs</a></h6>
 <ul>
 <li>Implemented as part of <code>data_read</code>. However there is no reason to have one unified function, like <code>data_read</code> that can
 be used to read all</li>
@@ -864,7 +920,7 @@ invocation. This includes:</p>
 <li>The data written with <code>storage_*</code> functions during current and previous execution;</li>
 <li>The bytes needed to store the account protobuf and the access keys of the given account.</li>
 </ul>
-<a class="header" href="#economics-api" id="economics-api"><h1>Economics API</h1></a>
+<h1><a class="header" href="#economics-api" id="economics-api">Economics API</a></h1>
 <p>Accounts own certain balance; and each transaction and each receipt have certain amount of balance and prepaid gas
 attached to them.
 During the contract execution, the contract has access to the following <code>u128</code> values:</p>
@@ -887,11 +943,12 @@ attached_deposit(balance_ptr: u64)
 
 #}</code></pre></pre>
 <p>-- writes the value into the <code>u128</code> variable pointed by <code>balance_ptr</code>.</p>
-<a class="header" href="#panics-29" id="panics-29"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-30" id="panics-30">Panics</a></h6>
 <ul>
 <li>If <code>balance_ptr + 16</code> points outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-10" id="current-bugs-10"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-10" id="current-bugs-10">Current bugs</a></h6>
 <ul>
 <li>Use a different name;</li>
 </ul>
@@ -902,14 +959,18 @@ attached_deposit(balance_ptr: u64)
 prepaid_gas() -&gt; u64
 used_gas() -&gt; u64
 #}</code></pre></pre>
-<a class="header" href="#math-api" id="math-api"><h1>Math API</h1></a>
+<h6><a class="header" href="#panics-31" id="panics-31">Panics</a></h6>
+<ul>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
+</ul>
+<h1><a class="header" href="#math-api" id="math-api">Math API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 random_seed(register_id: u64)
 #}</code></pre></pre>
 <p>Returns random seed that can be used for pseudo-random number generation in deterministic way.</p>
-<a class="header" href="#panics-30" id="panics-30"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-32" id="panics-32">Panics</a></h6>
 <ul>
 <li>If the size of the registers exceed the set limit <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -920,56 +981,23 @@ random_seed(register_id: u64)
 sha256(value_len: u64, value_ptr: u64, register_id: u64)
 #}</code></pre></pre>
 <p>Hashes the random sequence of bytes using sha256 and returns it into <code>register_id</code>.</p>
-<a class="header" href="#panics-31" id="panics-31"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-33" id="panics-33">Panics</a></h6>
 <ul>
 <li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-11" id="current-bugs-11"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-11" id="current-bugs-11">Current bugs</a></h6>
 <ul>
 <li>Current name <code>hash</code> is not specific to what hash is being used.</li>
 <li>We have <code>hash32</code> that largely duplicates the mechanics of <code>hash</code> because it returns the first 4 bytes only.</li>
 </ul>
-<hr />
-<pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-check_ethash(block_number_ptr: u64,
-             header_hash_ptr: u64,
-             nonce: u64,
-             mix_hash_ptr: u64,
-             difficulty_ptr: u64) -&gt; u64
-#}</code></pre></pre>
-<p>-- verifies hash of the header that we created using <a href="https://en.wikipedia.org/wiki/Ethash">Ethash</a>. Parameters are:</p>
-<ul>
-<li><code>block_number</code> -- <code>u256</code>/<code>[u64; 4]</code>, number of the block on Ethereum blockchain. We use the pointer to the slice of 32 bytes on guest memory;</li>
-<li><code>header_hash</code> -- <code>h256</code>/<code>[u8; 32]</code>, hash of the header on Ethereum blockchain. We use the pointer to the slice of 32 bytes on guest memory;</li>
-<li><code>nonce</code> -- <code>u64</code>/<code>h64</code>/<code>[u8; 8]</code>, nonce that was used to find the correct hash, passed as <code>u64</code> without pointers;</li>
-<li><code>mix_hash</code> -- <code>h256</code>/<code>[u8; 32]</code>, special hash that avoid griefing attack. We use the pointer to the slice of 32 bytes on guest memory;</li>
-<li><code>difficulty</code> -- <code>u256</code>/<code>[u64; 4]</code>, the difficulty of mining the block. We use the pointer to the slice of 32 bytes on guest memory;</li>
-</ul>
-<a class="header" href="#returns-10" id="returns-10"><h6>Returns</h6></a>
-<ul>
-<li><code>1</code> if the Ethash is valid;</li>
-<li><code>0</code> otherwise.</li>
-</ul>
-<a class="header" href="#panics-32" id="panics-32"><h6>Panics</h6></a>
-<ul>
-<li>If <code>block_number_ptr + 32</code> or <code>header_hash_ptr + 32</code> or <code>mix_hash_ptr + 32</code> or <code>difficulty_ptr + 32</code> point outside the memory or registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
-</ul>
-<a class="header" href="#current-bugs-12" id="current-bugs-12"><h6>Current bugs</h6></a>
-<ul>
-<li><code>block_number</code> and <code>difficulty</code> are currently exposed as <code>u64</code> which are casted to <code>u256</code> which breaks Ethereum compatibility;</li>
-<li>Currently, we also pass the length together with <code>header_hash_ptr</code> and <code>mix_hash_ptr</code> which is not necessary since
-we know their length.</li>
-</ul>
-<a class="header" href="#miscellaneous-api" id="miscellaneous-api"><h1>Miscellaneous API</h1></a>
+<h1><a class="header" href="#miscellaneous-api" id="miscellaneous-api">Miscellaneous API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 value_return(value_len: u64, value_ptr: u64)
 #}</code></pre></pre>
 <p>Sets the blob of data as the return value of the contract.</p>
-<a class="header" href="#panics-33" id="panics-33"><h5>Panics</h5></a>
+<h6><a class="header" href="#panics-34" id="panics-34">Panics</a></h6>
 <ul>
 <li>If <code>value_len + value_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -979,20 +1007,36 @@ value_return(value_len: u64, value_ptr: u64)
 #fn main() {
 panic()
 #}</code></pre></pre>
-<p>Terminates the execution of the program with panic <code>GuestPanic</code>.</p>
+<p>Terminates the execution of the program with panic <code>GuestPanic(&quot;explicit guest panic&quot;)</code>.</p>
+<hr />
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+panic_utf8(len: u64, ptr: u64)
+#}</code></pre></pre>
+<p>Terminates the execution of the program with panic <code>GuestPanic(s)</code>, where <code>s</code> is the given UTF-8 encoded string.</p>
+<h6><a class="header" href="#normal-behavior" id="normal-behavior">Normal behavior</a></h6>
+<p>If <code>len == u64::MAX</code> then treats the string as null-terminated with character <code>'\0'</code>;</p>
+<h6><a class="header" href="#panics-35" id="panics-35">Panics</a></h6>
+<ul>
+<li>If string extends outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
+<li>If string is not UTF-8 returns <code>BadUtf8</code>.</li>
+<li>If string length without null-termination symbol is larger than <code>config.max_log_len</code> returns <code>BadUtf8</code>.</li>
+</ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 log_utf8(len: u64, ptr: u64)
 #}</code></pre></pre>
-<p>Logs the UTF-8 encoded string. See https://stackoverflow.com/a/5923961 that explains
-that null termination is not defined through encoding.</p>
-<a class="header" href="#normal-behavior" id="normal-behavior"><h6>Normal behavior</h6></a>
+<p>Logs the UTF-8 encoded string.</p>
+<h6><a class="header" href="#normal-behavior-1" id="normal-behavior-1">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with character <code>'\0'</code>;</p>
-<a class="header" href="#panics-34" id="panics-34"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-36" id="panics-36">Panics</a></h6>
 <ul>
 <li>If string extends outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
+<li>If string is not UTF-8 returns <code>BadUtf8</code>.</li>
+<li>If string length without null-termination symbol is larger than <code>config.max_log_len</code> returns <code>BadUtf8</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -1000,10 +1044,11 @@ that null termination is not defined through encoding.</p>
 #fn main() {
 log_utf16(len: u64, ptr: u64)
 #}</code></pre></pre>
-<p>Logs the UTF-16 encoded string. <code>len</code> is the number of bytes in the string.</p>
-<a class="header" href="#normal-behavior-1" id="normal-behavior-1"><h6>Normal behavior</h6></a>
+<p>Logs the UTF-16 encoded string. <code>len</code> is the number of bytes in the string.
+See https://stackoverflow.com/a/5923961 that explains that null termination is not defined through encoding.</p>
+<h6><a class="header" href="#normal-behavior-2" id="normal-behavior-2">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with two-byte sequence of <code>0x00 0x00</code>.</p>
-<a class="header" href="#panics-35" id="panics-35"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-37" id="panics-37">Panics</a></h6>
 <ul>
 <li>If string extends outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -1015,7 +1060,7 @@ abort(msg_ptr: u32, filename_ptr: u32, line: u32, col: u32)
 #}</code></pre></pre>
 <p>Special import kept for compatibility with AssemblyScript contracts. Not called by smart contracts directly, but instead
 called by the code generated by AssemblyScript.</p>
-<a class="header" href="#future-improvements" id="future-improvements"><h1>Future Improvements</h1></a>
+<h1><a class="header" href="#future-improvements" id="future-improvements">Future Improvements</a></h1>
 <p>In the future we can have some of the registers to be on the guest.
 For instance a guest can tell the host that it has some pre-allocated memory that it wants to be used for the register,
 e.g.</p>
@@ -1048,21 +1093,6 @@ and can throw a panic if there is an attempted copying that exceeds the guest re
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         
