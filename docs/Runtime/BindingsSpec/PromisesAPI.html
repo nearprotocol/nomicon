@@ -4,6 +4,8 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Promises API - The Nearnomicon</title>
+        
+
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -59,7 +61,7 @@
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script type="text/javascript">
             var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
@@ -78,7 +80,10 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../../index.html">Introduction</a></li><li><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">1.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">1.1.1.</strong> Registers API</a></li><li><a href="../../Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">1.1.2.</strong> Trie API</a></li><li><a href="../../Runtime/BindingsSpec/PromisesAPI.html" class="active"><strong aria-hidden="true">1.1.3.</strong> Promises API</a></li><li><a href="../../Runtime/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">1.1.4.</strong> Context API</a></li><li><a href="../../Runtime/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">1.1.5.</strong> Economics API</a></li><li><a href="../../Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">1.1.6.</strong> Math API</a></li><li><a href="../../Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">1.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../../index.html">Introduction</a></li><li><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">1.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">1.1.1.</strong> Registers API</a></li><li><a href="../../Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">1.1.2.</strong> Trie API</a></li><li><a href="../../Runtime/BindingsSpec/PromisesAPI.html" class="active"><strong aria-hidden="true">1.1.3.</strong> Promises API</a></li><li><a href="../../Runtime/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">1.1.4.</strong> Context API</a></li><li><a href="../../Runtime/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">1.1.5.</strong> Economics API</a></li><li><a href="../../Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">1.1.6.</strong> Math API</a></li><li><a href="../../Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">1.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -108,7 +113,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">The Nearnomicon</h1> 
+                        <h1 class="menu-title">The Nearnomicon</h1>
 
                         <div class="right-buttons">
                             <a href="../../print.html" title="Print this book" aria-label="Print this book">
@@ -143,7 +148,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#promises-api" id="promises-api"><h1>Promises API</h1></a>
+                        <h1><a class="header" href="#promises-api" id="promises-api">Promises API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -158,12 +163,13 @@ promise_create(account_id_len: u64,
 #}</code></pre></pre>
 <p>Creates a promise that will execute a method on account with given arguments and attaches the given amount.
 <code>amount_ptr</code> point to slices of bytes representing <code>u128</code>.</p>
-<a class="header" href="#panics" id="panics"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
 <li>If <code>account_id_len + account_id_ptr</code> or <code>method_name_len + method_name_ptr</code> or <code>arguments_len + arguments_ptr</code>
 or <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns" id="returns"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns" id="returns">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -182,13 +188,14 @@ promise_then(promise_idx: u64,
              gas: u64) -&gt; u64            
 #}</code></pre></pre>
 <p>Attaches the callback that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
-<a class="header" href="#panics-1" id="panics-1"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-1" id="panics-1">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If <code>account_id_len + account_id_ptr</code> or <code>method_name_len + method_name_ptr</code> or <code>arguments_len + arguments_ptr</code>
 or <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-1" id="returns-1"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-1" id="returns-1">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -201,12 +208,13 @@ promise_and(promise_idx_ptr: u64, promise_idx_count: u64) -&gt; u64
 <p>Creates a new promise which completes when time all promises passed as arguments complete. Cannot be used with registers.
 <code>promise_idx_ptr</code> points to an array of <code>u64</code> elements, with <code>promise_idx_count</code> denoting the number of elements.
 The array contains indices of promises that need to be waited on jointly.</p>
-<a class="header" href="#panics-2" id="panics-2"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-2" id="panics-2">Panics</a></h6>
 <ul>
 <li>If <code>promise_ids_ptr + 8 * promise_idx_count</code> extend outside the guest memory with <code>MemoryAccessViolation</code>;</li>
 <li>If any of the promises in the array do not correspond to existing promises panics with <code>InvalidPromiseIndex</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-2" id="returns-2"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-2" id="returns-2">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -219,11 +227,15 @@ promise_results_count() -&gt; u64
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the number of complete and incomplete callbacks.</p>
 <p>Note, we are only going to have incomplete callbacks once we have <code>promise_or</code> combinator.</p>
-<a class="header" href="#normal-execution" id="normal-execution"><h6>Normal execution</h6></a>
+<h6><a class="header" href="#normal-execution" id="normal-execution">Normal execution</a></h6>
 <ul>
 <li>If there is only one callback <code>promise_results_count()</code> returns <code>1</code>;</li>
 <li>If there are multiple callbacks (e.g. created through <code>promise_and</code>) <code>promise_results_count()</code> returns their number.</li>
 <li>If the function was called not through the callback <code>promise_results_count()</code> returns <code>0</code>.</li>
+</ul>
+<h6><a class="header" href="#panics-3" id="panics-3">Panics</a></h6>
+<ul>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -233,23 +245,24 @@ promise_result(result_idx: u64, register_id: u64) -&gt; u64
 #}</code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the result in blob format and places it into the register.</p>
-<a class="header" href="#normal-execution-1" id="normal-execution-1"><h6>Normal execution</h6></a>
+<h6><a class="header" href="#normal-execution-1" id="normal-execution-1">Normal execution</a></h6>
 <ul>
 <li>If promise result is complete and successful copies its blob into the register;</li>
 <li>If promise result is complete and failed or incomplete keeps register unused;</li>
 </ul>
-<a class="header" href="#returns-3" id="returns-3"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-3" id="returns-3">Returns</a></h6>
 <ul>
 <li>If promise result is not complete returns <code>0</code>;</li>
 <li>If promise result is complete and successful returns <code>1</code>;</li>
 <li>If promise result is complete and failed returns <code>2</code>.</li>
 </ul>
-<a class="header" href="#panics-3" id="panics-3"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-4" id="panics-4">Panics</a></h6>
 <ul>
 <li>If <code>result_idx</code> does not correspond to an existing result panics with <code>InvalidResultIndex</code>.</li>
 <li>If copying the blob exhausts the memory limit it panics with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs" id="current-bugs"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs" id="current-bugs">Current bugs</a></h6>
 <ul>
 <li>We currently have two separate functions to check for result completion and copy it.</li>
 </ul>
@@ -260,11 +273,11 @@ caused the callback. This function returns the result in blob format and places 
 promise_return(promise_idx: u64)
 #}</code></pre></pre>
 <p>When promise <code>promise_idx</code> finishes executing its result is considered to be the result of the current function.</p>
-<a class="header" href="#panics-4" id="panics-4"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-5" id="panics-5">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-1" id="current-bugs-1"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-1" id="current-bugs-1">Current bugs</a></h6>
 <ul>
 <li>The current name <code>return_promise</code> is inconsistent with the naming convention of Promise API.</li>
 </ul>
@@ -274,11 +287,12 @@ promise_return(promise_idx: u64)
 promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 #}</code></pre></pre>
 <p>Creates a new promise towards given <code>account_id</code> without any actions attached to it.</p>
-<a class="header" href="#panics-5" id="panics-5"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-6" id="panics-6">Panics</a></h6>
 <ul>
 <li>If <code>account_id_len + account_id_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-4" id="returns-4"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-4" id="returns-4">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -289,12 +303,13 @@ promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
 #}</code></pre></pre>
 <p>Attaches a new empty promise that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
-<a class="header" href="#panics-6" id="panics-6"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-7" id="panics-7">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If <code>account_id_len + account_id_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#returns-5" id="returns-5"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-5" id="returns-5">Returns</a></h6>
 <ul>
 <li>Index of the new promise that uniquely identifies it within the current execution of the method.</li>
 </ul>
@@ -306,10 +321,11 @@ promise_batch_action_create_account(promise_idx: u64)
 #}</code></pre></pre>
 <p>Appends <code>CreateAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R48</p>
-<a class="header" href="#panics-7" id="panics-7"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-8" id="panics-8">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -319,11 +335,12 @@ promise_batch_action_deploy_contract(promise_idx: u64, code_len: u64, code_ptr: 
 #}</code></pre></pre>
 <p>Appends <code>DeployContract</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R49</p>
-<a class="header" href="#panics-8" id="panics-8"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-9" id="panics-9">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>code_len + code_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -340,12 +357,13 @@ promise_batch_action_function_call(promise_idx: u64,
 <p>Appends <code>FunctionCall</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R50</p>
 <p><em>NOTE: Calling <code>promise_batch_create</code> and then <code>promise_batch_action_function_call</code> will produce the same promise as calling <code>promise_create</code> directly.</em></p>
-<a class="header" href="#panics-9" id="panics-9"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-10" id="panics-10">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>account_id_len + account_id_ptr</code> or <code>method_name_len + method_name_ptr</code> or <code>arguments_len + arguments_ptr</code>
 or <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -355,11 +373,12 @@ promise_batch_action_transfer(promise_idx: u64, amount_ptr: u64)
 #}</code></pre></pre>
 <p>Appends <code>Transfer</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R51</p>
-<a class="header" href="#panics-10" id="panics-10"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-11" id="panics-11">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>amount_ptr + 16</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -372,12 +391,13 @@ promise_batch_action_stake(promise_idx: u64,
 #}</code></pre></pre>
 <p>Appends <code>Stake</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R52</p>
-<a class="header" href="#panics-11" id="panics-11"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-12" id="panics-12">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>If <code>amount_ptr + 16</code> or <code>public_key_len + public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -391,12 +411,13 @@ promise_batch_action_add_key_with_full_access(promise_idx: u64,
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FullAccess</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
-<a class="header" href="#panics-12" id="panics-12"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-13" id="panics-13">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>If <code>public_key_len + public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -419,14 +440,15 @@ The access key will have <code>FunctionCall</code> permission, details: https://
 <li>If the <code>allowance</code> value (not the pointer) is <code>0</code>, the allowance is set to <code>None</code> (which means unlimited allowance). And positive value represents a <code>Some(...)</code> allowance.</li>
 <li>Given <code>method_names</code> is a <code>utf-8</code> string with <code>,</code> used as a separator. The vm will split the given string into a vector of strings.</li>
 </ul>
-<a class="header" href="#panics-13" id="panics-13"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-14" id="panics-14">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>if <code>method_names</code> is not a valid <code>utf-8</code> string, fails with <code>BadUTF8</code>.</li>
-<li>If <code>public_key_len + public_key_ptr</code>, <code>allowance_ptr + 16</code>, <code>receiver_id_len + receiver_id_ptr</code> or
+<li>If <code>public_key_len + public_key_ptr</code>, <code>allowance_ptr + 16</code>, <code>receiver_id_len + receiver_id_ptr</code> or 
 <code>method_names_len + method_names_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -438,12 +460,13 @@ promise_batch_action_delete_key(promise_idx: u64,
 #}</code></pre></pre>
 <p>Appends <code>DeleteKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R55</p>
-<a class="header" href="#panics-14" id="panics-14"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-15" id="panics-15">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>If <code>public_key_len + public_key_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
@@ -456,11 +479,12 @@ promise_batch_action_delete_account(promise_idx: u64,
 <p>Appends <code>DeleteAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Action is used to delete an account. It can be performed on a newly created account, on your own account or an account with
 insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate where to send the remaining funds.</p>
-<a class="header" href="#panics-15" id="panics-15"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-16" id="panics-16">Panics</a></h6>
 <ul>
 <li>If <code>promise_idx</code> does not correspond to an existing promise panics with <code>InvalidPromiseIndex</code>.</li>
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If <code>beneficiary_id_len + beneficiary_id_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
+<li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
 
                     </main>
@@ -500,21 +524,6 @@ insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate wh
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         
