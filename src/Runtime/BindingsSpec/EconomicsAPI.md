@@ -9,7 +9,7 @@ During the contract execution, the contract has access to the following `u128` v
 * `prepaid_gas` -- the tokens attached to the call that can be used to pay for the gas;
 * `used_gas` -- the gas that was already burnt during the contract execution and attached to promises (cannot exceed `prepaid_gas`);
 
-If contract execution fails `prepaid_gas - used_gas` is refunded back to `signer_account_id` and `attached_balance`
+If contract execution fails `prepaid_gas - used_gas` is refunded back to `signer_account_id` and `attached_deposit`
 is refunded back to `predecessor_account_id`.
 
 The following spec is the same for all functions:
