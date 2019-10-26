@@ -2,6 +2,7 @@
 
 [Introduction](README.md)
 
+* [Blockchain Layer vs Runtime Layer](BlockchainLayerVsRuntimeLayer.md)
 * [Runtime](Runtime/Runtime.md)
     * [Bindings Specification](Runtime/BindingsSpec/BindingsSpec.md)
         * [Registers API](Runtime/BindingsSpec/RegistersAPI.md)

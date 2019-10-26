@@ -1,10 +1,8 @@
 # Runtime
 
-Near node consists roughly of a Blockchain layer and a Runtime layer.
-This section is mostly concerned with the Runtime layer.
+Runtime layer is used to execute smart contracts and other actions created by the users and preserve the state between the executions.
 
-Runtime layer is used to execute smart contracts written by users and preserve the state between the executions.
-The components of the Runtime layer are:
+The components of the runtime layer are:
 * `near-vm-logic` crate -- describes the interface that smart contract uses to interact with the blockchain.
 Encapsulates the behavior of the blockchain visible to the smart contract, e.g. fee rules, storage access rules, promise rules;
 * `near-vm-runner` crate -- a wrapper around Wasmer that does the actual execution of the smart contract code. It exposes the
