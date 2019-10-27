@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="index.html">Introduction</a></li><li class="expanded "><a href="BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.1.1.</strong> Registers API</a></li><li class="expanded "><a href="Runtime/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.1.2.</strong> Trie API</a></li><li class="expanded "><a href="Runtime/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.1.3.</strong> Promises API</a></li><li class="expanded "><a href="Runtime/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.1.4.</strong> Context API</a></li><li class="expanded "><a href="Runtime/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.1.5.</strong> Economics API</a></li><li class="expanded "><a href="Runtime/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.1.6.</strong> Math API</a></li><li class="expanded "><a href="Runtime/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="index.html">Introduction</a></li><li class="expanded "><a href="BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/Components.html"><strong aria-hidden="true">2.1.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.1.1.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.1.1.1.</strong> Registers API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.1.1.2.</strong> Trie API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.1.1.3.</strong> Promises API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.1.1.4.</strong> Context API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.1.1.5.</strong> Economics API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.1.1.6.</strong> Math API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.1.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -222,18 +222,46 @@ receipts will be used in other chunks. From the runtime perspective it consumes 
 has an indirect knowledge of them through the computation of the tokens-to-gas exchange rate and the inflation.</li>
 </ul>
 <h1><a class="header" href="#runtime" id="runtime">Runtime</a></h1>
-<p>Runtime layer is used to execute smart contracts and other actions created by the users and preserve the state between the executions.</p>
-<p>The components of the runtime layer are:</p>
+<p>Runtime layer is used to execute smart contracts and other actions created by the users and preserve the state between the executions.
+It can be described from three different angles: going step-by-step through various scenarios, describing the components
+of the runtime, and describing the functions that the runtime performs.</p>
+<h2><a class="header" href="#scenarios" id="scenarios">Scenarios</a></h2>
 <ul>
-<li><code>near-vm-logic</code> crate -- describes the interface that smart contract uses to interact with the blockchain.
+<li>Financial transaction -- we examine what happens when the runtime needs to process a simple financial transaction;</li>
+<li>Contract call transaction -- the scenario when the user calls a contract.</li>
+</ul>
+<h2><a class="header" href="#components" id="components">Components</a></h2>
+<p>The components of the runtime can be described through the crates:</p>
+<ul>
+<li><code>near-vm-logic</code> -- describes the interface that smart contract uses to interact with the blockchain.
 Encapsulates the behavior of the blockchain visible to the smart contract, e.g. fee rules, storage access rules, promise rules;</li>
 <li><code>near-vm-runner</code> crate -- a wrapper around Wasmer that does the actual execution of the smart contract code. It exposes the
 interface provided by <code>near-vm-logic</code> to the smart contract;</li>
-<li><code>runtime</code> crate -- works with the receipts. When receipt contains an action that calls a smart contract it calls
-<code>near-vm-runner</code>;</li>
-<li><code>store</code> crate -- interfaces with the KV databases and implements a trie on the top of it that smart contracts interface
-through <code>near-vm-logic</code>.</li>
+<li><code>runtime</code> crate -- encapsulates the logic of how transactions and receipts should be handled. If it encounters
+a smart contract call within a transaction or a receipt it calls <code>near-vm-runner</code>, for all other actions, like account
+creation, it processes them in-place.</li>
 </ul>
+<p>The utility crates are:</p>
+<ul>
+<li><code>near-runtime-fees</code> -- a convenience crate that encapsulates configuration of fees. We might get rid ot it later;</li>
+<li><code>near-vm-errors</code> -- contains the hierarchy of errors that can be occurred during transaction or receipt processing;</li>
+<li><code>near-vm-runner-standalone</code> -- a runnable tool that allows running the runtime without the blockhain, e.g. for
+integration testing of L2 projects;</li>
+<li><code>runtime-params-estimator</code> -- bechmarks the runtime and generates the config with the fees.</li>
+</ul>
+<p>Separately, from the components we describe <a href="Runtime/BindingsSpec/BindingsSpec.html">the Bindings Specification</a> which is an
+important part of the runtime that specifies the functions that the smart contract can call from its host -- the runtime.
+The specification is defined in <code>near-vm-logic</code>, but it is exposed to the smart contract in <code>near-vm-runner</code>.</p>
+<h2><a class="header" href="#functions" id="functions">Functions</a></h2>
+<ul>
+<li>Receipt consumption and production</li>
+<li>Fees</li>
+<li>Virtual machine</li>
+<li>Verification</li>
+</ul>
+<h1><a class="header" href="#components-1" id="components-1">Components</a></h1>
+<p>Here is the high-level diagram of various runtime components, including some blockchain layer components.
+<img src="Runtime/Components/../../images/runtime_architecture.svg" /></p>
 <h1><a class="header" href="#bindings-specification" id="bindings-specification">Bindings Specification</a></h1>
 <p>This is the low-level interface available to the smart contracts, it consists of the functions that the host (represented by
 Wasmer inside near-vm-runner) exposes to the guest (the smart contract compiled to Wasm).</p>
@@ -1197,21 +1225,6 @@ and can throw a panic if there is an attempted copying that exceeds the guest re
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         
