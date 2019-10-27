@@ -4,6 +4,8 @@
 
 * [Blockchain Layer vs Runtime Layer](BlockchainLayerVsRuntimeLayer.md)
 * [Runtime](Runtime/Runtime.md)
+    * [Scenarios](Runtime/Scenarios/Scenarios.md)
+        * [Financial Transaction](Runtime/Scenarios/FinancialTransaction.md)
     * [Components](Runtime/Components/Components.md)
         * [Bindings Specification](Runtime/Components/BindingsSpec/BindingsSpec.md)
             * [Registers API](Runtime/Components/BindingsSpec/RegistersAPI.md)

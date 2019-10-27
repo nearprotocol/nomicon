@@ -7,7 +7,7 @@ of the runtime, and describing the functions that the runtime performs.
 ## Scenarios
 
 * Financial transaction -- we examine what happens when the runtime needs to process a simple financial transaction;
-* Contract call transaction -- the scenario when the user calls a contract.
+* Cross-contract call -- the scenario when the user calls a contract that in turn calls another contract.
 
 ## Components
 The components of the runtime can be described through the crates:
