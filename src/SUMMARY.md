@@ -6,6 +6,7 @@
 * [Runtime](Runtime/Runtime.md)
     * [Scenarios](Runtime/Scenarios/Scenarios.md)
         * [Financial Transaction](Runtime/Scenarios/FinancialTransaction.md)
+        * [Cross-Contract Call](Runtime/Scenarios/CrossContractCall.md)
     * [Components](Runtime/Components/Components.md)
         * [Bindings Specification](Runtime/Components/BindingsSpec/BindingsSpec.md)
             * [Registers API](Runtime/Components/BindingsSpec/RegistersAPI.md)
