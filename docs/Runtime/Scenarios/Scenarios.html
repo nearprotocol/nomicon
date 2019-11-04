@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="sidebar-visible no-js">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -35,11 +35,11 @@
         <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
     </head>
-    <body>
+    <body class="light">
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "../../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+            var default_theme = "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -63,11 +63,8 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
-            html.classList.remove('light')
-            html.classList.add(theme);
-            html.classList.add('js');
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -83,8 +80,8 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="../../index.html">Introduction</a></li><li class="expanded "><a href="../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Scenarios/Scenarios.html" class="active"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../../index.html">Introduction</a></li><li><a href="../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li><a href="../../BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">2.</strong> Blockchain Layer</a></li><li><ol class="section"><li><a href="../../BlockchainLayer/Transactions.html"><strong aria-hidden="true">2.1.</strong> Transactions</a></li></ol></li><li><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">3.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../Runtime/Scenarios/Scenarios.html" class="active"><strong aria-hidden="true">3.1.</strong> Scenarios</a></li><li><ol class="section"><li><a href="../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">3.1.1.</strong> Financial Transaction</a></li><li><a href="../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">3.1.2.</strong> Cross-Contract Call</a></li></ol></li><li><a href="../../Runtime/Components/Components.html"><strong aria-hidden="true">3.2.</strong> Components</a></li><li><ol class="section"><li><a href="../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">3.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">3.2.1.1.</strong> Registers API</a></li><li><a href="../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">3.2.1.2.</strong> Trie API</a></li><li><a href="../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">3.2.1.3.</strong> Promises API</a></li><li><a href="../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">3.2.1.4.</strong> Context API</a></li><li><a href="../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">3.2.1.5.</strong> Economics API</a></li><li><a href="../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">3.2.1.6.</strong> Math API</a></li><li><a href="../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">3.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -193,14 +190,6 @@
 
         
 
-        
-
-        
-        
-        
-        <script type="text/javascript">
-            window.playpen_copyable = true;
-        </script>
         
 
         
