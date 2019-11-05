@@ -229,21 +229,24 @@ Now this signed transaction can be sent to a node.</p>
 <h2><a class="header" href="#transaction-ordering" id="transaction-ordering">Transaction ordering</a></h2>
 <p>The transaction pool groups transactions by a pair of <code>(signer_id, signer_public_key)</code>. The <code>signer_id</code> is the account ID of the user who signed the transaction, the <code>signer_public_key</code> is the public key of the account's access key that was used to sign the transactions. 
 Within the group, the transactions are ordered by nonce in non-decreasing order.</p>
-<p>When a transactions are requested from the pool, the pool returns a draining iterator. The order of the iterator is defined the following way:</p>
+<p>The valid order of the transactions is the following:</p>
 <ul>
 <li>transactions are ordered in batches.</li>
 <li>each batch should contain exactly one transaction with the lowest nonce for every transaction group keyed by the pair of <code>(signer_id, signer_public_key)</code>.</li>
 <li>the order within a batch is undefined and each node should use a unique secret seed for that ordering.</li>
 </ul>
+<p>Transaction pool provides a draining structure that allows to select valid transactions in a proper order.</p>
 <h2><a class="header" href="#transaction-validation" id="transaction-validation">Transaction validation</a></h2>
 <p>The transaction validation happens twice, once before adding to the transaction pool, next before adding to a chunk.</p>
 <h3><a class="header" href="#before-adding-to-a-transaction-pool" id="before-adding-to-a-transaction-pool">Before adding to a transaction pool</a></h3>
 <p>This is done to quickly filter out transactions that have an invalid signature or are invalid on the latest state.</p>
 <h3><a class="header" href="#before-adding-to-a-chunk" id="before-adding-to-a-chunk">Before adding to a chunk</a></h3>
-<p>A chunk producer pulls ordered transactions from the transaction pool using a draining iterator. Transactions are validated
-one by one on top of latest state. The state is persisted after each successful validation. E.g. if the first transaction charged the account, the next transaction for the same account may become invalid.
-Invalid transactions are discarded and removed from the pool. Valid transactions are added to the chunk and also removed from the pool.
-For every valid transaction, the validation result contains the amount of burnt gas that will be charged for converting this
+<p>A chunk producer pulls ordered transactions from the transaction pool using a draining structure.
+Transactions are pulled from the the pool and validated one by one on top of latest state. The state is persisted after each successful validation.
+E.g. if the first transaction charged the account, the next transaction for the same account may become invalid.</p>
+<p>If the last transaction was invalid, the chunk producer requests the next transaction from the pool with the same key to maintain the proper order.
+Otherwise we'd skip this key pair within this batch and the order will become invalid.</p>
+<p>Valid transactions are added to the chunk. For every valid transaction, the validation result contains the amount of burnt gas that will be charged for converting this
 transaction to a receipt. When the total sum of burnt gas for valid transactions exceeds the gas limit of a chunk, the chunk 
 producer drops the draining iterator and the remaining transactions stay in the pool.</p>
 <h1><a class="header" href="#runtime" id="runtime">Runtime</a></h1>
