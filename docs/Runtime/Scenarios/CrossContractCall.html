@@ -1,9 +1,11 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Cross-Contract Call - The Nearnomicon</title>
+        
+
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,11 +35,11 @@
         <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "../../";
-            var default_theme = "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -59,10 +61,13 @@
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script type="text/javascript">
             var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -78,7 +83,10 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../../index.html">Introduction</a></li><li><a href="../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li><a href="../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li><a href="../../Runtime/Scenarios/CrossContractCall.html" class="active"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li><a href="../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li><a href="../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li><a href="../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li><a href="../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li><a href="../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li><a href="../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li><a href="../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li><a href="../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../index.html">Introduction</a></li><li class="expanded "><a href="../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="../../Runtime/Scenarios/CrossContractCall.html" class="active"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li class="expanded "><a href="../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -108,7 +116,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">The Nearnomicon</h1> 
+                        <h1 class="menu-title">The Nearnomicon</h1>
 
                         <div class="right-buttons">
                             <a href="../../print.html" title="Print this book" aria-label="Print this book">
@@ -143,13 +151,13 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#cross-contract-call" id="cross-contract-call"><h1>Cross-Contract Call</h1></a>
+                        <h1><a class="header" href="#cross-contract-call" id="cross-contract-call">Cross-Contract Call</a></h1>
 <p>This guide assumes that you have read the <a href="FinancialTransaction.html">Financial Transaction</a> section.</p>
 <p>Suppose Alice is a calling a function <code>reserve_trip(city: String, date: u64)</code> on a smart contract deployed to a <code>travel_agency</code>
 account which in turn calls <code>reserve(date: u64)</code> on a smart contract deployed to a <code>hotel_near</code> account and attaches
 a callback to method <code>hotel_reservation_complete(date: u64)</code> on <code>travel_agency</code>.</p>
-<p><img src="../../images/receipt_flow_diagram.svg" /></p>
-<a class="header" href="#pre-requisites" id="pre-requisites"><h2>Pre-requisites</h2></a>
+<img src="../../images/receipt_flow_diagram.svg" />
+<h2><a class="header" href="#pre-requisites" id="pre-requisites">Pre-requisites</a></h2>
 <p>It possible for Alice to call the <code>travel_agency</code> in several different ways.</p>
 <p>In the simplest scenario Alice has an account <code>alice_near</code> and she has a full access key.
 She then composes the following transaction that calls the <code>travel_agency</code>:</p>
@@ -181,7 +189,7 @@ to be deposited to whatever smart contract that it is calling to. Notice, <code>
 measurement.</p>
 <p>Now, consider a slightly more complex scenario. In this scenario Alice uses a restricted access key to call the function.
 That is the permission of the access key is not <code>AccessKeyPermission::FullAccess</code> but is instead: <code>AccessKeyPermission::FunctionCall(FunctionCallPermission)</code>
-where</p>
+where </p>
 <pre><code>FucntionCallPermission {
     allowance: Some(3000),
     receiver_id: &quot;travel_agency&quot;,
@@ -198,7 +206,7 @@ the signature of on the signed transaction, and that it also checks for allowanc
 alice has full or restricted access key directly on <code>travel_agency</code> account. In that case <code>signer_id == receiver_id</code> in the
 <code>Transaction</code> object and runtime will convert transaction to the first receipt and apply that receipt in the same block.</p>
 <p>This section will focus on the first scenario, since the other two are the same with some minor differences.</p>
-<a class="header" href="#transaction-to-receipt" id="transaction-to-receipt"><h2>Transaction to receipt</h2></a>
+<h2><a class="header" href="#transaction-to-receipt" id="transaction-to-receipt">Transaction to receipt</a></h2>
 <p>The process of converting transaction to receipt is very similar to the <a href="FinancialTransaction.html">Financial Transaction</a>
 with several key points to note:</p>
 <ul>
@@ -207,7 +215,7 @@ similar to the regular financial transaction;</li>
 <li>Since we are attaching 1000000 prepaid gas, we will not only subtract the gas costs of processing the receipt from <code>alice_near</code>, but
 will also purchase 1000000 gas using the current gas price.</li>
 </ul>
-<a class="header" href="#processing-the-reserve_trip-receipt" id="processing-the-reserve_trip-receipt"><h2>Processing the <code>reserve_trip</code> receipt</h2></a>
+<h2><a class="header" href="#processing-the-reserve_trip-receipt" id="processing-the-reserve_trip-receipt">Processing the <code>reserve_trip</code> receipt</a></h2>
 <p>The receipt created on the shard that hosts <code>alice_near</code> will eventually arrive to the shard hosting <code>travel_agency</code> account.
 It will be processed in <code>Runtime::apply</code> which will check that receipt does not have data dependencies (which is the case because
 this function call is not a callback) and will call <code>Runtime::apply_action_receipt</code>.
@@ -238,16 +246,16 @@ about used gas;</li>
 <li><code>apply_action_receipt</code> then goes over the collected receipts from each action and returns them at the end of <code>Runtime::apply</code> together with
 other receipts.</li>
 </ul>
-<a class="header" href="#processing-the-reserve-receipt" id="processing-the-reserve-receipt"><h2>Processing the <code>reserve</code> receipt</h2></a>
+<h2><a class="header" href="#processing-the-reserve-receipt" id="processing-the-reserve-receipt">Processing the <code>reserve</code> receipt</a></h2>
 <p>This receipt will have <code>output_data_receivers</code> with one element corresponding to the receipt that calls <code>hotel_reservation_complete</code>,
 which will tell the runtime that it should create <code>DataReceipt</code> and send it towards <code>travel_agency</code> once the execution of <code>reserve(date: u64)</code> is complete.</p>
 <p>The rest of the smart contract execution is similar to the above.</p>
-<a class="header" href="#processing-the-hotel_reservation_complete-receipt" id="processing-the-hotel_reservation_complete-receipt"><h2>Processing the <code>hotel_reservation_complete</code> receipt</h2></a>
+<h2><a class="header" href="#processing-the-hotel_reservation_complete-receipt" id="processing-the-hotel_reservation_complete-receipt">Processing the <code>hotel_reservation_complete</code> receipt</a></h2>
 <p>Upon receiving the <code>hotel_reservation_complete</code> receipt the runtime will notice that its <code>input_data_ids</code> is not empty
 which means that it cannot be executed until <code>reserve</code> receipt is complete. It will store the receipt in the trie together
 with the counter of how many <code>DataReceipt</code> it is waiting on.</p>
 <p>It will not call the Wasm smart contract at this point.</p>
-<a class="header" href="#processing-the-datareceipt" id="processing-the-datareceipt"><h2>Processing the <code>DataReceipt</code></h2></a>
+<h2><a class="header" href="#processing-the-datareceipt" id="processing-the-datareceipt">Processing the <code>DataReceipt</code></a></h2>
 <p>Once the runtime receives the <code>DataReceipt</code> it takes the receipt with <code>hotel_reservation_complete</code> function call
 and executes it following the same execution steps as with the <code>reserve_trip</code> receipt.</p>
 
@@ -290,6 +298,14 @@ and executes it following the same execution steps as with the <code>reserve_tri
 
         
 
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
         
 
         

@@ -1,9 +1,11 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Trie API - The Nearnomicon</title>
+        
+
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,11 +35,11 @@
         <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "../../../";
-            var default_theme = "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -59,10 +61,13 @@
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script type="text/javascript">
             var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -78,7 +83,10 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../../../index.html">Introduction</a></li><li><a href="../../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li><a href="../../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li><a href="../../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li><a href="../../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li><a href="../../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li><a href="../../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/TrieAPI.html" class="active"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../../index.html">Introduction</a></li><li class="expanded "><a href="../../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="../../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="../../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="../../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/TrieAPI.html" class="active"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -108,7 +116,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">The Nearnomicon</h1> 
+                        <h1 class="menu-title">The Nearnomicon</h1>
 
                         <div class="right-buttons">
                             <a href="../../../print.html" title="Print this book" aria-label="Print this book">
@@ -143,34 +151,35 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#trie-api" id="trie-api"><h1>Trie API</h1></a>
+                        <h1><a class="header" href="#trie-api" id="trie-api">Trie API</a></h1>
 <p>Here we provide a specification of trie API. After this NEP is merged, the cases where our current implementation does
 not follow the specification are considered to be bugs that need to be fixed.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_write(key_len: u64, key_ptr: u64, value_len: u64, value_ptr: u64, register_id: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_write(key_len: u64, key_ptr: u64, value_len: u64, value_ptr: u64, register_id: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Writes key-value into storage.</p>
-<a class="header" href="#normal-operation" id="normal-operation"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation" id="normal-operation">Normal operation</a></h6>
 <ul>
 <li>If key is not in use it inserts the key-value pair and does not modify the register;</li>
 <li>If key is in use it inserts the key-value and copies the old value into the <code>register_id</code>.</li>
 </ul>
-<a class="header" href="#returns" id="returns"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns" id="returns">Returns</a></h6>
 <ul>
 <li>If key was not used returns <code>0</code>;</li>
 <li>If key was used returns <code>1</code>.</li>
 </ul>
-<a class="header" href="#panics" id="panics"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> or <code>value_len + value_ptr</code> exceeds the memory container or points to an unused register it panics
 with <code>MemoryAccessViolation</code>. (When we say that something panics with the given error we mean that we use Wasmer API to
 create this error and terminate the execution of VM. For mocks of the host that would only cause a non-name panic.)</li>
 <li>If returning the preempted value into the registers exceed the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs" id="current-bugs"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs" id="current-bugs">Current bugs</a></h6>
 <ul>
 <li><code>External::storage_set</code> trait can return an error which is then converted to a generic non-descriptive
 <code>StorageUpdateError</code>, <a href="https://github.com/nearprotocol/nearcore/blob/942bd7bdbba5fb3403e5c2f1ee3c08963947d0c6/runtime/wasm/src/runtime.rs#L210">here</a>
@@ -179,122 +188,128 @@ however the actual implementation does not return error at all, <a href="https:/
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_read(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_read(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Reads the value stored under the given key.</p>
-<a class="header" href="#normal-operation-1" id="normal-operation-1"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-1" id="normal-operation-1">Normal operation</a></h6>
 <ul>
 <li>If key is used copies the content of the value into the <code>register_id</code>, even if the content is zero bytes;</li>
 <li>If key is not present then does not modify the register.</li>
 </ul>
-<a class="header" href="#returns-1" id="returns-1"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-1" id="returns-1">Returns</a></h6>
 <ul>
 <li>If key was not present returns <code>0</code>;</li>
 <li>If key was present returns <code>1</code>.</li>
 </ul>
-<a class="header" href="#panics-1" id="panics-1"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-1" id="panics-1">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 <li>If returning the preempted value into the registers exceed the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs-1" id="current-bugs-1"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-1" id="current-bugs-1">Current bugs</a></h6>
 <ul>
 <li>This function currently does not exist.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_remove(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_remove(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Removes the value stored under the given key.</p>
-<a class="header" href="#normal-operation-2" id="normal-operation-2"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-2" id="normal-operation-2">Normal operation</a></h6>
 <p>Very similar to <code>storage_read</code>:</p>
 <ul>
 <li>If key is used, removes the key-value from the trie and copies the content of the value into the <code>register_id</code>, even if the content is zero bytes.</li>
 <li>If key is not present then does not modify the register.</li>
 </ul>
-<a class="header" href="#returns-2" id="returns-2"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns-2" id="returns-2">Returns</a></h6>
 <ul>
 <li>If key was not present returns <code>0</code>;</li>
 <li>If key was present returns <code>1</code>.</li>
 </ul>
-<a class="header" href="#panics-2" id="panics-2"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-2" id="panics-2">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 <li>If returning the preempted value into the registers exceed the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs-2" id="current-bugs-2"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-2" id="current-bugs-2">Current bugs</a></h6>
 <ul>
 <li>Does not return into the registers.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_has_key(key_len: u64, key_ptr: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_has_key(key_len: u64, key_ptr: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Checks if there is a key-value pair.</p>
-<a class="header" href="#normal-operation-3" id="normal-operation-3"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-3" id="normal-operation-3">Normal operation</a></h6>
 <ul>
 <li>If key is used returns <code>1</code>, even if the value is zero bytes;</li>
 <li>Otherwise returns <code>0</code>.</li>
 </ul>
-<a class="header" href="#panics-3" id="panics-3"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-3" id="panics-3">Panics</a></h6>
 <ul>
 <li>If <code>key_len + key_ptr</code> exceeds the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_iter_prefix(prefix_len: u64, prefix_ptr: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_iter_prefix(prefix_len: u64, prefix_ptr: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Creates an iterator object inside the host.
 Returns the identifier that uniquely differentiates the given iterator from other iterators that can be simultaneously
 created.</p>
-<a class="header" href="#normal-operation-4" id="normal-operation-4"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-4" id="normal-operation-4">Normal operation</a></h6>
 <ul>
 <li>It iterates over the keys that have the provided prefix. The order of iteration is defined by the lexicographic
 order of the bytes in the keys. If there are no keys, it creates an empty iterator, see below on empty iterators;</li>
 </ul>
-<a class="header" href="#panics-4" id="panics-4"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-4" id="panics-4">Panics</a></h6>
 <ul>
 <li>If <code>prefix_len + prefix_ptr</code> exceeds the memory container it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_iter_range(start_len: u64, start_ptr: u64, end_len: u64, end_ptr: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_iter_range(start_len: u64, start_ptr: u64, end_len: u64, end_ptr: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Similarly to <code>storage_iter_prefix</code>
 creates an iterator object inside the host.</p>
-<a class="header" href="#normal-operation-5" id="normal-operation-5"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-5" id="normal-operation-5">Normal operation</a></h6>
 <p>Unless lexicographically <code>start &lt; end</code>, it creates an empty iterator.
 Iterates over all key-values such that keys are between <code>start</code> and <code>end</code>, where <code>start</code> is inclusive and <code>end</code> is exclusive.</p>
 <p>Note, this definition allows for <code>start</code> or <code>end</code> keys to not actually exist on the given trie.</p>
-<a class="header" href="#panics-5" id="panics-5"><h6>Panics:</h6></a>
+<h6><a class="header" href="#panics-5" id="panics-5">Panics:</a></h6>
 <ul>
 <li>If <code>start_len + start_ptr</code> or <code>end_len + end_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_iter_next(iterator_id: u64, key_register_id: u64, value_register_id: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_iter_next(iterator_id: u64, key_register_id: u64, value_register_id: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Advances iterator and saves the next key and value in the register.</p>
-<a class="header" href="#normal-operation-6" id="normal-operation-6"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-6" id="normal-operation-6">Normal operation</a></h6>
 <ul>
 <li>If iterator is not empty (after calling next it points to a key-value), copies the key into <code>key_register_id</code> and value into <code>value_register_id</code> and returns <code>1</code>;</li>
 <li>If iterator is empty returns <code>0</code>.</li>
 </ul>
 <p>This allows us to iterate over the keys that have zero bytes stored in values.</p>
-<a class="header" href="#panics-6" id="panics-6"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-6" id="panics-6">Panics</a></h6>
 <ul>
 <li>If <code>key_register_id == value_register_id</code> panics with <code>MemoryAccessViolation</code>;</li>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
@@ -302,7 +317,7 @@ storage_iter_next(iterator_id: u64, key_register_id: u64, value_register_id: u64
 <li>If between the creation of the iterator and calling <code>storage_iter_next</code> any modification to storage was done through
 <code>storage_write</code> or <code>storage_remove</code> the iterator is invalidated and the error message is <code>IteratorWasInvalidated</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-3" id="current-bugs-3"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-3" id="current-bugs-3">Current bugs</a></h6>
 <ul>
 <li>Not implemented, currently we have <code>storage_iter_next</code> and <code>data_read</code> + <code>DATA_TYPE_STORAGE_ITER</code> that together fulfill
 the purpose, but have unspecified behavior.</li>
@@ -347,6 +362,14 @@ the purpose, but have unspecified behavior.</li>
 
         
 
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
         
 
         

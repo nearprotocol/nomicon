@@ -1,9 +1,11 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Context API - The Nearnomicon</title>
+        
+
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="Implementation details of the NearProtocol client">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,11 +35,11 @@
         <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "../../../";
-            var default_theme = "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -59,10 +61,13 @@
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script type="text/javascript">
             var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -78,7 +83,10 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li class="affix"><a href="../../../index.html">Introduction</a></li><li><a href="../../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li><a href="../../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li><a href="../../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li><a href="../../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li><a href="../../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li><a href="../../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/ContextAPI.html" class="active"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../../index.html">Introduction</a></li><li class="expanded "><a href="../../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="../../../Runtime/Runtime.html"><strong aria-hidden="true">2.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">2.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">2.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="../../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">2.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="../../../Runtime/Components/Components.html"><strong aria-hidden="true">2.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">2.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">2.2.1.1.</strong> Registers API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">2.2.1.2.</strong> Trie API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">2.2.1.3.</strong> Promises API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/ContextAPI.html" class="active"><strong aria-hidden="true">2.2.1.4.</strong> Context API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">2.2.1.5.</strong> Economics API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">2.2.1.6.</strong> Math API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">2.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -108,7 +116,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">The Nearnomicon</h1> 
+                        <h1 class="menu-title">The Nearnomicon</h1>
 
                         <div class="right-buttons">
                             <a href="../../../print.html" title="Print this book" aria-label="Print this book">
@@ -143,7 +151,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#context-api" id="context-api"><h1>Context API</h1></a>
+                        <h1><a class="header" href="#context-api" id="context-api">Context API</a></h1>
 <p>Context API mostly provides read-only functions that access current information about the blockchain, the accounts
 (that originally initiated the chain of cross-contract calls, the immediate contract that called the current one, the account of the current contract),
 other important information like storage usage.</p>
@@ -161,114 +169,121 @@ execute anyway.</li>
 <p>However there is one reason to not have <code>data_read</code> -- it makes <code>API</code> more human-like which is a general direction Wasm APIs, like WASI are moving towards to.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-current_account_id(register_id: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>current_account_id(register_id: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>Saves the account id of the current contract that we execute into the register.</p>
-<a class="header" href="#panics" id="panics"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-signer_account_id(register_id: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>signer_account_id(register_id: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>All contract calls are a result of some transaction that was signed by some account using
 some access key and submitted into a memory pool (either through the wallet using RPC or by a node itself). This function returns the id of that account.</p>
-<a class="header" href="#normal-operation" id="normal-operation"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation" id="normal-operation">Normal operation</a></h6>
 <ul>
 <li>Saves the bytes of the signer account id into the register.</li>
 </ul>
-<a class="header" href="#panics-1" id="panics-1"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-1" id="panics-1">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 <li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs" id="current-bugs"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs" id="current-bugs">Current bugs</a></h6>
 <ul>
 <li>Currently we conflate <code>originator_id</code> and <code>sender_id</code> in our code base.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-signer_account_pk(register_id: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>signer_account_pk(register_id: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>Saves the public key fo the access key that was used by the signer into the register.
 In rare situations smart contract might want to know the exact access key that was used to send the original transaction,
 e.g. to increase the allowance or manipulate with the public key.</p>
-<a class="header" href="#panics-2" id="panics-2"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-2" id="panics-2">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 <li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-1" id="current-bugs-1"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-1" id="current-bugs-1">Current bugs</a></h6>
 <ul>
 <li>Not implemented.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-predecessor_account_id(register_id: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>predecessor_account_id(register_id: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>All contract calls are a result of a receipt, this receipt might be created by a transaction
 that does function invocation on the contract or another contract as a result of cross-contract call.</p>
-<a class="header" href="#normal-operation-1" id="normal-operation-1"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-1" id="normal-operation-1">Normal operation</a></h6>
 <ul>
 <li>Saves the bytes of the predecessor account id into the register.</li>
 </ul>
-<a class="header" href="#panics-3" id="panics-3"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-3" id="panics-3">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 <li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>
-<a class="header" href="#current-bugs-2" id="current-bugs-2"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-2" id="current-bugs-2">Current bugs</a></h6>
 <ul>
 <li>Not implemented.</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-input(register_id: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>input(register_id: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>Reads input to the contract call into the register. Input is expected to be in JSON-format.</p>
-<a class="header" href="#normal-operation-2" id="normal-operation-2"><h6>Normal operation</h6></a>
+<h6><a class="header" href="#normal-operation-2" id="normal-operation-2">Normal operation</a></h6>
 <ul>
 <li>If input is provided saves the bytes (potentially zero) of input into register.</li>
 <li>If input is not provided does not modify the register.</li>
 </ul>
-<a class="header" href="#returns" id="returns"><h6>Returns</h6></a>
+<h6><a class="header" href="#returns" id="returns">Returns</a></h6>
 <ul>
 <li>If input was not provided returns <code>0</code>;</li>
 <li>If input was provided returns <code>1</code>; If input is zero bytes returns <code>1</code>, too.</li>
 </ul>
-<a class="header" href="#panics-4" id="panics-4"><h6>Panics</h6></a>
+<h6><a class="header" href="#panics-4" id="panics-4">Panics</a></h6>
 <ul>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
-<a class="header" href="#current-bugs-3" id="current-bugs-3"><h6>Current bugs</h6></a>
+<h6><a class="header" href="#current-bugs-3" id="current-bugs-3">Current bugs</a></h6>
 <ul>
 <li>Implemented as part of <code>data_read</code>. However there is no reason to have one unified function, like <code>data_read</code> that can
 be used to read all</li>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-block_index() -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>block_index() -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Returns the current block index.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-storage_usage() -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>storage_usage() -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Returns the number of bytes used by the contract if it was saved to the trie as of the
 invocation. This includes:</p>
 <ul>
@@ -315,6 +330,14 @@ invocation. This includes:</p>
 
         
 
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
         
 
         
