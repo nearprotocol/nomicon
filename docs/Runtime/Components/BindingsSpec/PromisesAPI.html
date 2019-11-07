@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -35,11 +35,11 @@
         <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "../../../";
-            var default_theme = "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -63,8 +63,11 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -80,8 +83,8 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="affix"><a href="../../../index.html">Introduction</a></li><li><a href="../../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li><a href="../../../BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">2.</strong> Blockchain Layer</a></li><li><ol class="section"><li><a href="../../../BlockchainLayer/Transactions.html"><strong aria-hidden="true">2.1.</strong> Transactions</a></li></ol></li><li><a href="../../../Runtime/Runtime.html"><strong aria-hidden="true">3.</strong> Runtime</a></li><li><ol class="section"><li><a href="../../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">3.1.</strong> Scenarios</a></li><li><ol class="section"><li><a href="../../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">3.1.1.</strong> Financial Transaction</a></li><li><a href="../../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">3.1.2.</strong> Cross-Contract Call</a></li></ol></li><li><a href="../../../Runtime/Components/Components.html"><strong aria-hidden="true">3.2.</strong> Components</a></li><li><ol class="section"><li><a href="../../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">3.2.1.</strong> Bindings Specification</a></li><li><ol class="section"><li><a href="../../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">3.2.1.1.</strong> Registers API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">3.2.1.2.</strong> Trie API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/PromisesAPI.html" class="active"><strong aria-hidden="true">3.2.1.3.</strong> Promises API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">3.2.1.4.</strong> Context API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">3.2.1.5.</strong> Economics API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">3.2.1.6.</strong> Math API</a></li><li><a href="../../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">3.2.1.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../../../index.html">Introduction</a></li><li class="expanded "><a href="../../../BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="../../../BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">2.</strong> Blockchain Layer</a></li><li><ol class="section"><li class="expanded "><a href="../../../BlockchainLayer/Transactions.html"><strong aria-hidden="true">2.1.</strong> Transactions</a></li></ol></li><li class="expanded "><a href="../../../Runtime/Runtime.html"><strong aria-hidden="true">3.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">3.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">3.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="../../../Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">3.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="../../../Runtime/Components/Components.html"><strong aria-hidden="true">3.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Components/RuntimeCrate.html"><strong aria-hidden="true">3.2.1.</strong> Runtime crate</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">3.2.2.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">3.2.2.1.</strong> Registers API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">3.2.2.2.</strong> Trie API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/PromisesAPI.html" class="active"><strong aria-hidden="true">3.2.2.3.</strong> Promises API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">3.2.2.4.</strong> Context API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">3.2.2.5.</strong> Economics API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">3.2.2.6.</strong> Math API</a></li><li class="expanded "><a href="../../../Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">3.2.2.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -150,9 +153,9 @@
                     <main>
                         <h1><a class="header" href="#promises-api" id="promises-api">Promises API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_create(account_id_len: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_create(account_id_len: u64,
                account_id_ptr: u64,
                method_name_len: u64,
                method_name_ptr: u64,
@@ -160,7 +163,8 @@ promise_create(account_id_len: u64,
                arguments_ptr: u64,
                amount_ptr: u64,
                gas: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Creates a promise that will execute a method on account with given arguments and attaches the given amount.
 <code>amount_ptr</code> point to slices of bytes representing <code>u128</code>.</p>
 <h6><a class="header" href="#panics" id="panics">Panics</a></h6>
@@ -175,9 +179,9 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_then(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_then(promise_idx: u64,
              account_id_len: u64,
              account_id_ptr: u64,
              method_name_len: u64,
@@ -186,7 +190,8 @@ promise_then(promise_idx: u64,
              arguments_ptr: u64,
              amount_ptr: u64,
              gas: u64) -&gt; u64            
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Attaches the callback that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
 <h6><a class="header" href="#panics-1" id="panics-1">Panics</a></h6>
 <ul>
@@ -201,10 +206,11 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_and(promise_idx_ptr: u64, promise_idx_count: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_and(promise_idx_ptr: u64, promise_idx_count: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Creates a new promise which completes when time all promises passed as arguments complete. Cannot be used with registers.
 <code>promise_idx_ptr</code> points to an array of <code>u64</code> elements, with <code>promise_idx_count</code> denoting the number of elements.
 The array contains indices of promises that need to be waited on jointly.</p>
@@ -220,10 +226,11 @@ The array contains indices of promises that need to be waited on jointly.</p>
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_results_count() -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_results_count() -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the number of complete and incomplete callbacks.</p>
 <p>Note, we are only going to have incomplete callbacks once we have <code>promise_or</code> combinator.</p>
@@ -239,10 +246,11 @@ caused the callback. This function returns the number of complete and incomplete
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_result(result_idx: u64, register_id: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_result(result_idx: u64, register_id: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the result in blob format and places it into the register.</p>
 <h6><a class="header" href="#normal-execution-1" id="normal-execution-1">Normal execution</a></h6>
@@ -268,10 +276,11 @@ caused the callback. This function returns the result in blob format and places 
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_return(promise_idx: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_return(promise_idx: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>When promise <code>promise_idx</code> finishes executing its result is considered to be the result of the current function.</p>
 <h6><a class="header" href="#panics-5" id="panics-5">Panics</a></h6>
 <ul>
@@ -282,10 +291,11 @@ promise_return(promise_idx: u64)
 <li>The current name <code>return_promise</code> is inconsistent with the naming convention of Promise API.</li>
 </ul>
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
+<span class="boring">}
+</code></pre></pre>
 <p>Creates a new promise towards given <code>account_id</code> without any actions attached to it.</p>
 <h6><a class="header" href="#panics-6" id="panics-6">Panics</a></h6>
 <ul>
@@ -298,10 +308,11 @@ promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
+<span class="boring">}
+</code></pre></pre>
 <p>Attaches a new empty promise that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
 <h6><a class="header" href="#panics-7" id="panics-7">Panics</a></h6>
 <ul>
@@ -315,10 +326,11 @@ promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_create_account(promise_idx: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_create_account(promise_idx: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>CreateAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R48</p>
 <h6><a class="header" href="#panics-8" id="panics-8">Panics</a></h6>
@@ -329,10 +341,11 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_deploy_contract(promise_idx: u64, code_len: u64, code_ptr: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_deploy_contract(promise_idx: u64, code_len: u64, code_ptr: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>DeployContract</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R49</p>
 <h6><a class="header" href="#panics-9" id="panics-9">Panics</a></h6>
@@ -344,16 +357,17 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_function_call(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_function_call(promise_idx: u64,
                                    method_name_len: u64,
                                    method_name_ptr: u64,
                                    arguments_len: u64,
                                    arguments_ptr: u64,
                                    amount_ptr: u64,
                                    gas: u64)
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>FunctionCall</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R50</p>
 <p><em>NOTE: Calling <code>promise_batch_create</code> and then <code>promise_batch_action_function_call</code> will produce the same promise as calling <code>promise_create</code> directly.</em></p>
@@ -367,10 +381,11 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_transfer(promise_idx: u64, amount_ptr: u64)
-#}</code></pre></pre>
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_transfer(promise_idx: u64, amount_ptr: u64)
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>Transfer</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R51</p>
 <h6><a class="header" href="#panics-11" id="panics-11">Panics</a></h6>
@@ -382,13 +397,14 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_stake(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_stake(promise_idx: u64,
                            amount_ptr: u64,
                            bls_public_key_len: u64,
                            bls_public_key_ptr: u64)
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>Stake</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R52</p>
 <h6><a class="header" href="#panics-12" id="panics-12">Panics</a></h6>
@@ -401,13 +417,14 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_add_key_with_full_access(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_add_key_with_full_access(promise_idx: u64,
                                               public_key_len: u64,
                                               public_key_ptr: u64,
                                               nonce: u64)
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FullAccess</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
@@ -421,9 +438,9 @@ The access key will have <code>FullAccess</code> permission, details: https://gi
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_add_key_with_function_call(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_add_key_with_function_call(promise_idx: u64,
                                                 public_key_len: u64,
                                                 public_key_ptr: u64,
                                                 nonce: u64,
@@ -432,7 +449,8 @@ promise_batch_action_add_key_with_function_call(promise_idx: u64,
                                                 receiver_id_ptr: u64,
                                                 method_names_len: u64,
                                                 method_names_ptr: u64)
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-156752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FunctionCall</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
@@ -452,12 +470,13 @@ The access key will have <code>FunctionCall</code> permission, details: https://
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_delete_key(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_delete_key(promise_idx: u64,
                                 public_key_len: u64,
                                 public_key_ptr: u64)
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>DeleteKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R55</p>
 <h6><a class="header" href="#panics-15" id="panics-15">Panics</a></h6>
@@ -470,12 +489,13 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 </ul>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-promise_batch_action_delete_account(promise_idx: u64,
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>promise_batch_action_delete_account(promise_idx: u64,
                                     beneficiary_id_len: u64,
                                     beneficiary_id_ptr: u64)
-#}</code></pre></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Appends <code>DeleteAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Action is used to delete an account. It can be performed on a newly created account, on your own account or an account with
 insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate where to send the remaining funds.</p>
@@ -526,6 +546,14 @@ insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate wh
 
         
 
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
         
 
         
