@@ -10,6 +10,7 @@
         * [Financial Transaction](Runtime/Scenarios/FinancialTransaction.md)
         * [Cross-Contract Call](Runtime/Scenarios/CrossContractCall.md)
     * [Components](Runtime/Components/Components.md)
+        * [Runtime crate](Runtime/Components/RuntimeCrate.md)
         * [Bindings Specification](Runtime/Components/BindingsSpec/BindingsSpec.md)
             * [Registers API](Runtime/Components/BindingsSpec/RegistersAPI.md)
             * [Trie API](Runtime/Components/BindingsSpec/TrieAPI.md)
