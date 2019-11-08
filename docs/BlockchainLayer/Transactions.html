@@ -180,6 +180,165 @@ Otherwise we'd skip this key pair within this batch and the order will become in
 <p>Valid transactions are added to the chunk. For every valid transaction, the validation result contains the amount of burnt gas that will be charged for converting this
 transaction to a receipt. When the total sum of burnt gas for valid transactions exceeds the gas limit of a chunk, the chunk 
 producer drops the draining iterator and the remaining transactions stay in the pool.</p>
+<h2><a class="header" href="#draining-iterator" id="draining-iterator">Draining iterator</a></h2>
+<p>Draining Iterator is a structure to pull transactions from the pool.
+It allows to request a next transaction either with the new key (next key) or with the same key.
+When a draining iterator is dropped the remaining transactions are returned back to the pool.</p>
+<p>It implements <code>fn next(from_same_tx_group: bool) -&gt; Option&lt;SignedTransaction&gt;</code>.
+If <code>from_same_tx_group</code> is true, then the iterator returns a transaction from the same group as the last transaction.
+If it's false, then the iterator returns a transaction from the next group with the different key.</p>
+<h3><a class="header" href="#transaction-ordering-example-using-draining-iterator" id="transaction-ordering-example-using-draining-iterator">Transaction ordering example using draining iterator.</a></h3>
+<p>Let's say:</p>
+<ul>
+<li>account IDs as uppercase letters (<code>&quot;A&quot;</code>, <code>&quot;B&quot;</code>, <code>&quot;C&quot;</code> ...)</li>
+<li>public keys are lowercase letters (<code>&quot;a&quot;</code>, <code>&quot;b&quot;</code>, <code>&quot;c&quot;</code> ...)</li>
+<li>nonces are numbers (<code>1</code>, <code>2</code>, <code>3</code> ...)</li>
+</ul>
+<p>A pool might have group of transactions in the hashmap:</p>
+<pre><code>transactions: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [1, 3, 2, 1, 2]
+  (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
+  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+}
+</code></pre>
+<p>There are 3 accounts (<code>&quot;A&quot;</code>, <code>&quot;B&quot;</code>, <code>&quot;C&quot;</code>). Account <code>&quot;A&quot;</code> used 2 public keys (<code>&quot;a&quot;</code>, <code>&quot;c&quot;</code>). Other accounts used 1 public key each.
+Transactions within each group may have repeated nonces while in the pool.
+That's because the pool doesn't filter transactions with the same nonce, only transactions with the same hash.</p>
+<h5><a class="header" href="#initialization" id="initialization">Initialization</a></h5>
+<p>Here's how the iterator would work. When the iterator is first created nothing happens.
+The iterator internally hold 2 maps, the current map and the next map.
+At start the current map is the same as above, and the next map is empty.</p>
+<p>The internal iterator structure looks like this:</p>
+<pre><code>current map: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [1, 3, 2, 1, 2]
+  (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
+  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+}
+sorted: false
+next map: {
+}
+last_entry: None
+</code></pre>
+<h5><a class="header" href="#transaction-1" id="transaction-1">Transaction #1</a></h5>
+<p>The iterator is called with <code>.next(false)</code>.</p>
+<p>An entry <code>(&quot;A&quot;, &quot;a&quot;) -&gt; [1, 3, 2, 1, 2]</code> is pulled from the current map.
+Then the transactions are sorted in non-decreasing order, so the last transaction has the smallest nonce.
+The entry becomes the following: <code>(&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1, 1]</code>. The last transaction with nonce <code>1</code> from the vector is returned.</p>
+<p>The internal iterator structure becomes the following:</p>
+<pre><code>current map: {
+  (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
+  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+}
+sorted: false
+next map: {
+}
+last_entry: (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+</code></pre>
+<h5><a class="header" href="#transaction-2" id="transaction-2">Transaction #2</a></h5>
+<p>Now if the returned transaction is valid the iterator is going to be called with <code>.next(false)</code> again.</p>
+<p>The iterator needs a new entry, so it inserts the last entry into the <code>next_map</code> and pulls the new entry <code>(&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]</code>.
+Sorts it and returns the last transaction with nonce <code>13</code>.</p>
+<p>The internal iterator structure becomes the following:</p>
+<pre><code>current map: {
+  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+}
+sorted: false
+next map: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+}
+last_entry: (&quot;B&quot;, &quot;b&quot;) -&gt; [14]
+</code></pre>
+<h5><a class="header" href="#transaction-3" id="transaction-3">Transaction #3</a></h5>
+<p>Let's say the last transaction was invalid. The iterator is called with <code>.next(true)</code>.</p>
+<p>Instead of pulling a new entry from the current map, the iterator returns a transaction with nonce <code>14</code> from the last entry.
+The entry becomes empty, so the iterator sets it to <code>None</code>.</p>
+<p>The internal iterator structure becomes the following:</p>
+<pre><code>current map: {
+  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+}
+sorted: false
+next map: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+}
+last_entry: None
+</code></pre>
+<h5><a class="header" href="#transaction-4" id="transaction-4">Transaction #4</a></h5>
+<p>Let's say the transaction was valid and iterator was called with <code>.next(false)</code>.</p>
+<p>But even if the last transaction was invalid, the iterator would still pull the new entry, because the <code>last_entry</code> is <code>None</code>.
+The new entry is <code>(&quot;C&quot;, &quot;d&quot;) -&gt; [7]</code>, the iterator returns transaction with nonce <code>7</code>, entry becomes empty, so it is set to <code>None</code>.</p>
+<p>The internal iterator structure becomes the following:</p>
+<pre><code>current map: {
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+}
+sorted: false
+next map: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+}
+last_entry: None
+</code></pre>
+<h5><a class="header" href="#transaction-5" id="transaction-5">Transaction #5</a></h5>
+<p>Iterator called with <code>.next(false)</code>.</p>
+<p>The new entry is <code>(&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]</code>, sorted to <code>(&quot;A&quot;, &quot;c&quot;) -&gt; [5, 3, 2]</code> and the transaction with nonce <code>2</code> is returned.</p>
+<p>The internal iterator structure becomes the following:</p>
+<pre><code>current map: {
+}
+sorted: false
+next map: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+}
+last_entry: (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 3]
+</code></pre>
+<h5><a class="header" href="#transaction-6" id="transaction-6">Transaction #6</a></h5>
+<p>Iterator called with <code>.next(false)</code> again. The last entry is added to the next map.</p>
+<p>Note, that the next map doesn't have to maintain the order of inserts, cause it's a hashmap.
+The iterator need to get a new entry, but the current map is empty.
+It means the new batch is starting.</p>
+<p>The iterator swaps current and next maps.
+Also, since the iterator went through all entries and sorted them all, the next time they don't need to be sorted.</p>
+<p>Let's the iterator pulls a new entry <code>(&quot;A&quot;, &quot;c&quot;) -&gt; [5, 3]</code>. Then returns the transaction with nonce <code>3</code>.</p>
+<p>The internal iterator structure becomes the following:</p>
+<pre><code>current map: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+}
+sorted: true
+next map: {
+}
+last_entry: (&quot;A&quot;, &quot;c&quot;) -&gt; [5]
+</code></pre>
+<h5><a class="header" href="#dropping-iterator" id="dropping-iterator">Dropping iterator</a></h5>
+<p>Let's say the chunk producer collected enough transactions.
+It drops the iterator, so the iterator has to return all remaining transactions to the pool.
+First it inserts the last entry into the pool transactions map.
+Then it inserts all transactions from iterator maps into the pool transactions map.</p>
+<p>The pool map becomes the following:</p>
+<pre><code>transactions: {
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [5]
+}
+</code></pre>
+<h5><a class="header" href="#chunk-transactions" id="chunk-transactions">Chunk Transactions</a></h5>
+<p>Transactions that were pulled from the pool: </p>
+<pre><code>(&quot;A&quot;, &quot;a&quot;, 1),
+(&quot;B&quot;, &quot;b&quot;, 13), // Invalid
+(&quot;B&quot;, &quot;b&quot;, 14),
+(&quot;C&quot;, &quot;d&quot;, 7),
+(&quot;A&quot;, &quot;c&quot;, 2),
+(&quot;A&quot;, &quot;c&quot;, 3),
+</code></pre>
+<p>After filtering invalid transactions out:</p>
+<pre><code>(&quot;A&quot;, &quot;a&quot;, 1),
+(&quot;B&quot;, &quot;b&quot;, 14),
+(&quot;C&quot;, &quot;d&quot;, 7),
+(&quot;A&quot;, &quot;c&quot;, 2),
+(&quot;A&quot;, &quot;c&quot;, 3),
+</code></pre>
+<p>So there are 2 batches of transactions. The first batch contains 4 keys and the second batch contains 1 key.
+And this is a valid order.</p>
 
                     </main>
 
