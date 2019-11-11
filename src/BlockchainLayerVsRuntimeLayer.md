@@ -32,6 +32,20 @@ transactions and the receipts. It is therefore deeply aware of the concept of ac
 Blockchain layer however is mostly aware of the accounts through the trie (see below) and the validators (see below).
 Outside these two it does not operate on the accounts directly.
 
+### Assume every account belongs to its own shard
+
+Every account at NEAR belongs to some shard.
+All the information related to this account also belongs to the same shard. The information includes:
+- Balance
+- Locked balance (for staking)
+- Code of the contract
+- Key-value storage of the contract
+- All Access Keys
+
+Runtime assumes, it's the only information that is available for the contract execution.
+While other accounts may belong to the same shards, the Runtime never uses or provides them during contract execution.
+We can just assume that every account belongs to its own shard. So there is no reason to intentionally try to collocate accounts.
+
 ## Trie
 
 Near Protocol is a stateful blockchain -- there is a state associated with each account and the user actions performed
@@ -48,6 +62,7 @@ However, we allow some trie-specific operations that we expose to the smart cont
 Near Protocol to its maximum efficiency.
 
 ## Tokens and gas
+
 Even though tokens is a fundamental concept of the blockchain, it is neatly encapsulated
 inside the runtime layer together with the gas, fees, and rewards.
 

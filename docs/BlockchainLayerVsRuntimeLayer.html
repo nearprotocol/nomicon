@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="index.html">Introduction</a></li><li class="expanded "><a href="BlockchainLayerVsRuntimeLayer.html" class="active"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">2.</strong> Blockchain Layer</a></li><li><ol class="section"><li class="expanded "><a href="BlockchainLayer/Transactions.html"><strong aria-hidden="true">2.1.</strong> Transactions</a></li></ol></li><li class="expanded "><a href="Runtime/Runtime.html"><strong aria-hidden="true">3.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">3.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">3.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">3.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="Runtime/Components/Components.html"><strong aria-hidden="true">3.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/RuntimeCrate.html"><strong aria-hidden="true">3.2.1.</strong> Runtime crate</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">3.2.2.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">3.2.2.1.</strong> Registers API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">3.2.2.2.</strong> Trie API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">3.2.2.3.</strong> Promises API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">3.2.2.4.</strong> Context API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">3.2.2.5.</strong> Economics API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">3.2.2.6.</strong> Math API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">3.2.2.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="expanded "><a href="BlockchainLayerVsRuntimeLayer.html" class="active"><strong aria-hidden="true">2.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="Primitives/Primitives.html"><strong aria-hidden="true">3.</strong> Primitives</a></li><li><ol class="section"><li class="expanded "><a href="Primitives/Account.html"><strong aria-hidden="true">3.1.</strong> Account</a></li><li class="expanded "><a href="Primitives/Transaction.html"><strong aria-hidden="true">3.2.</strong> Transaction</a></li></ol></li><li class="expanded "><a href="BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">4.</strong> Blockchain Layer</a></li><li><ol class="section"><li class="expanded "><a href="BlockchainLayer/Transactions.html"><strong aria-hidden="true">4.1.</strong> Transactions in Blockchain Layer</a></li></ol></li><li class="expanded "><a href="Runtime/Runtime.html"><strong aria-hidden="true">5.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">5.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">5.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">5.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="Runtime/Components/Components.html"><strong aria-hidden="true">5.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/RuntimeCrate.html"><strong aria-hidden="true">5.2.1.</strong> Runtime crate</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">5.2.2.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">5.2.2.1.</strong> Registers API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">5.2.2.2.</strong> Trie API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">5.2.2.3.</strong> Promises API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">5.2.2.4.</strong> Context API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">5.2.2.5.</strong> Economics API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">5.2.2.6.</strong> Math API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">5.2.2.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -174,6 +174,19 @@ through the access keys).</p>
 transactions and the receipts. It is therefore deeply aware of the concept of account. </p>
 <p>Blockchain layer however is mostly aware of the accounts through the trie (see below) and the validators (see below).
 Outside these two it does not operate on the accounts directly.</p>
+<h3><a class="header" href="#assume-every-account-belongs-to-its-own-shard" id="assume-every-account-belongs-to-its-own-shard">Assume every account belongs to its own shard</a></h3>
+<p>Every account at NEAR belongs to some shard.
+All the information related to this account also belongs to the same shard. The information includes:</p>
+<ul>
+<li>Balance</li>
+<li>Locked balance (for staking)</li>
+<li>Code of the contract</li>
+<li>Key-value storage of the contract</li>
+<li>All Access Keys</li>
+</ul>
+<p>Runtime assumes, it's the only information that is available for the contract execution.
+While other accounts may belong to the same shards, the Runtime never uses or provides them during contract execution.
+We can just assume that every account belongs to its own shard. So there is no reason to intentionally try to collocate accounts.</p>
 <h2><a class="header" href="#trie" id="trie">Trie</a></h2>
 <p>Near Protocol is a stateful blockchain -- there is a state associated with each account and the user actions performed
 through transactions mutate that state. The state then is stored as a trie, and both the blockchain layer and the
@@ -222,7 +235,7 @@ has an indirect knowledge of them through the computation of the tokens-to-gas e
                         
 
                         
-                            <a rel="next" href="BlockchainLayer/BlockchainLayer.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="Primitives/Primitives.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -240,7 +253,7 @@ has an indirect knowledge of them through the computation of the tokens-to-gas e
                 
 
                 
-                    <a href="BlockchainLayer/BlockchainLayer.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a href="Primitives/Primitives.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

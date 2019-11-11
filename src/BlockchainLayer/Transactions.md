@@ -1,4 +1,4 @@
-# Transactions
+# Transactions in the Blockchain Layer
 
 A client creates a transaction, computes the transaction hash and signs this hash to get a signed transaction.
 Now this signed transaction can be sent to a node.
