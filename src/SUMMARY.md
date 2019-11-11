@@ -1,10 +1,12 @@
 # Summary
 
-[Introduction](README.md)
-
+* [Introduction](README.md)
 * [Blockchain Layer vs Runtime Layer](BlockchainLayerVsRuntimeLayer.md)
+* [Primitives](Primitives/Primitives.md)
+    * [Account](Primitives/Account.md)
+    * [Transaction](Primitives/Transaction.md)
 * [Blockchain Layer](BlockchainLayer/BlockchainLayer.md)
-    * [Transactions](BlockchainLayer/Transactions.md)
+    * [Transactions in Blockchain Layer](BlockchainLayer/Transactions.md)
 * [Runtime](Runtime/Runtime.md)
     * [Scenarios](Runtime/Scenarios/Scenarios.md)
         * [Financial Transaction](Runtime/Scenarios/FinancialTransaction.md)

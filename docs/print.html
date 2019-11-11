@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="index.html">Introduction</a></li><li class="expanded "><a href="BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">1.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">2.</strong> Blockchain Layer</a></li><li><ol class="section"><li class="expanded "><a href="BlockchainLayer/Transactions.html"><strong aria-hidden="true">2.1.</strong> Transactions</a></li></ol></li><li class="expanded "><a href="Runtime/Runtime.html"><strong aria-hidden="true">3.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">3.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">3.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">3.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="Runtime/Components/Components.html"><strong aria-hidden="true">3.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/RuntimeCrate.html"><strong aria-hidden="true">3.2.1.</strong> Runtime crate</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">3.2.2.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">3.2.2.1.</strong> Registers API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">3.2.2.2.</strong> Trie API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">3.2.2.3.</strong> Promises API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">3.2.2.4.</strong> Context API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">3.2.2.5.</strong> Economics API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">3.2.2.6.</strong> Math API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">3.2.2.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="expanded "><a href="BlockchainLayerVsRuntimeLayer.html"><strong aria-hidden="true">2.</strong> Blockchain Layer vs Runtime Layer</a></li><li class="expanded "><a href="Primitives/Primitives.html"><strong aria-hidden="true">3.</strong> Primitives</a></li><li><ol class="section"><li class="expanded "><a href="Primitives/Account.html"><strong aria-hidden="true">3.1.</strong> Account</a></li><li class="expanded "><a href="Primitives/Transaction.html"><strong aria-hidden="true">3.2.</strong> Transaction</a></li></ol></li><li class="expanded "><a href="BlockchainLayer/BlockchainLayer.html"><strong aria-hidden="true">4.</strong> Blockchain Layer</a></li><li><ol class="section"><li class="expanded "><a href="BlockchainLayer/Transactions.html"><strong aria-hidden="true">4.1.</strong> Transactions in Blockchain Layer</a></li></ol></li><li class="expanded "><a href="Runtime/Runtime.html"><strong aria-hidden="true">5.</strong> Runtime</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/Scenarios.html"><strong aria-hidden="true">5.1.</strong> Scenarios</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Scenarios/FinancialTransaction.html"><strong aria-hidden="true">5.1.1.</strong> Financial Transaction</a></li><li class="expanded "><a href="Runtime/Scenarios/CrossContractCall.html"><strong aria-hidden="true">5.1.2.</strong> Cross-Contract Call</a></li></ol></li><li class="expanded "><a href="Runtime/Components/Components.html"><strong aria-hidden="true">5.2.</strong> Components</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/RuntimeCrate.html"><strong aria-hidden="true">5.2.1.</strong> Runtime crate</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/BindingsSpec.html"><strong aria-hidden="true">5.2.2.</strong> Bindings Specification</a></li><li><ol class="section"><li class="expanded "><a href="Runtime/Components/BindingsSpec/RegistersAPI.html"><strong aria-hidden="true">5.2.2.1.</strong> Registers API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/TrieAPI.html"><strong aria-hidden="true">5.2.2.2.</strong> Trie API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/PromisesAPI.html"><strong aria-hidden="true">5.2.2.3.</strong> Promises API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/ContextAPI.html"><strong aria-hidden="true">5.2.2.4.</strong> Context API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/EconomicsAPI.html"><strong aria-hidden="true">5.2.2.5.</strong> Economics API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MathAPI.html"><strong aria-hidden="true">5.2.2.6.</strong> Math API</a></li><li class="expanded "><a href="Runtime/Components/BindingsSpec/MiscellaneousAPI.html"><strong aria-hidden="true">5.2.2.7.</strong> Miscellaneous API</a></li></ol></li></ol></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -185,6 +185,19 @@ through the access keys).</p>
 transactions and the receipts. It is therefore deeply aware of the concept of account. </p>
 <p>Blockchain layer however is mostly aware of the accounts through the trie (see below) and the validators (see below).
 Outside these two it does not operate on the accounts directly.</p>
+<h3><a class="header" href="#assume-every-account-belongs-to-its-own-shard" id="assume-every-account-belongs-to-its-own-shard">Assume every account belongs to its own shard</a></h3>
+<p>Every account at NEAR belongs to some shard.
+All the information related to this account also belongs to the same shard. The information includes:</p>
+<ul>
+<li>Balance</li>
+<li>Locked balance (for staking)</li>
+<li>Code of the contract</li>
+<li>Key-value storage of the contract</li>
+<li>All Access Keys</li>
+</ul>
+<p>Runtime assumes, it's the only information that is available for the contract execution.
+While other accounts may belong to the same shards, the Runtime never uses or provides them during contract execution.
+We can just assume that every account belongs to its own shard. So there is no reason to intentionally try to collocate accounts.</p>
 <h2><a class="header" href="#trie" id="trie">Trie</a></h2>
 <p>Near Protocol is a stateful blockchain -- there is a state associated with each account and the user actions performed
 through transactions mutate that state. The state then is stored as a trie, and both the blockchain layer and the
@@ -221,9 +234,124 @@ receipts will be used in other chunks. From the runtime perspective it consumes 
 <li>Fees and rewards -- fees and rewards are neatly encapsulated in the runtime layer. The blockchain layer, however
 has an indirect knowledge of them through the computation of the tokens-to-gas exchange rate and the inflation.</li>
 </ul>
+<h1><a class="header" href="#primitives" id="primitives">Primitives</a></h1>
+<ul>
+<li><a href="Primitives/Account.html">Account</a>
+<ul>
+<li><a href="Primitives/Account.html#account_id">Account ID</a></li>
+<li><a href="Primitives/Account.html#account">Account</a></li>
+</ul>
+</li>
+<li><a href="Primitives/Transactions.html">Transaction</a>
+<ul>
+<li><a href="Primitives/Transaction.html#SignedTransaction">SignedTransaction</a></li>
+</ul>
+</li>
+</ul>
+<h1><a class="header" href="#accounts" id="accounts">Accounts</a></h1>
+<h2><a class="header" href="#account-id" id="account-id">Account ID</a></h2>
+<p>NEAR Protocol has an account names system. Account ID is similar to a username. Account IDs have to follow the rules.</p>
+<h3><a class="header" href="#account-id-rules" id="account-id-rules">Account ID Rules</a></h3>
+<ul>
+<li>minimum length is 2</li>
+<li>maximum length is 64</li>
+<li><strong>Account ID</strong> consists of <strong>Account ID parts</strong> separated by <code>.</code></li>
+<li><strong>Account ID part</strong> consists of lowercase alphanumeric symbols separated by either <code>_</code> or <code>-</code>.</li>
+</ul>
+<p>Account names are similar to a domain names. 
+Anyone can create a top level account (TLA) without separators, e.g. <code>near</code>.
+Only <code>near</code> can create <code>alice.near</code>. And only <code>alice.near</code> can create <code>app.alice.near</code> and so on.
+Note, <code>near</code> can NOT create <code>app.alice.near</code> directly.</p>
+<p>Regex for a full account ID, without checking for length:</p>
+<pre><code class="language-regex">^(([a-z\d]+[\-_])*[a-z\d]+\.)*([a-z\d]+[\-_])*[a-z\d]+$
+</code></pre>
+<p>There is a rent for the account ID length in case it's less than 11 characters long. See [Economics] for the details.</p>
+<h3><a class="header" href="#examples" id="examples">Examples</a></h3>
+<p>Valid accounts:</p>
+<pre><code>ok
+bowen
+ek-2
+ek.near
+com
+google.com
+bowen.google.com
+near
+illia.cheap-accounts.near
+max_99.near
+100
+near2019
+over.9000
+a.bro
+// Valid, but can't be created, because &quot;a&quot; is too short
+bro.a            
+</code></pre>
+<p>Invalid accounts:</p>
+<pre><code>not ok           // Whitespace characters are not allowed 
+a                // Too short
+100-             // Suffix separator
+bo__wen          // Two separators in a row
+_illia           // Prefix separator
+.near            // Prefix dot separator
+near.            // Suffix dot separator
+a..near          // Two dot separators in a row
+$$$              // Non alphanumeric characters are not allowed
+WAT              // Non lowercase characters are not allowed
+me@google.com    // @ is not allowed (it was allowed in the past)
+// TOO LONG:
+abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz
+</code></pre>
+<h2><a class="header" href="#account" id="account">Account</a></h2>
+<p>Data for an single account is collocated in one shard. The account data consists of the following:</p>
+<ul>
+<li>Balance</li>
+<li>Locked balance (for staking)</li>
+<li>Code of the contract</li>
+<li>Key-value storage of the contract. Stored in a ordered trie.</li>
+<li>Access Keys.</li>
+</ul>
+<h4><a class="header" href="#balances" id="balances">Balances</a></h4>
+<p>Total account balance consists of unlocked balance and locked balance.</p>
+<p>Unlocked balance is tokens that the account can use for transaction fees, transfers staking and other operations.</p>
+<p>Locked balance is the tokens that are currently in use for staking to be a validator or to become a validator.
+Locked balance may become unlocked at the beginning of an epoch. See [Staking] for details.</p>
+<h4><a class="header" href="#contracts" id="contracts">Contracts</a></h4>
+<p>A contract (AKA smart contract) is a program in WebAssembly that belongs to a specific account.
+When account is created, it doesn't have a contract.
+A contract has to be explicitly deployed, either by the account owner, or during the account creation.
+A contract can be executed by anyone who calls a method on your account. A contract has access to the storage on your account.</p>
+<h4><a class="header" href="#storage" id="storage">Storage</a></h4>
+<p>Every account has its own storage. It's a persistent key-value trie. Keys are ordered in lexicographical order.
+The storage can only be modified by the contract on the account.
+Current implementation on Runtime only allows your account's contract to read from the storage, but this might change in the future and other accounts's contracts will be able to read from your storage.</p>
+<p>NOTE: Accounts are charged recurrent rent for the total storage. This includes storage of the account itself, contract code, contract storage and all access keys.</p>
+<h4><a class="header" href="#access-keys" id="access-keys">Access Keys</a></h4>
+<p>An access key grants an access to a account. Each access key on the account is identified by a unique public key.
+This public key is used to validate signature of transactions.
+Each access key contains a unique nonce to differentiate or order transactions signed with this access key.</p>
+<p>An access keys have a permission associated with it. The permission can be one of two types:</p>
+<ul>
+<li>Full permission. It grants full access to the account.</li>
+<li>Function call permission. It grants access to only issue function call transactions.</li>
+</ul>
+<p>See [Access Keys] for more details.</p>
+<h1><a class="header" href="#transactions" id="transactions">Transactions</a></h1>
+<p>A transaction consists of:</p>
+<ul>
+<li>signer_id</li>
+<li>signer_public_key</li>
+<li>receiver_id</li>
+<li>block_hash</li>
+<li>nonce</li>
+<li>actions</li>
+</ul>
+<h2><a class="header" href="#signedtransactions" id="signedtransactions">SignedTransactions</a></h2>
+<ul>
+<li>transaction</li>
+<li>signature</li>
+</ul>
 <h1><a class="header" href="#blockchain-layer" id="blockchain-layer">Blockchain Layer</a></h1>
 <p>TBD</p>
-<h1><a class="header" href="#transactions" id="transactions">Transactions</a></h1>
+<h1><a class="header" href="#transactions-in-the-blockchain-layer" id="transactions-in-the-blockchain-layer">Transactions in the Blockchain Layer</a></h1>
 <p>A client creates a transaction, computes the transaction hash and signs this hash to get a signed transaction.
 Now this signed transaction can be sent to a node.</p>
 <p>When a node receives a new signed transaction, it validates the transaction (if the node tracks the shard) and gossips it to the peers. Eventually, the valid transaction is added to a transaction pool.</p>
