@@ -1,4 +1,4 @@
-# Nearnomicon https://nearprotocol.github.io/nomicon/
+# Nearnomicon http://nomicon.io/
 
 Implementation details of the NearProtocol client.
 
