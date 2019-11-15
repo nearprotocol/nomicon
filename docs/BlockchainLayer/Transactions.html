@@ -360,7 +360,10 @@ This transaction belongs to the next batch.</p>
 If there are no transaction with the same key in the N batch, then the order is invalid.</p>
 <p>We also enforce the order of the sequence of transactions for the same key, the nonces of them should be in strictly increasing order.</p>
 <p>Here is the algorithm that validates the order:</p>
-<pre><code>fn validate_order(txs: &amp;Vec&lt;Transaction&gt;) -&gt; bool {
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>fn validate_order(txs: &amp;Vec&lt;Transaction&gt;) -&gt; bool {
     let mut nonces: HashMap&lt;Key, Nonce&gt; = HashMap::new();
     let mut batches: HashMap&lt;Key, usize&gt; = HashMap::new();
     let mut current_batch = 1;
@@ -397,7 +400,8 @@ If there are no transaction with the same key in the N batch, then the order is 
     true
 }
 
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 
                     </main>
 

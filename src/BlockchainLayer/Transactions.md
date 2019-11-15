@@ -273,7 +273,7 @@ If there are no transaction with the same key in the N batch, then the order is 
 We also enforce the order of the sequence of transactions for the same key, the nonces of them should be in strictly increasing order.
 
 Here is the algorithm that validates the order:
-```
+```rust
 fn validate_order(txs: &Vec<Transaction>) -> bool {
     let mut nonces: HashMap<Key, Nonce> = HashMap::new();
     let mut batches: HashMap<Key, usize> = HashMap::new();
