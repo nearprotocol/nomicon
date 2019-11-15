@@ -8,7 +8,11 @@ A transaction consists of:
 - nonce
 - actions
 
+TBD
+
 ## SignedTransactions
 
 - transaction
 - signature
+
+TBD

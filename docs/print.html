@@ -344,11 +344,13 @@ Each access key contains a unique nonce to differentiate or order transactions s
 <li>nonce</li>
 <li>actions</li>
 </ul>
+<p>TBD</p>
 <h2><a class="header" href="#signedtransactions" id="signedtransactions">SignedTransactions</a></h2>
 <ul>
 <li>transaction</li>
 <li>signature</li>
 </ul>
+<p>TBD</p>
 <h1><a class="header" href="#blockchain-layer" id="blockchain-layer">Blockchain Layer</a></h1>
 <p>TBD</p>
 <h1><a class="header" href="#transactions-in-the-blockchain-layer" id="transactions-in-the-blockchain-layer">Transactions in the Blockchain Layer</a></h1>
@@ -358,36 +360,58 @@ Now this signed transaction can be sent to a node.</p>
 <p>Every validating node has its own transaction pool. The transaction pool maintains transactions that were not yet discarded and not yet included into the chain.</p>
 <p>Before producing a chunk transactions are ordered and validated again. This is done to produce chunks with only valid transactions.</p>
 <h2><a class="header" href="#transaction-ordering" id="transaction-ordering">Transaction ordering</a></h2>
-<p>The transaction pool groups transactions by a pair of <code>(signer_id, signer_public_key)</code>. The <code>signer_id</code> is the account ID of the user who signed the transaction, the <code>signer_public_key</code> is the public key of the account's access key that was used to sign the transactions. 
-Within the group, the transactions are ordered by nonce in non-decreasing order.</p>
-<p>The valid order of the transactions is the following:</p>
+<p>The transaction pool groups transactions by a pair of <code>(signer_id, signer_public_key)</code>.
+The <code>signer_id</code> is the account ID of the user who signed the transaction, the <code>signer_public_key</code> is the public key of the account's access key that was used to sign the transactions.
+Within the group, the transactions are ordered are stored without an order.</p>
+<p>The valid order of the transactions in the chunk is the following:</p>
 <ul>
 <li>transactions are ordered in batches.</li>
-<li>each batch should contain exactly one transaction with the lowest nonce for every transaction group keyed by the pair of <code>(signer_id, signer_public_key)</code>.</li>
-<li>the order within a batch is undefined and each node should use a unique secret seed for that ordering.</li>
+<li>within a batch all transactions keys should have different.</li>
+<li>a set of transaction keys in each subsequent batch should be a sub-set of keys from the previous batch.</li>
+<li>transactions with the same key should be ordered in increasing order of their corresponding nonces.</li>
 </ul>
-<p>Transaction pool provides a draining structure that allows to select valid transactions in a proper order.</p>
+<p>Note:</p>
+<ul>
+<li>the order within a batch is undefined. Each node should use a unique secret seed for that ordering to users from finding the lowest keys to get advantage of every node.</li>
+</ul>
+<p>Transaction pool provides a draining structure that allows to pull transactions in a proper order.</p>
 <h2><a class="header" href="#transaction-validation" id="transaction-validation">Transaction validation</a></h2>
 <p>The transaction validation happens twice, once before adding to the transaction pool, next before adding to a chunk.</p>
 <h3><a class="header" href="#before-adding-to-a-transaction-pool" id="before-adding-to-a-transaction-pool">Before adding to a transaction pool</a></h3>
 <p>This is done to quickly filter out transactions that have an invalid signature or are invalid on the latest state.</p>
 <h3><a class="header" href="#before-adding-to-a-chunk" id="before-adding-to-a-chunk">Before adding to a chunk</a></h3>
-<p>A chunk producer pulls ordered transactions from the transaction pool using a draining structure.
-Transactions are pulled from the the pool and validated one by one on top of latest state. The state is persisted after each successful validation.
-E.g. if the first transaction charged the account, the next transaction for the same account may become invalid.</p>
-<p>If the last transaction was invalid, the chunk producer requests the next transaction from the pool with the same key to maintain the proper order.
-Otherwise we'd skip this key pair within this batch and the order will become invalid.</p>
-<p>Valid transactions are added to the chunk. For every valid transaction, the validation result contains the amount of burnt gas that will be charged for converting this
-transaction to a receipt. When the total sum of burnt gas for valid transactions exceeds the gas limit of a chunk, the chunk 
-producer drops the draining iterator and the remaining transactions stay in the pool.</p>
-<h2><a class="header" href="#draining-iterator" id="draining-iterator">Draining iterator</a></h2>
-<p>Draining Iterator is a structure to pull transactions from the pool.
-It allows to request a next transaction either with the new key (next key) or with the same key.
-When a draining iterator is dropped the remaining transactions are returned back to the pool.</p>
-<p>It implements <code>fn next(from_same_tx_group: bool) -&gt; Option&lt;SignedTransaction&gt;</code>.
-If <code>from_same_tx_group</code> is true, then the iterator returns a transaction from the same group as the last transaction.
-If it's false, then the iterator returns a transaction from the next group with the different key.</p>
-<h3><a class="header" href="#transaction-ordering-example-using-draining-iterator" id="transaction-ordering-example-using-draining-iterator">Transaction ordering example using draining iterator.</a></h3>
+<p>A chunk producer has to create a chunk with valid and ordered transactions up to some limits.
+One limit is the maximum number of transactions, another is the total gas burnt for transactions.</p>
+<p>To order and filter transactions, chunk producer gets a pool iterator and passes it to the runtime adapter.
+The runtime adapter pulls transactions one by one.
+The valid transactions are added to the result, invalid transactions are discarded.
+Once the limit is reached, all the remaining transactions from the iterator are returned back to the pool.</p>
+<h2><a class="header" href="#pool-iterator" id="pool-iterator">Pool iterator</a></h2>
+<p>Pool Iterator is a trait that iterates over transaction groups until all transaction group are empty.
+Pool Iterator returns a mutable reference to a transaction group that implements a draining iterator.
+The draining iterator is like a normal iterator, but it removes the returned entity from the group.
+It pulls transactions from the group in order from the smallest nonce to largest.</p>
+<p>The pool iterator and draining iterators for transaction groups allow the runtime adapter to create proper order.
+For every transaction group, the runtime adapter keeps pulling transactions until the valid transaction is found.
+If the transaction group becomes empty, then it's skipped.</p>
+<p>The runtime adapter may implement the following code to pull all valid transactions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>let mut valid_transactions = vec![];
+let mut pool_iter = pool.pool_iterator();
+while let Some(group_iter) = pool_iter.next() {
+    while let Some(tx) = group_iter.next() {
+        if is_valid(tx) {
+            valid_transactions.push(tx);
+            break;
+        }
+    }
+}
+valid_transactions
+<span class="boring">}
+</code></pre></pre>
+<h3><a class="header" href="#transaction-ordering-example-using-pool-iterator" id="transaction-ordering-example-using-pool-iterator">Transaction ordering example using pool iterator.</a></h3>
 <p>Let's say:</p>
 <ul>
 <li>account IDs as uppercase letters (<code>&quot;A&quot;</code>, <code>&quot;B&quot;</code>, <code>&quot;C&quot;</code> ...)</li>
@@ -405,140 +429,177 @@ If it's false, then the iterator returns a transaction from the next group with 
 <p>There are 3 accounts (<code>&quot;A&quot;</code>, <code>&quot;B&quot;</code>, <code>&quot;C&quot;</code>). Account <code>&quot;A&quot;</code> used 2 public keys (<code>&quot;a&quot;</code>, <code>&quot;c&quot;</code>). Other accounts used 1 public key each.
 Transactions within each group may have repeated nonces while in the pool.
 That's because the pool doesn't filter transactions with the same nonce, only transactions with the same hash.</p>
+<p>For this example, let's say that transactions are valid if the nonce is even and strictly greater than the previous nonce for the same key.</p>
 <h5><a class="header" href="#initialization" id="initialization">Initialization</a></h5>
-<p>Here's how the iterator would work. When the iterator is first created nothing happens.
-The iterator internally hold 2 maps, the current map and the next map.
-At start the current map is the same as above, and the next map is empty.</p>
-<p>The internal iterator structure looks like this:</p>
-<pre><code>current map: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [1, 3, 2, 1, 2]
-  (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
-  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
-  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+<p>When <code>.pool_iterator()</code> is called, a new <code>PoolIteratorWrapper</code> is created and it holds the mutuable reference to the pool,
+so the pool can't be modified outside of this iterator. The wrapper looks like this:</p>
+<pre><code>pool: {
+    transactions: {
+      (&quot;A&quot;, &quot;a&quot;) -&gt; [1, 3, 2, 1, 2]
+      (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
+      (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+      (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+    }
 }
-sorted: false
-next map: {
-}
-last_entry: None
+sorted_groups: [],
 </code></pre>
+<p><code>sorted_groups</code> is a queue of sorted transaction groups that were already sorted and pulled from the pool. </p>
 <h5><a class="header" href="#transaction-1" id="transaction-1">Transaction #1</a></h5>
-<p>The iterator is called with <code>.next(false)</code>.</p>
-<p>An entry <code>(&quot;A&quot;, &quot;a&quot;) -&gt; [1, 3, 2, 1, 2]</code> is pulled from the current map.
-Then the transactions are sorted in non-decreasing order, so the last transaction has the smallest nonce.
-The entry becomes the following: <code>(&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1, 1]</code>. The last transaction with nonce <code>1</code> from the vector is returned.</p>
-<p>The internal iterator structure becomes the following:</p>
-<pre><code>current map: {
-  (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
-  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
-  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+<p>The first group to be selected is for key <code>(&quot;A&quot;, &quot;a&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
+<code>[1, 1, 2, 2, 3]</code>. Runtime adapter pulls <code>1</code>, then <code>1</code>, and then <code>2</code>. Both transactions with nonce <code>1</code> are invalid because of odd nonce.</p>
+<p>Transaction with nonce <code>2</code> is added to the list of valid transactions.</p>
+<p>The transaction group is dropped and the pool iterator wrapper becomes the following:</p>
+<pre><code>pool: {
+    transactions: {
+      (&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]
+      (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+      (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+    }
 }
-sorted: false
-next map: {
-}
-last_entry: (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+sorted_groups: [
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [2, 3]
+],
 </code></pre>
 <h5><a class="header" href="#transaction-2" id="transaction-2">Transaction #2</a></h5>
-<p>Now if the returned transaction is valid the iterator is going to be called with <code>.next(false)</code> again.</p>
-<p>The iterator needs a new entry, so it inserts the last entry into the <code>next_map</code> and pulls the new entry <code>(&quot;B&quot;, &quot;b&quot;) -&gt; [13, 14]</code>.
-Sorts it and returns the last transaction with nonce <code>13</code>.</p>
-<p>The internal iterator structure becomes the following:</p>
-<pre><code>current map: {
-  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
-  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+<p>The next group is for key <code>(&quot;B&quot;, &quot;b&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
+<code>[13, 14]</code>. Runtime adapter pulls <code>13</code>, then <code>14</code>. The transaction with nonce <code>13</code> is invalid because of odd nonce.</p>
+<p>Transaction with nonce <code>14</code> is added to the list of valid transactions.</p>
+<p>The transaction group is dropped, but it's empty, so the pool iterator drops it completely:</p>
+<pre><code>pool: {
+    transactions: {
+      (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
+      (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+    }
 }
-sorted: false
-next map: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
-}
-last_entry: (&quot;B&quot;, &quot;b&quot;) -&gt; [14]
+sorted_groups: [
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [2, 3]
+],
 </code></pre>
 <h5><a class="header" href="#transaction-3" id="transaction-3">Transaction #3</a></h5>
-<p>Let's say the last transaction was invalid. The iterator is called with <code>.next(true)</code>.</p>
-<p>Instead of pulling a new entry from the current map, the iterator returns a transaction with nonce <code>14</code> from the last entry.
-The entry becomes empty, so the iterator sets it to <code>None</code>.</p>
-<p>The internal iterator structure becomes the following:</p>
-<pre><code>current map: {
-  (&quot;C&quot;, &quot;d&quot;) -&gt; [7]
-  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+<p>The next group is for key <code>(&quot;C&quot;, &quot;d&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
+<code>[7]</code>. Runtime adapter pulls <code>7</code>. The transaction with nonce <code>7</code> is invalid because of odd nonce.</p>
+<p>No valid transactions is added for this group. </p>
+<p>The transaction group is dropped, it's empty, so the pool iterator drops it completely:</p>
+<pre><code>pool: {
+    transactions: {
+      (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+    }
 }
-sorted: false
-next map: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
+sorted_groups: [
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [2, 3]
+],
+</code></pre>
+<p>The next group is for key <code>(&quot;A&quot;, &quot;c&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
+<code>[2, 3, 5]</code>. Runtime adapter pulls <code>2</code>.</p>
+<p>It's a valid transaction, so it's added to the list of valid transactions. </p>
+<p>The transaction group is dropped, so the pool iterator drops it completely:</p>
+<pre><code>pool: {
+    transactions: { }
 }
-last_entry: None
+sorted_groups: [
+  (&quot;A&quot;, &quot;a&quot;) -&gt; [2, 3]
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [3, 5]
+],
 </code></pre>
 <h5><a class="header" href="#transaction-4" id="transaction-4">Transaction #4</a></h5>
-<p>Let's say the transaction was valid and iterator was called with <code>.next(false)</code>.</p>
-<p>But even if the last transaction was invalid, the iterator would still pull the new entry, because the <code>last_entry</code> is <code>None</code>.
-The new entry is <code>(&quot;C&quot;, &quot;d&quot;) -&gt; [7]</code>, the iterator returns transaction with nonce <code>7</code>, entry becomes empty, so it is set to <code>None</code>.</p>
-<p>The internal iterator structure becomes the following:</p>
-<pre><code>current map: {
-  (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]
+<p>The next group is pulled not from the pool, but from the sorted_groups. The key is <code>(&quot;A&quot;, &quot;a&quot;)</code>.
+It's already sorted, so the iterator returns the mutable reference. Nonces are:
+<code>[2, 3]</code>. Runtime adapter pulls <code>2</code>, then pulls <code>3</code>. </p>
+<p>The transaction with nonce <code>2</code> is invalid, because we've already pulled a transaction #1 from this group and it had nonce <code>2</code>.
+The new nonce has to be larger than the previous nonce, so this transaction is invalid.</p>
+<p>The transaction with nonce <code>3</code> is invalid because of odd nonce.</p>
+<p>No valid transactions is added for this group.</p>
+<p>The transaction group is dropped, it's empty, so the pool iterator drops it completely:</p>
+<pre><code>pool: {
+    transactions: { }
 }
-sorted: false
-next map: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
-}
-last_entry: None
+sorted_groups: [
+  (&quot;A&quot;, &quot;c&quot;) -&gt; [3, 5]
+],
 </code></pre>
-<h5><a class="header" href="#transaction-5" id="transaction-5">Transaction #5</a></h5>
-<p>Iterator called with <code>.next(false)</code>.</p>
-<p>The new entry is <code>(&quot;A&quot;, &quot;c&quot;) -&gt; [5, 2, 3]</code>, sorted to <code>(&quot;A&quot;, &quot;c&quot;) -&gt; [5, 3, 2]</code> and the transaction with nonce <code>2</code> is returned.</p>
-<p>The internal iterator structure becomes the following:</p>
-<pre><code>current map: {
+<p>The next group is for key <code>(&quot;A&quot;, &quot;c&quot;)</code>, with nonces <code>[3, 5]</code>.
+Runtime adapter pulls <code>3</code>, then pulls <code>5</code>. Both transactions are invalid, because the nonce is odd.</p>
+<p>No transactions are added.</p>
+<p>The transaction group is dropped, the pool iterator wrapper becomes empty:</p>
+<pre><code>pool: {
+    transactions: { }
 }
-sorted: false
-next map: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
-}
-last_entry: (&quot;A&quot;, &quot;c&quot;) -&gt; [5, 3]
+sorted_groups: [ ],
 </code></pre>
-<h5><a class="header" href="#transaction-6" id="transaction-6">Transaction #6</a></h5>
-<p>Iterator called with <code>.next(false)</code> again. The last entry is added to the next map.</p>
-<p>Note, that the next map doesn't have to maintain the order of inserts, cause it's a hashmap.
-The iterator need to get a new entry, but the current map is empty.
-It means the new batch is starting.</p>
-<p>The iterator swaps current and next maps.
-Also, since the iterator went through all entries and sorted them all, the next time they don't need to be sorted.</p>
-<p>Let's the iterator pulls a new entry <code>(&quot;A&quot;, &quot;c&quot;) -&gt; [5, 3]</code>. Then returns the transaction with nonce <code>3</code>.</p>
-<p>The internal iterator structure becomes the following:</p>
-<pre><code>current map: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
-}
-sorted: true
-next map: {
-}
-last_entry: (&quot;A&quot;, &quot;c&quot;) -&gt; [5]
-</code></pre>
+<p>When runtime adapter tries to pull the next group, the pool iterator returns <code>None</code>, so the runtime adapter drops the iterator.</p>
 <h5><a class="header" href="#dropping-iterator" id="dropping-iterator">Dropping iterator</a></h5>
-<p>Let's say the chunk producer collected enough transactions.
-It drops the iterator, so the iterator has to return all remaining transactions to the pool.
-First it inserts the last entry into the pool transactions map.
-Then it inserts all transactions from iterator maps into the pool transactions map.</p>
-<p>The pool map becomes the following:</p>
-<pre><code>transactions: {
-  (&quot;A&quot;, &quot;a&quot;) -&gt; [3, 2, 2, 1]
-  (&quot;A&quot;, &quot;c&quot;) -&gt; [5]
-}
-</code></pre>
+<p>If the iterator was not fully drained, but some transactions still remained. They would be reinserted back into the pool.</p>
 <h5><a class="header" href="#chunk-transactions" id="chunk-transactions">Chunk Transactions</a></h5>
 <p>Transactions that were pulled from the pool: </p>
-<pre><code>(&quot;A&quot;, &quot;a&quot;, 1),
-(&quot;B&quot;, &quot;b&quot;, 13), // Invalid
+<pre><code>// First batch
+(&quot;A&quot;, &quot;a&quot;, 1),
+(&quot;A&quot;, &quot;a&quot;, 1),
+(&quot;A&quot;, &quot;a&quot;, 2),
+(&quot;B&quot;, &quot;b&quot;, 13),
 (&quot;B&quot;, &quot;b&quot;, 14),
 (&quot;C&quot;, &quot;d&quot;, 7),
 (&quot;A&quot;, &quot;c&quot;, 2),
+
+// Next batch
+(&quot;A&quot;, &quot;a&quot;, 2),
+(&quot;A&quot;, &quot;a&quot;, 3),
 (&quot;A&quot;, &quot;c&quot;, 3),
+(&quot;A&quot;, &quot;c&quot;, 5),
 </code></pre>
-<p>After filtering invalid transactions out:</p>
-<pre><code>(&quot;A&quot;, &quot;a&quot;, 1),
+<p>The valid transactions are:</p>
+<pre><code>(&quot;A&quot;, &quot;a&quot;, 2),
 (&quot;B&quot;, &quot;b&quot;, 14),
-(&quot;C&quot;, &quot;d&quot;, 7),
 (&quot;A&quot;, &quot;c&quot;, 2),
-(&quot;A&quot;, &quot;c&quot;, 3),
 </code></pre>
-<p>So there are 2 batches of transactions. The first batch contains 4 keys and the second batch contains 1 key.
-And this is a valid order.</p>
+<p>In total there were only 3 valid transactions, that resulted in one batch.</p>
+<h3><a class="header" href="#order-validation" id="order-validation">Order validation</a></h3>
+<p>Other validators need to check the order of transactions in the produced chunk.
+It can be done in linear time, using a greedy algorithm.</p>
+<p>To select a first batch we need to iterate over transactions one by one until we see a transaction
+with the key that we've already included in the first batch.
+This transaction belongs to the next batch.</p>
+<p>Now all transactions in the N+1 batch should have a corresponding transaction with the same key in the N batch.
+If there are no transaction with the same key in the N batch, then the order is invalid.</p>
+<p>We also enforce the order of the sequence of transactions for the same key, the nonces of them should be in strictly increasing order.</p>
+<p>Here is the algorithm that validates the order:</p>
+<pre><code>fn validate_order(txs: &amp;Vec&lt;Transaction&gt;) -&gt; bool {
+    let mut nonces: HashMap&lt;Key, Nonce&gt; = HashMap::new();
+    let mut batches: HashMap&lt;Key, usize&gt; = HashMap::new();
+    let mut current_batch = 1;
+    
+    for tx in txs {
+        let key = tx.key();
+        
+        // Verifying nonce
+        let nonce = tx.nonce();
+        if let Some(last_nonce) = nonces.get(key) {
+            if nonce &lt;= last_nonce {
+                // Nonces should increase.
+                return false;
+            }
+        }
+        nonces.insert(key, nonce);
+        
+        // Verifying batch
+        if let Some(last_batch) = batches.get(key) {
+            if last_batch == current_batch {
+                current_batch += 1;
+            } else if last_batch &lt; current_batch - 1 {
+                // Was skipped in the last batch
+                return false;
+            }
+        } else {
+            if current_batch &gt; 1 {
+                // Not in first batch
+                return false;
+            }
+        }
+        batches.insert(key, batch);
+    }  
+    true
+}
+
+</code></pre>
 <h1><a class="header" href="#runtime" id="runtime">Runtime</a></h1>
 <p>Runtime layer is used to execute smart contracts and other actions created by the users and preserve the state between the executions.
 It can be described from three different angles: going step-by-step through various scenarios, describing the components
