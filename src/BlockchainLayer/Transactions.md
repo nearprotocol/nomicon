@@ -13,13 +13,13 @@ Before producing a chunk transactions are ordered and validated again. This is d
 
 The transaction pool groups transactions by a pair of `(signer_id, signer_public_key)`.
 The `signer_id` is the account ID of the user who signed the transaction, the `signer_public_key` is the public key of the account's access key that was used to sign the transactions.
-Within the group, the transactions are ordered are stored without an order.
+Transactions within a group are not ordered.
 
-The valid order of the transactions in the chunk is the following:
+The valid order of the transactions in a chunk is the following:
 - transactions are ordered in batches.
 - within a batch all transactions keys should have different.
 - a set of transaction keys in each subsequent batch should be a sub-set of keys from the previous batch.
-- transactions with the same key should be ordered in increasing order of their corresponding nonces.
+- transactions with the same key should be ordered in strictly increasing order of their corresponding nonces.
 
 Note:
 - the order within a batch is undefined. Each node should use a unique secret seed for that ordering to users from finding the lowest keys to get advantage of every node.
@@ -297,7 +297,7 @@ fn validate_order(txs: &Vec<Transaction>) -> bool {
             if last_batch == current_batch {
                 current_batch += 1;
             } else if last_batch < current_batch - 1 {
-                // Was skipped in the last batch
+                // Was skipped this key in the previous batch
                 return false;
             }
         } else {
@@ -310,5 +310,4 @@ fn validate_order(txs: &Vec<Transaction>) -> bool {
     }  
     true
 }
-
 ```
