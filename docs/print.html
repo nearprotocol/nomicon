@@ -182,7 +182,7 @@ around and feeding them to a runtime.</p>
 associated with one or several accounts (there are exceptions though, when users share an account and are separated
 through the access keys).</p>
 <p>The runtime is essentially a complex set of rules on what to do with accounts based on the information from the
-transactions and the receipts. It is therefore deeply aware of the concept of account. </p>
+transactions and the receipts. It is therefore deeply aware of the concept of account.</p>
 <p>Blockchain layer however is mostly aware of the accounts through the trie (see below) and the validators (see below).
 Outside these two it does not operate on the accounts directly.</p>
 <h3><a class="header" href="#assume-every-account-belongs-to-its-own-shard" id="assume-every-account-belongs-to-its-own-shard">Assume every account belongs to its own shard</a></h3>
@@ -397,7 +397,7 @@ If the transaction group becomes empty, then it's skipped.</p>
 <p>The runtime adapter may implement the following code to pull all valid transactions:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>let mut valid_transactions = vec![];
 let mut pool_iter = pool.pool_iterator();
 while let Some(group_iter) = pool_iter.next() {
@@ -410,7 +410,7 @@ while let Some(group_iter) = pool_iter.next() {
 }
 valid_transactions
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h3><a class="header" href="#transaction-ordering-example-using-pool-iterator" id="transaction-ordering-example-using-pool-iterator">Transaction ordering example using pool iterator.</a></h3>
 <p>Let's say:</p>
 <ul>
@@ -443,7 +443,7 @@ so the pool can't be modified outside of this iterator. The wrapper looks like t
 }
 sorted_groups: [],
 </code></pre>
-<p><code>sorted_groups</code> is a queue of sorted transaction groups that were already sorted and pulled from the pool. </p>
+<p><code>sorted_groups</code> is a queue of sorted transaction groups that were already sorted and pulled from the pool.</p>
 <h5><a class="header" href="#transaction-1" id="transaction-1">Transaction #1</a></h5>
 <p>The first group to be selected is for key <code>(&quot;A&quot;, &quot;a&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
 <code>[1, 1, 2, 2, 3]</code>. Runtime adapter pulls <code>1</code>, then <code>1</code>, and then <code>2</code>. Both transactions with nonce <code>1</code> are invalid because of odd nonce.</p>
@@ -478,7 +478,7 @@ sorted_groups: [
 <h5><a class="header" href="#transaction-3" id="transaction-3">Transaction #3</a></h5>
 <p>The next group is for key <code>(&quot;C&quot;, &quot;d&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
 <code>[7]</code>. Runtime adapter pulls <code>7</code>. The transaction with nonce <code>7</code> is invalid because of odd nonce.</p>
-<p>No valid transactions is added for this group. </p>
+<p>No valid transactions is added for this group.</p>
 <p>The transaction group is dropped, it's empty, so the pool iterator drops it completely:</p>
 <pre><code>pool: {
     transactions: {
@@ -491,7 +491,7 @@ sorted_groups: [
 </code></pre>
 <p>The next group is for key <code>(&quot;A&quot;, &quot;c&quot;)</code>, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
 <code>[2, 3, 5]</code>. Runtime adapter pulls <code>2</code>.</p>
-<p>It's a valid transaction, so it's added to the list of valid transactions. </p>
+<p>It's a valid transaction, so it's added to the list of valid transactions.</p>
 <p>The transaction group is dropped, so the pool iterator drops it completely:</p>
 <pre><code>pool: {
     transactions: { }
@@ -504,7 +504,7 @@ sorted_groups: [
 <h5><a class="header" href="#transaction-4" id="transaction-4">Transaction #4</a></h5>
 <p>The next group is pulled not from the pool, but from the sorted_groups. The key is <code>(&quot;A&quot;, &quot;a&quot;)</code>.
 It's already sorted, so the iterator returns the mutable reference. Nonces are:
-<code>[2, 3]</code>. Runtime adapter pulls <code>2</code>, then pulls <code>3</code>. </p>
+<code>[2, 3]</code>. Runtime adapter pulls <code>2</code>, then pulls <code>3</code>.</p>
 <p>The transaction with nonce <code>2</code> is invalid, because we've already pulled a transaction #1 from this group and it had nonce <code>2</code>.
 The new nonce has to be larger than the previous nonce, so this transaction is invalid.</p>
 <p>The transaction with nonce <code>3</code> is invalid because of odd nonce.</p>
@@ -530,7 +530,7 @@ sorted_groups: [ ],
 <h5><a class="header" href="#dropping-iterator" id="dropping-iterator">Dropping iterator</a></h5>
 <p>If the iterator was not fully drained, but some transactions still remained. They would be reinserted back into the pool.</p>
 <h5><a class="header" href="#chunk-transactions" id="chunk-transactions">Chunk Transactions</a></h5>
-<p>Transactions that were pulled from the pool: </p>
+<p>Transactions that were pulled from the pool:</p>
 <pre><code>// First batch
 (&quot;A&quot;, &quot;a&quot;, 1),
 (&quot;A&quot;, &quot;a&quot;, 1),
@@ -564,15 +564,15 @@ If there are no transaction with the same key in the N batch, then the order is 
 <p>Here is the algorithm that validates the order:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>fn validate_order(txs: &amp;Vec&lt;Transaction&gt;) -&gt; bool {
     let mut nonces: HashMap&lt;Key, Nonce&gt; = HashMap::new();
     let mut batches: HashMap&lt;Key, usize&gt; = HashMap::new();
     let mut current_batch = 1;
-    
+
     for tx in txs {
         let key = tx.key();
-        
+
         // Verifying nonce
         let nonce = tx.nonce();
         if let Some(last_nonce) = nonces.get(key) {
@@ -582,7 +582,7 @@ fn main() {
             }
         }
         nonces.insert(key, nonce);
-        
+
         // Verifying batch
         if let Some(last_batch) = batches.get(key) {
             if last_batch == current_batch {
@@ -598,11 +598,11 @@ fn main() {
             }
         }
         batches.insert(key, batch);
-    }  
+    }
     true
 }
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h1><a class="header" href="#runtime" id="runtime">Runtime</a></h1>
 <p>Runtime layer is used to execute smart contracts and other actions created by the users and preserve the state between the executions.
 It can be described from three different angles: going step-by-step through various scenarios, describing the components
@@ -715,9 +715,7 @@ Specifically it does the following checks:</p>
 <li>Retrieves the latest state of the <code>alice_near</code> account, and simultaneously checks that it exists;</li>
 <li>Retrieves the state of the access key of that <code>alice_near</code> used to sign the transaction;</li>
 <li>Checks that transaction nonce is greater than the nonce of the latest transaction executed with that access key;</li>
-<li>Checks whether the account that signed the transaction (<code>alice_near</code>) is the same as the account that receives it (<code>bob_near</code>).
-This is necessary because we apply different fees depending on whether this is the case or not. In this scenario it is not,
-so we do not go deeper into it here;</li>
+<li>Checks whether the account that signed the transaction is the same as the account that receives it. In our case the sender (<code>alice_near</code>) and the receiver (<code>bob_near</code>) are not the same. We apply different fees if receiver and sender is the same account;</li>
 <li>Applies the storage rent to the <code>alice_near</code> account;</li>
 <li>Computes how much gas we need to spend to convert this transaction to a receipt;</li>
 <li>Computes how much balance we need to subtract from <code>alice_near</code>, in this case it is 100 tokens;</li>
@@ -778,7 +776,7 @@ to be deposited to whatever smart contract that it is calling to. Notice, <code>
 measurement.</p>
 <p>Now, consider a slightly more complex scenario. In this scenario Alice uses a restricted access key to call the function.
 That is the permission of the access key is not <code>AccessKeyPermission::FullAccess</code> but is instead: <code>AccessKeyPermission::FunctionCall(FunctionCallPermission)</code>
-where </p>
+where</p>
 <pre><code>FucntionCallPermission {
     allowance: Some(3000),
     receiver_id: &quot;travel_agency&quot;,
@@ -1066,10 +1064,10 @@ order and can for instance save some blob in register <code>5000</code> and anot
 <h4><a class="header" href="#specification" id="specification">Specification</a></h4>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>read_register(register_id: u64, ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Writes the entire content from the register <code>register_id</code> into the memory of the guest starting with <code>ptr</code>.</p>
 <h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
@@ -1084,10 +1082,10 @@ wrong location this function will overwrite memory that it is not supposed to ov
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>register_len(register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns the size of the blob stored in the given register.</p>
 <h6><a class="header" href="#normal-operation" id="normal-operation">Normal operation</a></h6>
 <ul>
@@ -1100,10 +1098,10 @@ not follow the specification are considered to be bugs that need to be fixed.</p
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_write(key_len: u64, key_ptr: u64, value_len: u64, value_ptr: u64, register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Writes key-value into storage.</p>
 <h6><a class="header" href="#normal-operation-1" id="normal-operation-1">Normal operation</a></h6>
 <ul>
@@ -1132,10 +1130,10 @@ however the actual implementation does not return error at all, <a href="https:/
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_read(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Reads the value stored under the given key.</p>
 <h6><a class="header" href="#normal-operation-2" id="normal-operation-2">Normal operation</a></h6>
 <ul>
@@ -1159,10 +1157,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_remove(key_len: u64, key_ptr: u64, register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Removes the value stored under the given key.</p>
 <h6><a class="header" href="#normal-operation-3" id="normal-operation-3">Normal operation</a></h6>
 <p>Very similar to <code>storage_read</code>:</p>
@@ -1188,10 +1186,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_has_key(key_len: u64, key_ptr: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Checks if there is a key-value pair.</p>
 <h6><a class="header" href="#normal-operation-4" id="normal-operation-4">Normal operation</a></h6>
 <ul>
@@ -1205,10 +1203,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_iter_prefix(prefix_len: u64, prefix_ptr: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates an iterator object inside the host.
 Returns the identifier that uniquely differentiates the given iterator from other iterators that can be simultaneously
 created.</p>
@@ -1224,10 +1222,10 @@ order of the bytes in the keys. If there are no keys, it creates an empty iterat
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_iter_range(start_len: u64, start_ptr: u64, end_len: u64, end_ptr: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Similarly to <code>storage_iter_prefix</code>
 creates an iterator object inside the host.</p>
 <h6><a class="header" href="#normal-operation-6" id="normal-operation-6">Normal operation</a></h6>
@@ -1241,10 +1239,10 @@ Iterates over all key-values such that keys are between <code>start</code> and <
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_iter_next(iterator_id: u64, key_register_id: u64, value_register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Advances iterator and saves the next key and value in the register.</p>
 <h6><a class="header" href="#normal-operation-7" id="normal-operation-7">Normal operation</a></h6>
 <ul>
@@ -1268,7 +1266,7 @@ the purpose, but have unspecified behavior.</li>
 <h1><a class="header" href="#promises-api" id="promises-api">Promises API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_create(account_id_len: u64,
                account_id_ptr: u64,
                method_name_len: u64,
@@ -1278,7 +1276,7 @@ fn main() {
                amount_ptr: u64,
                gas: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates a promise that will execute a method on account with given arguments and attaches the given amount.
 <code>amount_ptr</code> point to slices of bytes representing <code>u128</code>.</p>
 <h6><a class="header" href="#panics-8" id="panics-8">Panics</a></h6>
@@ -1294,7 +1292,7 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_then(promise_idx: u64,
              account_id_len: u64,
              account_id_ptr: u64,
@@ -1305,7 +1303,7 @@ fn main() {
              amount_ptr: u64,
              gas: u64) -&gt; u64            
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Attaches the callback that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
 <h6><a class="header" href="#panics-9" id="panics-9">Panics</a></h6>
 <ul>
@@ -1321,10 +1319,10 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_and(promise_idx_ptr: u64, promise_idx_count: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates a new promise which completes when time all promises passed as arguments complete. Cannot be used with registers.
 <code>promise_idx_ptr</code> points to an array of <code>u64</code> elements, with <code>promise_idx_count</code> denoting the number of elements.
 The array contains indices of promises that need to be waited on jointly.</p>
@@ -1341,10 +1339,10 @@ The array contains indices of promises that need to be waited on jointly.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_results_count() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the number of complete and incomplete callbacks.</p>
 <p>Note, we are only going to have incomplete callbacks once we have <code>promise_or</code> combinator.</p>
@@ -1361,10 +1359,10 @@ caused the callback. This function returns the number of complete and incomplete
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_result(result_idx: u64, register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the result in blob format and places it into the register.</p>
 <h6><a class="header" href="#normal-execution-1" id="normal-execution-1">Normal execution</a></h6>
@@ -1391,10 +1389,10 @@ caused the callback. This function returns the result in blob format and places 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_return(promise_idx: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>When promise <code>promise_idx</code> finishes executing its result is considered to be the result of the current function.</p>
 <h6><a class="header" href="#panics-13" id="panics-13">Panics</a></h6>
 <ul>
@@ -1406,10 +1404,10 @@ fn main() {
 </ul>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates a new promise towards given <code>account_id</code> without any actions attached to it.</p>
 <h6><a class="header" href="#panics-14" id="panics-14">Panics</a></h6>
 <ul>
@@ -1423,10 +1421,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Attaches a new empty promise that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
 <h6><a class="header" href="#panics-15" id="panics-15">Panics</a></h6>
 <ul>
@@ -1441,10 +1439,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_create_account(promise_idx: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>CreateAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R48</p>
 <h6><a class="header" href="#panics-16" id="panics-16">Panics</a></h6>
@@ -1456,10 +1454,10 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_deploy_contract(promise_idx: u64, code_len: u64, code_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>DeployContract</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R49</p>
 <h6><a class="header" href="#panics-17" id="panics-17">Panics</a></h6>
@@ -1472,7 +1470,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_function_call(promise_idx: u64,
                                    method_name_len: u64,
                                    method_name_ptr: u64,
@@ -1481,7 +1479,7 @@ fn main() {
                                    amount_ptr: u64,
                                    gas: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>FunctionCall</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R50</p>
 <p><em>NOTE: Calling <code>promise_batch_create</code> and then <code>promise_batch_action_function_call</code> will produce the same promise as calling <code>promise_create</code> directly.</em></p>
@@ -1496,10 +1494,10 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_transfer(promise_idx: u64, amount_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>Transfer</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R51</p>
 <h6><a class="header" href="#panics-19" id="panics-19">Panics</a></h6>
@@ -1512,13 +1510,13 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_stake(promise_idx: u64,
                            amount_ptr: u64,
                            bls_public_key_len: u64,
                            bls_public_key_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>Stake</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R52</p>
 <h6><a class="header" href="#panics-20" id="panics-20">Panics</a></h6>
@@ -1532,13 +1530,13 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_add_key_with_full_access(promise_idx: u64,
                                               public_key_len: u64,
                                               public_key_ptr: u64,
                                               nonce: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FullAccess</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
@@ -1553,7 +1551,7 @@ The access key will have <code>FullAccess</code> permission, details: https://gi
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_add_key_with_function_call(promise_idx: u64,
                                                 public_key_len: u64,
                                                 public_key_ptr: u64,
@@ -1564,7 +1562,7 @@ fn main() {
                                                 method_names_len: u64,
                                                 method_names_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-156752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FunctionCall</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
@@ -1585,12 +1583,12 @@ The access key will have <code>FunctionCall</code> permission, details: https://
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_delete_key(promise_idx: u64,
                                 public_key_len: u64,
                                 public_key_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>DeleteKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R55</p>
 <h6><a class="header" href="#panics-23" id="panics-23">Panics</a></h6>
@@ -1604,12 +1602,12 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_delete_account(promise_idx: u64,
                                     beneficiary_id_len: u64,
                                     beneficiary_id_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>DeleteAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Action is used to delete an account. It can be performed on a newly created account, on your own account or an account with
 insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate where to send the remaining funds.</p>
@@ -1639,10 +1637,10 @@ execute anyway.</li>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>current_account_id(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Saves the account id of the current contract that we execute into the register.</p>
 <h6><a class="header" href="#panics-25" id="panics-25">Panics</a></h6>
 <ul>
@@ -1651,10 +1649,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>signer_account_id(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>All contract calls are a result of some transaction that was signed by some account using
 some access key and submitted into a memory pool (either through the wallet using RPC or by a node itself). This function returns the id of that account.</p>
 <h6><a class="header" href="#normal-operation-8" id="normal-operation-8">Normal operation</a></h6>
@@ -1673,10 +1671,10 @@ some access key and submitted into a memory pool (either through the wallet usin
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>signer_account_pk(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Saves the public key fo the access key that was used by the signer into the register.
 In rare situations smart contract might want to know the exact access key that was used to send the original transaction,
 e.g. to increase the allowance or manipulate with the public key.</p>
@@ -1692,10 +1690,10 @@ e.g. to increase the allowance or manipulate with the public key.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>predecessor_account_id(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>All contract calls are a result of a receipt, this receipt might be created by a transaction
 that does function invocation on the contract or another contract as a result of cross-contract call.</p>
 <h6><a class="header" href="#normal-operation-9" id="normal-operation-9">Normal operation</a></h6>
@@ -1714,10 +1712,10 @@ that does function invocation on the contract or another contract as a result of
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>input(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Reads input to the contract call into the register. Input is expected to be in JSON-format.</p>
 <h6><a class="header" href="#normal-operation-10" id="normal-operation-10">Normal operation</a></h6>
 <ul>
@@ -1741,18 +1739,18 @@ be used to read all</li>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>block_index() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns the current block index.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_usage() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns the number of bytes used by the contract if it was saved to the trie as of the
 invocation. This includes:</p>
 <ul>
@@ -1776,12 +1774,12 @@ is refunded back to <code>predecessor_account_id</code>.</p>
 <p>The following spec is the same for all functions:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>account_balance(balance_ptr: u64)
 attached_deposit(balance_ptr: u64)
 
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>-- writes the value into the <code>u128</code> variable pointed by <code>balance_ptr</code>.</p>
 <h6><a class="header" href="#panics-30" id="panics-30">Panics</a></h6>
 <ul>
@@ -1795,11 +1793,11 @@ attached_deposit(balance_ptr: u64)
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>prepaid_gas() -&gt; u64
 used_gas() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h6><a class="header" href="#panics-31" id="panics-31">Panics</a></h6>
 <ul>
 <li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
@@ -1807,10 +1805,10 @@ used_gas() -&gt; u64
 <h1><a class="header" href="#math-api" id="math-api">Math API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>random_seed(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns random seed that can be used for pseudo-random number generation in deterministic way.</p>
 <h6><a class="header" href="#panics-32" id="panics-32">Panics</a></h6>
 <ul>
@@ -1819,10 +1817,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>sha256(value_len: u64, value_ptr: u64, register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Hashes the random sequence of bytes using sha256 and returns it into <code>register_id</code>.</p>
 <h6><a class="header" href="#panics-33" id="panics-33">Panics</a></h6>
 <ul>
@@ -1836,10 +1834,10 @@ fn main() {
 <h1><a class="header" href="#miscellaneous-api" id="miscellaneous-api">Miscellaneous API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>value_return(value_len: u64, value_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Sets the blob of data as the return value of the contract.</p>
 <h6><a class="header" href="#panics-34" id="panics-34">Panics</a></h6>
 <ul>
@@ -1848,18 +1846,18 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>panic()
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Terminates the execution of the program with panic <code>GuestPanic(&quot;explicit guest panic&quot;)</code>.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>panic_utf8(len: u64, ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Terminates the execution of the program with panic <code>GuestPanic(s)</code>, where <code>s</code> is the given UTF-8 encoded string.</p>
 <h6><a class="header" href="#normal-behavior" id="normal-behavior">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with character <code>'\0'</code>;</p>
@@ -1872,10 +1870,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>log_utf8(len: u64, ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Logs the UTF-8 encoded string.</p>
 <h6><a class="header" href="#normal-behavior-1" id="normal-behavior-1">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with character <code>'\0'</code>;</p>
@@ -1888,10 +1886,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>log_utf16(len: u64, ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Logs the UTF-16 encoded string. <code>len</code> is the number of bytes in the string.
 See https://stackoverflow.com/a/5923961 that explains that null termination is not defined through encoding.</p>
 <h6><a class="header" href="#normal-behavior-2" id="normal-behavior-2">Normal behavior</a></h6>
@@ -1903,10 +1901,10 @@ See https://stackoverflow.com/a/5923961 that explains that null termination is n
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>abort(msg_ptr: u32, filename_ptr: u32, line: u32, col: u32)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Special import kept for compatibility with AssemblyScript contracts. Not called by smart contracts directly, but instead
 called by the code generated by AssemblyScript.</p>
 <h1><a class="header" href="#future-improvements" id="future-improvements">Future Improvements</a></h1>
@@ -1915,10 +1913,10 @@ For instance a guest can tell the host that it has some pre-allocated memory tha
 e.g.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>set_guest_register(register_id: u64, register_ptr: u64, max_register_size: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>will assign <code>register_id</code> to a span of memory on the guest. Host then would also know the size of that buffer on guest
 and can throw a panic if there is an attempted copying that exceeds the guest register size.</p>
 

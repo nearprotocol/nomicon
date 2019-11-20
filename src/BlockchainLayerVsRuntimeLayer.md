@@ -27,7 +27,7 @@ associated with one or several accounts (there are exceptions though, when users
 through the access keys).
 
 The runtime is essentially a complex set of rules on what to do with accounts based on the information from the
-transactions and the receipts. It is therefore deeply aware of the concept of account. 
+transactions and the receipts. It is therefore deeply aware of the concept of account.
 
 Blockchain layer however is mostly aware of the accounts through the trie (see below) and the validators (see below).
 Outside these two it does not operate on the accounts directly.
@@ -36,6 +36,7 @@ Outside these two it does not operate on the accounts directly.
 
 Every account at NEAR belongs to some shard.
 All the information related to this account also belongs to the same shard. The information includes:
+
 - Balance
 - Locked balance (for staking)
 - Code of the contract
@@ -79,14 +80,15 @@ around the orchestration of the validators is inside the blockchain layer.
 ## Blockchain Layer Concepts
 
 Interestingly, the following concepts are for the blockchain layer only and the runtime layer is not aware of them:
-* Sharding -- the runtime layer does not know that it is being used in a sharded blockchain, e.g. it does not know
-that the trie it works on is only a part of the overall blockchain state;
-* Blocks or chunks -- the runtime does not know that the receipts that it processes constitute a chunk and that the output
-receipts will be used in other chunks. From the runtime perspective it consumes and outputs batches of transactions and receipts;
-* Consensus -- the runtime does not know how consistency of the state is maintained;
-* Communication -- the runtime does not know where transactions and receipts are coming from and where they are going to.
 
+- Sharding -- the runtime layer does not know that it is being used in a sharded blockchain, e.g. it does not know
+  that the trie it works on is only a part of the overall blockchain state;
+- Blocks or chunks -- the runtime does not know that the receipts that it processes constitute a chunk and that the output
+  receipts will be used in other chunks. From the runtime perspective it consumes and outputs batches of transactions and receipts;
+- Consensus -- the runtime does not know how consistency of the state is maintained;
+- Communication -- the runtime does not know where transactions and receipts are coming from and where they are going to.
 
 ## Runtime Layer Concepts
-* Fees and rewards -- fees and rewards are neatly encapsulated in the runtime layer. The blockchain layer, however
-has an indirect knowledge of them through the computation of the tokens-to-gas exchange rate and the inflation.
+
+- Fees and rewards -- fees and rewards are neatly encapsulated in the runtime layer. The blockchain layer, however
+  has an indirect knowledge of them through the computation of the tokens-to-gas exchange rate and the inflation.

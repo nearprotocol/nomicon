@@ -154,7 +154,7 @@
                         <h1><a class="header" href="#promises-api" id="promises-api">Promises API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_create(account_id_len: u64,
                account_id_ptr: u64,
                method_name_len: u64,
@@ -164,7 +164,7 @@ fn main() {
                amount_ptr: u64,
                gas: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates a promise that will execute a method on account with given arguments and attaches the given amount.
 <code>amount_ptr</code> point to slices of bytes representing <code>u128</code>.</p>
 <h6><a class="header" href="#panics" id="panics">Panics</a></h6>
@@ -180,7 +180,7 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_then(promise_idx: u64,
              account_id_len: u64,
              account_id_ptr: u64,
@@ -191,7 +191,7 @@ fn main() {
              amount_ptr: u64,
              gas: u64) -&gt; u64            
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Attaches the callback that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
 <h6><a class="header" href="#panics-1" id="panics-1">Panics</a></h6>
 <ul>
@@ -207,10 +207,10 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_and(promise_idx_ptr: u64, promise_idx_count: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates a new promise which completes when time all promises passed as arguments complete. Cannot be used with registers.
 <code>promise_idx_ptr</code> points to an array of <code>u64</code> elements, with <code>promise_idx_count</code> denoting the number of elements.
 The array contains indices of promises that need to be waited on jointly.</p>
@@ -227,10 +227,10 @@ The array contains indices of promises that need to be waited on jointly.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_results_count() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the number of complete and incomplete callbacks.</p>
 <p>Note, we are only going to have incomplete callbacks once we have <code>promise_or</code> combinator.</p>
@@ -247,10 +247,10 @@ caused the callback. This function returns the number of complete and incomplete
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_result(result_idx: u64, register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>If the current function is invoked by a callback we can access the execution results of the promises that
 caused the callback. This function returns the result in blob format and places it into the register.</p>
 <h6><a class="header" href="#normal-execution-1" id="normal-execution-1">Normal execution</a></h6>
@@ -277,10 +277,10 @@ caused the callback. This function returns the result in blob format and places 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_return(promise_idx: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>When promise <code>promise_idx</code> finishes executing its result is considered to be the result of the current function.</p>
 <h6><a class="header" href="#panics-5" id="panics-5">Panics</a></h6>
 <ul>
@@ -292,10 +292,10 @@ fn main() {
 </ul>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_create(account_id_len: u64, account_id_ptr: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Creates a new promise towards given <code>account_id</code> without any actions attached to it.</p>
 <h6><a class="header" href="#panics-6" id="panics-6">Panics</a></h6>
 <ul>
@@ -309,10 +309,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Attaches a new empty promise that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
 <h6><a class="header" href="#panics-7" id="panics-7">Panics</a></h6>
 <ul>
@@ -327,10 +327,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_create_account(promise_idx: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>CreateAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R48</p>
 <h6><a class="header" href="#panics-8" id="panics-8">Panics</a></h6>
@@ -342,10 +342,10 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_deploy_contract(promise_idx: u64, code_len: u64, code_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>DeployContract</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R49</p>
 <h6><a class="header" href="#panics-9" id="panics-9">Panics</a></h6>
@@ -358,7 +358,7 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_function_call(promise_idx: u64,
                                    method_name_len: u64,
                                    method_name_ptr: u64,
@@ -367,7 +367,7 @@ fn main() {
                                    amount_ptr: u64,
                                    gas: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>FunctionCall</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R50</p>
 <p><em>NOTE: Calling <code>promise_batch_create</code> and then <code>promise_batch_action_function_call</code> will produce the same promise as calling <code>promise_create</code> directly.</em></p>
@@ -382,10 +382,10 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_transfer(promise_idx: u64, amount_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>Transfer</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R51</p>
 <h6><a class="header" href="#panics-11" id="panics-11">Panics</a></h6>
@@ -398,13 +398,13 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_stake(promise_idx: u64,
                            amount_ptr: u64,
                            bls_public_key_len: u64,
                            bls_public_key_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>Stake</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R52</p>
 <h6><a class="header" href="#panics-12" id="panics-12">Panics</a></h6>
@@ -418,13 +418,13 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_add_key_with_full_access(promise_idx: u64,
                                               public_key_len: u64,
                                               public_key_ptr: u64,
                                               nonce: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FullAccess</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
@@ -439,7 +439,7 @@ The access key will have <code>FullAccess</code> permission, details: https://gi
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_add_key_with_function_call(promise_idx: u64,
                                                 public_key_len: u64,
                                                 public_key_ptr: u64,
@@ -450,7 +450,7 @@ fn main() {
                                                 method_names_len: u64,
                                                 method_names_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>AddKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-156752ec7d78e7b85b8c7de4a19cbd4R54
 The access key will have <code>FunctionCall</code> permission, details: https://github.com/nearprotocol/NEPs/blob/master/text/0005-access-keys.md#guide-level-explanation</p>
@@ -471,12 +471,12 @@ The access key will have <code>FunctionCall</code> permission, details: https://
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_delete_key(promise_idx: u64,
                                 public_key_len: u64,
                                 public_key_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>DeleteKey</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-15b6752ec7d78e7b85b8c7de4a19cbd4R55</p>
 <h6><a class="header" href="#panics-15" id="panics-15">Panics</a></h6>
@@ -490,12 +490,12 @@ Details for the action: https://github.com/nearprotocol/NEPs/pull/8/files#diff-1
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>promise_batch_action_delete_account(promise_idx: u64,
                                     beneficiary_id_len: u64,
                                     beneficiary_id_ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Appends <code>DeleteAccount</code> action to the batch of actions for the given promise pointed by <code>promise_idx</code>.
 Action is used to delete an account. It can be performed on a newly created account, on your own account or an account with
 insufficient funds to pay rent. Takes <code>beneficiary_id</code> to indicate where to send the remaining funds.</p>

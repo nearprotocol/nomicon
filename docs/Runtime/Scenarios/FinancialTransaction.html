@@ -223,9 +223,7 @@ Specifically it does the following checks:</p>
 <li>Retrieves the latest state of the <code>alice_near</code> account, and simultaneously checks that it exists;</li>
 <li>Retrieves the state of the access key of that <code>alice_near</code> used to sign the transaction;</li>
 <li>Checks that transaction nonce is greater than the nonce of the latest transaction executed with that access key;</li>
-<li>Checks whether the account that signed the transaction (<code>alice_near</code>) is the same as the account that receives it (<code>bob_near</code>).
-This is necessary because we apply different fees depending on whether this is the case or not. In this scenario it is not,
-so we do not go deeper into it here;</li>
+<li>Checks whether the account that signed the transaction is the same as the account that receives it. In our case the sender (<code>alice_near</code>) and the receiver (<code>bob_near</code>) are not the same. We apply different fees if receiver and sender is the same account;</li>
 <li>Applies the storage rent to the <code>alice_near</code> account;</li>
 <li>Computes how much gas we need to spend to convert this transaction to a receipt;</li>
 <li>Computes how much balance we need to subtract from <code>alice_near</code>, in this case it is 100 tokens;</li>

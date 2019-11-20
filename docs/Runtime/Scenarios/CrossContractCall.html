@@ -189,7 +189,7 @@ to be deposited to whatever smart contract that it is calling to. Notice, <code>
 measurement.</p>
 <p>Now, consider a slightly more complex scenario. In this scenario Alice uses a restricted access key to call the function.
 That is the permission of the access key is not <code>AccessKeyPermission::FullAccess</code> but is instead: <code>AccessKeyPermission::FunctionCall(FunctionCallPermission)</code>
-where </p>
+where</p>
 <pre><code>FucntionCallPermission {
     allowance: Some(3000),
     receiver_id: &quot;travel_agency&quot;,

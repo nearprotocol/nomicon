@@ -185,10 +185,10 @@ order and can for instance save some blob in register <code>5000</code> and anot
 <h4><a class="header" href="#specification" id="specification">Specification</a></h4>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>read_register(register_id: u64, ptr: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Writes the entire content from the register <code>register_id</code> into the memory of the guest starting with <code>ptr</code>.</p>
 <h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
@@ -203,10 +203,10 @@ wrong location this function will overwrite memory that it is not supposed to ov
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>register_len(register_id: u64) -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns the size of the blob stored in the given register.</p>
 <h6><a class="header" href="#normal-operation" id="normal-operation">Normal operation</a></h6>
 <ul>

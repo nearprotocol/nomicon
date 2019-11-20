@@ -170,10 +170,10 @@ execute anyway.</li>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>current_account_id(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Saves the account id of the current contract that we execute into the register.</p>
 <h6><a class="header" href="#panics" id="panics">Panics</a></h6>
 <ul>
@@ -182,10 +182,10 @@ fn main() {
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>signer_account_id(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>All contract calls are a result of some transaction that was signed by some account using
 some access key and submitted into a memory pool (either through the wallet using RPC or by a node itself). This function returns the id of that account.</p>
 <h6><a class="header" href="#normal-operation" id="normal-operation">Normal operation</a></h6>
@@ -204,10 +204,10 @@ some access key and submitted into a memory pool (either through the wallet usin
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>signer_account_pk(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Saves the public key fo the access key that was used by the signer into the register.
 In rare situations smart contract might want to know the exact access key that was used to send the original transaction,
 e.g. to increase the allowance or manipulate with the public key.</p>
@@ -223,10 +223,10 @@ e.g. to increase the allowance or manipulate with the public key.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>predecessor_account_id(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>All contract calls are a result of a receipt, this receipt might be created by a transaction
 that does function invocation on the contract or another contract as a result of cross-contract call.</p>
 <h6><a class="header" href="#normal-operation-1" id="normal-operation-1">Normal operation</a></h6>
@@ -245,10 +245,10 @@ that does function invocation on the contract or another contract as a result of
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>input(register_id: u64)
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Reads input to the contract call into the register. Input is expected to be in JSON-format.</p>
 <h6><a class="header" href="#normal-operation-2" id="normal-operation-2">Normal operation</a></h6>
 <ul>
@@ -272,18 +272,18 @@ be used to read all</li>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>block_index() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns the current block index.</p>
 <hr />
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>storage_usage() -&gt; u64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Returns the number of bytes used by the contract if it was saved to the trie as of the
 invocation. This includes:</p>
 <ul>
