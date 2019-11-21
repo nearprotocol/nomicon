@@ -238,13 +238,14 @@ has an indirect knowledge of them through the computation of the tokens-to-gas e
 <ul>
 <li><a href="Primitives/Account.html">Account</a>
 <ul>
-<li><a href="Primitives/Account.html#account_id">Account ID</a></li>
+<li><a href="Primitives/Account.html#account-id">Account ID</a></li>
 <li><a href="Primitives/Account.html#account">Account</a></li>
 </ul>
 </li>
 <li><a href="Primitives/Transactions.html">Transaction</a>
 <ul>
 <li><a href="Primitives/Transaction.html#SignedTransaction">SignedTransaction</a></li>
+<li><a href="Primitives/Transaction.html#Actions">Actions</a></li>
 </ul>
 </li>
 </ul>
@@ -258,7 +259,7 @@ has an indirect knowledge of them through the computation of the tokens-to-gas e
 <li><strong>Account ID</strong> consists of <strong>Account ID parts</strong> separated by <code>.</code></li>
 <li><strong>Account ID part</strong> consists of lowercase alphanumeric symbols separated by either <code>_</code> or <code>-</code>.</li>
 </ul>
-<p>Account names are similar to a domain names. 
+<p>Account names are similar to a domain names.
 Anyone can create a top level account (TLA) without separators, e.g. <code>near</code>.
 Only <code>near</code> can create <code>alice.near</code>. And only <code>alice.near</code> can create <code>app.alice.near</code> and so on.
 Note, <code>near</code> can NOT create <code>app.alice.near</code> directly.</p>
@@ -283,10 +284,10 @@ near2019
 over.9000
 a.bro
 // Valid, but can't be created, because &quot;a&quot; is too short
-bro.a            
+bro.a
 </code></pre>
 <p>Invalid accounts:</p>
-<pre><code>not ok           // Whitespace characters are not allowed 
+<pre><code>not ok           // Whitespace characters are not allowed
 a                // Too short
 100-             // Suffix separator
 bo__wen          // Two separators in a row
@@ -335,22 +336,177 @@ Each access key contains a unique nonce to differentiate or order transactions s
 </ul>
 <p>See [Access Keys] for more details.</p>
 <h1><a class="header" href="#transactions" id="transactions">Transactions</a></h1>
-<p>A transaction consists of:</p>
+<p>A transaction in Near is a list of <a href="Primitives/Transaction.html#actions">actions</a> and additional information:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Transaction {
+    /// An account on which behalf transaction is signed
+    pub signer_id: AccountId,
+    /// An access key which was used to sign a transaction
+    pub public_key: PublicKey,
+    /// Nonce is used to determine order of transaction in the pool.
+    /// It increments for a combination of `signer_id` and `public_key`
+    pub nonce: Nonce,
+    /// Receiver account for this transaction. If
+    pub receiver_id: AccountId,
+    /// The hash of the block in the blockchain on top of which the given transaction is valid
+    pub block_hash: CryptoHash,
+    /// A list of actions to be applied
+    pub actions: Vec&lt;Action&gt;,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#signed-transaction" id="signed-transaction">Signed Transaction</a></h2>
+<p><code>SignedTransaction</code> is what the node receives from a wallet through JSON-RPC endpoint and then routed to the shard where <code>receiver_id</code> account lives. Signature proves an ownership of the corresponding <code>public_key</code> (which is an AccessKey for a particular account) as well as authenticity of the transaction itself.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct SignedTransaction {
+    pub transaction: Transaction,
+    pub signature: Signature, // a signature of a hash of the Borsh-serialized Transaction
+<span class="boring">}
+</span></code></pre></pre>
+<p>Take a look some <a href="Primitives//Runtime/Scenarios/Scenarios">scenarios</a> how transaction can be applied:</p>
+<h1><a class="header" href="#actions" id="actions">Actions</a></h1>
+<p>There are a several action types in Near:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub enum Action {
+    CreateAccount(CreateAccountAction),
+    DeployContract(DeployContractAction),
+    FunctionCall(FunctionCallAction),
+    Transfer(TransferAction),
+    Stake(StakeAction),
+    AddKey(AddKeyAction),
+    DeleteKey(DeleteKeyAction),
+    DeleteAccount(DeleteAccountAction),
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Each transaction consists a list of actions to be performed on the <code>receiver_id</code> side. Sometimes the <code>singer_id</code> equals to <code>receiver_id</code>. There is a set of action types when <code>signer_id</code> and <code>receiver_id</code> is required to be equal. Actions requires arguments and use data from the <code>Transaction</code> itself.</p>
+<p>// TODO: how to introduce the concept of <code>sender_id</code></p>
+<h2><a class="header" href="#createaccount" id="createaccount">CreateAccount</a></h2>
+<p><code>CreateAccountAction</code> doesn't take any additional arguments, it uses <code>receiver_id</code> from Transaction. <code>receiver_id</code> is an ID for an account to be created. Account ID should be <a href="Primitives/Account.html#account-id">valid</a> and unique throughout the system. Usually we want to create an AccessKey with full access keys</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct CreateAccountAction {}
+<span class="boring">}
+</span></code></pre></pre>
+<p>// TODO: how to add an initial access key if we don't have an account yet?</p>
+<h2><a class="header" href="#deploycontract" id="deploycontract">DeployContract</a></h2>
+<p><em>Requires:</em></p>
 <ul>
-<li>signer_id</li>
-<li>signer_public_key</li>
-<li>receiver_id</li>
-<li>block_hash</li>
-<li>nonce</li>
-<li>actions</li>
+<li><em><code>signer_id</code> to be equal to <code>receiver_id</code></em></li>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code></em></li>
 </ul>
-<p>TBD</p>
-<h2><a class="header" href="#signedtransactions" id="signedtransactions">SignedTransactions</a></h2>
+<p><code>DeployContractAction</code> takes a WebAssembly code which will be set for account.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct DeployContractAction {
+    pub code: Vec&lt;u8&gt;, // a valid WebAssembly code
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#functioncallaction" id="functioncallaction">FunctionCallAction</a></h2>
+<p><em>Requires:</em></p>
 <ul>
-<li>transaction</li>
-<li>signature</li>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code> or <code>AccessKeyPermission::FunctionCall</code></em></li>
 </ul>
-<p>TBD</p>
+<p>Calls a method of a particular contract.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct FunctionCallAction {
+    /// Name of exported Wasm function
+    pub method_name: String,
+    /// Serialized arguments
+    pub args: Vec&lt;u8&gt;,
+    /// Prepaid gas (gas_limit) for a function call
+    pub gas: Gas,
+    /// Amount of tokens to transfer to a receiver_id
+    pub deposit: Balance,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#transferaction" id="transferaction">TransferAction</a></h2>
+<p><em>Requires:</em></p>
+<ul>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code></em></li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct TransferAction {
+    /// Amount of tokens to transfer to a receiver_id
+    pub deposit: Balance,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#stakeaction" id="stakeaction">StakeAction</a></h2>
+<p><em>Requires:</em></p>
+<ul>
+<li><em><code>signer_id</code> to be equal to <code>receiver_id</code></em></li>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code></em></li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct StakeAction {
+    pub stake: Balance,
+    pub public_key: PublicKey,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#addkeyaction" id="addkeyaction">AddKeyAction</a></h2>
+<p><em>Requires:</em></p>
+<ul>
+<li><em><code>signer_id</code> to be equal to <code>receiver_id</code></em></li>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code></em></li>
+</ul>
+<p>Associates an <a href="Primitives/AccessKey">AccessKey</a> with a <code>public_key</code> provided.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct AddKeyAction {
+    pub public_key: PublicKey,
+    pub access_key: AccessKey,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#deletekeyaction" id="deletekeyaction">DeleteKeyAction</a></h2>
+<p><em>Requires:</em></p>
+<ul>
+<li><em><code>signer_id</code> to be equal to <code>receiver_id</code></em></li>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code></em></li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct DeleteKeyAction {
+    pub public_key: PublicKey,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#deleteaccountaction" id="deleteaccountaction">DeleteAccountAction</a></h2>
+<p><em>Requires:</em></p>
+<ul>
+<li><em><code>signer_id</code> to be equal to <code>receiver_id</code></em></li>
+<li><em><code>public_key</code> to be <code>AccessKeyPermission::FullAccess</code></em></li>
+<li><em><code>account shouldn't have any locked balance</code></em></li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct DeleteAccountAction {
+    /// The remaining account balance will be transferred to the AccountId below
+    pub beneficiary_id: AccountId,
+}
+<span class="boring">}
+</span></code></pre></pre>
 <h1><a class="header" href="#blockchain-layer" id="blockchain-layer">Blockchain Layer</a></h1>
 <p>TBD</p>
 <h1><a class="header" href="#transactions-in-the-blockchain-layer" id="transactions-in-the-blockchain-layer">Transactions in the Blockchain Layer</a></h1>

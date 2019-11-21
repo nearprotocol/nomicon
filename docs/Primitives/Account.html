@@ -161,7 +161,7 @@
 <li><strong>Account ID</strong> consists of <strong>Account ID parts</strong> separated by <code>.</code></li>
 <li><strong>Account ID part</strong> consists of lowercase alphanumeric symbols separated by either <code>_</code> or <code>-</code>.</li>
 </ul>
-<p>Account names are similar to a domain names. 
+<p>Account names are similar to a domain names.
 Anyone can create a top level account (TLA) without separators, e.g. <code>near</code>.
 Only <code>near</code> can create <code>alice.near</code>. And only <code>alice.near</code> can create <code>app.alice.near</code> and so on.
 Note, <code>near</code> can NOT create <code>app.alice.near</code> directly.</p>
@@ -186,10 +186,10 @@ near2019
 over.9000
 a.bro
 // Valid, but can't be created, because &quot;a&quot; is too short
-bro.a            
+bro.a
 </code></pre>
 <p>Invalid accounts:</p>
-<pre><code>not ok           // Whitespace characters are not allowed 
+<pre><code>not ok           // Whitespace characters are not allowed
 a                // Too short
 100-             // Suffix separator
 bo__wen          // Two separators in a row
