@@ -1,7 +1,7 @@
-# AccessKey
+# Access Keys
 
 Access key provides an access for a particular account. Each access key belongs to some account and
-is identified by a unique (within the account) public key. Access keys are stored as `account_id,public_key` in a trie state. An account w/0 access key is managed entirely by its code (if any). It means that account cannot be destroyed (only if its balance would be exhausted due to rent payments and any account will be allowed to send [DeleteAccountAction](Transaction#DeleteAccountAction) on it).
+is identified by a unique (within the account) public key. Access keys are stored as `account_id,public_key` in a trie state. Account can have from [zero](#account-without-access-keys) to multiple access keys.
 
 ```rust
 pub struct AccessKey {
@@ -47,3 +47,7 @@ pub struct FunctionCallPermission {
     pub method_names: Vec<String>,
 }
 ```
+
+## Account without access keys
+
+If account has no access keys attached it means that it has no owner who can run transactions from its behalf. However, if such accounts has code it can be invoked by other accounts and contracts.
