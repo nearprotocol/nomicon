@@ -189,7 +189,7 @@ or <code>amount_ptr + 16</code> points outside the memory of the guest or host, 
              arguments_len: u64,
              arguments_ptr: u64,
              amount_ptr: u64,
-             gas: u64) -&gt; u64            
+             gas: u64) -&gt; u64
 <span class="boring">}
 </span></code></pre></pre>
 <p>Attaches the callback that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
@@ -310,7 +310,7 @@ caused the callback. This function returns the result in blob format and places 
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
-</span>promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64            
+</span>promise_batch_then(promise_idx: u64, account_id_len: u64, account_id_ptr: u64) -&gt; u64
 <span class="boring">}
 </span></code></pre></pre>
 <p>Attaches a new empty promise that is executed after promise pointed by <code>promise_idx</code> is complete.</p>
@@ -464,7 +464,7 @@ The access key will have <code>FunctionCall</code> permission, details: https://
 <li>If the promise pointed by the <code>promise_idx</code> is an ephemeral promise created by <code>promise_and</code>.</li>
 <li>If the given public key is not a valid public key (e.g. wrong length) <code>InvalidPublicKey</code>.</li>
 <li>if <code>method_names</code> is not a valid <code>utf-8</code> string, fails with <code>BadUTF8</code>.</li>
-<li>If <code>public_key_len + public_key_ptr</code>, <code>allowance_ptr + 16</code>, <code>receiver_id_len + receiver_id_ptr</code> or 
+<li>If <code>public_key_len + public_key_ptr</code>, <code>allowance_ptr + 16</code>, <code>receiver_id_len + receiver_id_ptr</code> or
 <code>method_names_len + method_names_ptr</code> points outside the memory of the guest or host, with <code>MemoryAccessViolation</code>.</li>
 <li>If called in a view function panics with <code>ProhibitedInView</code>.</li>
 </ul>

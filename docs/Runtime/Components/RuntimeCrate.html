@@ -156,7 +156,7 @@
 a smart contract call within a transaction or a receipt it calls <code>near-vm-runner</code>, for all other actions, like account
 creation, it processes them in-place.</p>
 <h2><a class="header" href="#runtime-class" id="runtime-class">Runtime class</a></h2>
-<p>The main entry point of the <code>Runtime</code> is method <code>apply</code>. 
+<p>The main entry point of the <code>Runtime</code> is method <code>apply</code>.
 It applies new singed transactions and incoming receipts for some chunk/shard on top of
 given trie and the given state root.
 If the validator accounts update is provided, updates validators accounts.
@@ -169,10 +169,10 @@ execution outcomes.</p>
 <p>It takes the following arguments:</p>
 <ul>
 <li><code>trie: Arc&lt;Trie&gt;</code> - the trie that contains the latest state.</li>
-<li><code>root: CryptoHash</code> - the hash of the state root in the trie. </li>
+<li><code>root: CryptoHash</code> - the hash of the state root in the trie.</li>
 <li><code>validator_accounts_update: &amp;Option&lt;ValidatorAccountsUpdate&gt;</code> - optional field that contains updates for validator accounts.
 It's provided at the beginning of the epoch or when someone is slashed.</li>
-<li><code>apply_state: &amp;ApplyState</code> - contains block index and timestamp, epoch length, gas price and gas limit. </li>
+<li><code>apply_state: &amp;ApplyState</code> - contains block index and timestamp, epoch length, gas price and gas limit.</li>
 <li><code>prev_receipts: &amp;[Receipt]</code> - the list of incoming receipts, from the previous block.</li>
 <li><code>transactions: &amp;[SignedTransaction]</code> - the list of new signed transactions.</li>
 </ul>
@@ -201,7 +201,7 @@ Runtime does validation again for the following reasons:</p>
 <li>to compute burnt gas;</li>
 <li>to validate transactions again, in case the chunk producer was malicious.</li>
 </ul>
-<p>If the transaction has the the same <code>signer_id</code> and <code>receiver_id</code>, then the new receipt is added to the list of new local receipts, 
+<p>If the transaction has the the same <code>signer_id</code> and <code>receiver_id</code>, then the new receipt is added to the list of new local receipts,
 otherwise it's added to the list of new outgoing receipts.</p>
 <h2><a class="header" href="#receipt-processing" id="receipt-processing">Receipt processing</a></h2>
 <p>Receipts are processed one by one in the following order:</p>
@@ -266,7 +266,7 @@ Refunds are considered to be free of charge for fees, but still has attached dep
 <li>Initial balances for the postponed receipts. Postponed receipts are receipts from the previous blocks that were processed, but were not executed.
 They are action receipts with some expected incoming data. Usually for a callback on top of awaited promise.
 When the expected data arrives later than the action receipt, then the action receipt is postponed.
-Note, the data receipts are 0 cost, because they are completely prepaid when issued. </li>
+Note, the data receipts are 0 cost, because they are completely prepaid when issued.</li>
 </ul>
 <p>The total outgoing balance consists of the following:</p>
 <ul>

@@ -313,7 +313,7 @@ Iterates over all key-values such that keys are between <code>start</code> and <
 <ul>
 <li>If <code>key_register_id == value_register_id</code> panics with <code>MemoryAccessViolation</code>;</li>
 <li>If the registers exceed the memory limit panics with <code>MemoryAccessViolation</code>;</li>
-<li>If <code>iterator_id</code> does not correspond to an existing iterator panics with  <code>InvalidIteratorId</code></li>
+<li>If <code>iterator_id</code> does not correspond to an existing iterator panics with <code>InvalidIteratorId</code></li>
 <li>If between the creation of the iterator and calling <code>storage_iter_next</code> any modification to storage was done through
 <code>storage_write</code> or <code>storage_remove</code> the iterator is invalidated and the error message is <code>IteratorWasInvalidated</code>.</li>
 </ul>
