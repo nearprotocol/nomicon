@@ -180,7 +180,8 @@
 </span><span class="boring">fn main() {
 </span>pub struct SignedTransaction {
     pub transaction: Transaction,
-    pub signature: Signature, // a signature of a hash of the Borsh-serialized Transaction
+    /// A signature of a hash of the Borsh-serialized Transaction
+    pub signature: Signature,
 <span class="boring">}
 </span></code></pre></pre>
 <p>Take a look some <a href="/Runtime/Scenarios/Scenarios">scenarios</a> how transaction can be applied:</p>

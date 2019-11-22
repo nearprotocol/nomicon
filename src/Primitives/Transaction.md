@@ -27,7 +27,8 @@ pub struct Transaction {
 ```rust
 pub struct SignedTransaction {
     pub transaction: Transaction,
-    pub signature: Signature, // a signature of a hash of the Borsh-serialized Transaction
+    /// A signature of a hash of the Borsh-serialized Transaction
+    pub signature: Signature,
 ```
 
 Take a look some [scenarios](/Runtime/Scenarios/Scenarios) how transaction can be applied:
