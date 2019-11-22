@@ -9,11 +9,12 @@ a callback to method `hotel_reservation_complete(date: u64)` on `travel_agency`.
 <img src="../../images/receipt_flow_diagram.svg" />
 
 ## Pre-requisites
-It possible for Alice to call the `travel_agency` in several different ways.
 
+It possible for Alice to call the `travel_agency` in several different ways.
 
 In the simplest scenario Alice has an account `alice_near` and she has a full access key.
 She then composes the following transaction that calls the `travel_agency`:
+
 ```
 Transaction {
     signer_id: "alice_near",
@@ -31,6 +32,7 @@ Transaction {
     ],
 }
 ```
+
 Here the public key corresponds to the full access key of `alice_near` account. All other fields in `Transaction` were
 discussed in the [Financial Transaction](FinancialTransaction.md) section. The `FunctionCallAction` action describes how
 the contract should be called. The `receiver_id` field in `Transaction` already establishes what contract should be executed,
@@ -44,7 +46,8 @@ measurement.
 
 Now, consider a slightly more complex scenario. In this scenario Alice uses a restricted access key to call the function.
 That is the permission of the access key is not `AccessKeyPermission::FullAccess` but is instead: `AccessKeyPermission::FunctionCall(FunctionCallPermission)`
-where 
+where
+
 ```
 FucntionCallPermission {
     allowance: Some(3000),
@@ -52,6 +55,7 @@ FucntionCallPermission {
     method_names: [ "reserve_trip", "cancel_trip" ]
 }
 ```
+
 This scenario might arise when someone Alice's parent has given them a restricted access to `alice_near` account by
 creating an access key that can be used strictly for trip management.
 This access key allows up to `3000` tokens to be spent (which includes token transfers and payments for gas), it can
@@ -69,10 +73,11 @@ This section will focus on the first scenario, since the other two are the same 
 
 The process of converting transaction to receipt is very similar to the [Financial Transaction](FinancialTransaction.md)
 with several key points to note:
-* Since Alice attaches 100 tokens to the function call, we subtract them from `alice_near` upon converting transaction to receipt,
-similar to the regular financial transaction;
-* Since we are attaching 1000000 prepaid gas, we will not only subtract the gas costs of processing the receipt from `alice_near`, but
-will also purchase 1000000 gas using the current gas price.
+
+- Since Alice attaches 100 tokens to the function call, we subtract them from `alice_near` upon converting transaction to receipt,
+  similar to the regular financial transaction;
+- Since we are attaching 1000000 prepaid gas, we will not only subtract the gas costs of processing the receipt from `alice_near`, but
+  will also purchase 1000000 gas using the current gas price.
 
 ## Processing the `reserve_trip` receipt
 
@@ -81,25 +86,27 @@ It will be processed in `Runtime::apply` which will check that receipt does not 
 this function call is not a callback) and will call `Runtime::apply_action_receipt`.
 At this point receipt processing is similar to receipt processing from the [Financial Transaction](FinancialTransaction.md)
 section, with one difference that we will also call `action_function_call` which will do the following:
-* Retrieve the Wasm code of the smart contract (either from the database or from the cache);
-* Initialize runtime context through `VMContext` and create `RuntimeExt` which provides access to the trie when the smart contract
-call the storage API. Specifically `"{\"city\": \"Venice\", \"date\": 20191201}"` arguments will be set in `VMContext`.
-* Calls `near_vm_runner::run` which does the following:
-    * Inject gas, stack, and other kinds of metering;
-    * Verify that Wasm code does not use floats;
-    * Checks that bindings API functions that the smart contract is trying to call are actually those provided by `near_vm_logic`;
-    * Compiles Wasm code into the native binary;
-    * Calls `reserve_trip` on the smart contract.
-        * During the execution of the smart contract it will at some point call `promise_create` and `promise_then`, which will
-          call method on `RuntimeExt` that will record that two promises were created and that the second one should
-          wait on the first one. Specifically, `promise_create` will call `RuntimeExt::create_receipt(vec![], "hotel_near")`
-          returning `0` and then `RuntimeExt::create_receipt(vec![0], "travel_agency")`;
-* `action_function_call` then collects receipts from `VMContext` along with the execution result, logs, and information
-about used gas;
-* `apply_action_receipt` then goes over the collected receipts from each action and returns them at the end of `Runtime::apply` together with
-other receipts.
+
+- Retrieve the Wasm code of the smart contract (either from the database or from the cache);
+- Initialize runtime context through `VMContext` and create `RuntimeExt` which provides access to the trie when the smart contract
+  call the storage API. Specifically `"{\"city\": \"Venice\", \"date\": 20191201}"` arguments will be set in `VMContext`.
+- Calls `near_vm_runner::run` which does the following:
+  - Inject gas, stack, and other kinds of metering;
+  - Verify that Wasm code does not use floats;
+  - Checks that bindings API functions that the smart contract is trying to call are actually those provided by `near_vm_logic`;
+  - Compiles Wasm code into the native binary;
+  - Calls `reserve_trip` on the smart contract.
+    - During the execution of the smart contract it will at some point call `promise_create` and `promise_then`, which will
+      call method on `RuntimeExt` that will record that two promises were created and that the second one should
+      wait on the first one. Specifically, `promise_create` will call `RuntimeExt::create_receipt(vec![], "hotel_near")`
+      returning `0` and then `RuntimeExt::create_receipt(vec![0], "travel_agency")`;
+- `action_function_call` then collects receipts from `VMContext` along with the execution result, logs, and information
+  about used gas;
+- `apply_action_receipt` then goes over the collected receipts from each action and returns them at the end of `Runtime::apply` together with
+  other receipts.
 
 ## Processing the `reserve` receipt
+
 This receipt will have `output_data_receivers` with one element corresponding to the receipt that calls `hotel_reservation_complete`,
 which will tell the runtime that it should create `DataReceipt` and send it towards `travel_agency` once the execution of `reserve(date: u64)` is complete.
 
@@ -117,5 +124,3 @@ It will not call the Wasm smart contract at this point.
 
 Once the runtime receives the `DataReceipt` it takes the receipt with `hotel_reservation_complete` function call
 and executes it following the same execution steps as with the `reserve_trip` receipt.
-
-

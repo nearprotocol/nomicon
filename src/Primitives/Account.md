@@ -1,6 +1,7 @@
 # Accounts
 
 ## Account ID
+
 [account_id]: #account_id
 
 NEAR Protocol has an account names system. Account ID is similar to a username. Account IDs have to follow the rules.
@@ -12,12 +13,13 @@ NEAR Protocol has an account names system. Account ID is similar to a username. 
 - **Account ID** consists of **Account ID parts** separated by `.`
 - **Account ID part** consists of lowercase alphanumeric symbols separated by either `_` or `-`.
 
-Account names are similar to a domain names. 
+Account names are similar to a domain names.
 Anyone can create a top level account (TLA) without separators, e.g. `near`.
 Only `near` can create `alice.near`. And only `alice.near` can create `app.alice.near` and so on.
 Note, `near` can NOT create `app.alice.near` directly.
 
 Regex for a full account ID, without checking for length:
+
 ```regex
 ^(([a-z\d]+[\-_])*[a-z\d]+\.)*([a-z\d]+[\-_])*[a-z\d]+$
 ```
@@ -27,6 +29,7 @@ There is a rent for the account ID length in case it's less than 11 characters l
 ### Examples
 
 Valid accounts:
+
 ```
 ok
 bowen
@@ -43,12 +46,13 @@ near2019
 over.9000
 a.bro
 // Valid, but can't be created, because "a" is too short
-bro.a            
+bro.a
 ```
 
 Invalid accounts:
+
 ```
-not ok           // Whitespace characters are not allowed 
+not ok           // Whitespace characters are not allowed
 a                // Too short
 100-             // Suffix separator
 bo__wen          // Two separators in a row
@@ -64,9 +68,11 @@ abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz
 ```
 
 ## Account
+
 [account]: #account
 
 Data for an single account is collocated in one shard. The account data consists of the following:
+
 - Balance
 - Locked balance (for staking)
 - Code of the contract
@@ -104,6 +110,7 @@ This public key is used to validate signature of transactions.
 Each access key contains a unique nonce to differentiate or order transactions signed with this access key.
 
 An access keys have a permission associated with it. The permission can be one of two types:
+
 - Full permission. It grants full access to the account.
 - Function call permission. It grants access to only issue function call transactions.
 

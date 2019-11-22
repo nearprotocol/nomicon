@@ -16,12 +16,14 @@ The `signer_id` is the account ID of the user who signed the transaction, the `s
 Transactions within a group are not ordered.
 
 The valid order of the transactions in a chunk is the following:
+
 - transactions are ordered in batches.
 - within a batch all transactions keys should have different.
 - a set of transaction keys in each subsequent batch should be a sub-set of keys from the previous batch.
 - transactions with the same key should be ordered in strictly increasing order of their corresponding nonces.
 
 Note:
+
 - the order within a batch is undefined. Each node should use a unique secret seed for that ordering to users from finding the lowest keys to get advantage of every node.
 
 Transaction pool provides a draining structure that allows to pull transactions in a proper order.
@@ -35,7 +37,7 @@ The transaction validation happens twice, once before adding to the transaction 
 This is done to quickly filter out transactions that have an invalid signature or are invalid on the latest state.
 
 ### Before adding to a chunk
- 
+
 A chunk producer has to create a chunk with valid and ordered transactions up to some limits.
 One limit is the maximum number of transactions, another is the total gas burnt for transactions.
 
@@ -56,6 +58,7 @@ For every transaction group, the runtime adapter keeps pulling transactions unti
 If the transaction group becomes empty, then it's skipped.
 
 The runtime adapter may implement the following code to pull all valid transactions:
+
 ```rust
 let mut valid_transactions = vec![];
 let mut pool_iter = pool.pool_iterator();
@@ -73,11 +76,13 @@ valid_transactions
 ### Transaction ordering example using pool iterator.
 
 Let's say:
+
 - account IDs as uppercase letters (`"A"`, `"B"`, `"C"` ...)
 - public keys are lowercase letters (`"a"`, `"b"`, `"c"` ...)
 - nonces are numbers (`1`, `2`, `3` ...)
 
 A pool might have group of transactions in the hashmap:
+
 ```
 transactions: {
   ("A", "a") -> [1, 3, 2, 1, 2]
@@ -97,6 +102,7 @@ For this example, let's say that transactions are valid if the nonce is even and
 
 When `.pool_iterator()` is called, a new `PoolIteratorWrapper` is created and it holds the mutuable reference to the pool,
 so the pool can't be modified outside of this iterator. The wrapper looks like this:
+
 ```
 pool: {
     transactions: {
@@ -108,7 +114,8 @@ pool: {
 }
 sorted_groups: [],
 ```
-`sorted_groups` is a queue of sorted transaction groups that were already sorted and pulled from the pool. 
+
+`sorted_groups` is a queue of sorted transaction groups that were already sorted and pulled from the pool.
 
 ##### Transaction #1
 
@@ -118,6 +125,7 @@ The first group to be selected is for key `("A", "a")`, the pool iterator sorts 
 Transaction with nonce `2` is added to the list of valid transactions.
 
 The transaction group is dropped and the pool iterator wrapper becomes the following:
+
 ```
 pool: {
     transactions: {
@@ -139,6 +147,7 @@ The next group is for key `("B", "b")`, the pool iterator sorts transactions by 
 Transaction with nonce `14` is added to the list of valid transactions.
 
 The transaction group is dropped, but it's empty, so the pool iterator drops it completely:
+
 ```
 pool: {
     transactions: {
@@ -156,9 +165,10 @@ sorted_groups: [
 The next group is for key `("C", "d")`, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
 `[7]`. Runtime adapter pulls `7`. The transaction with nonce `7` is invalid because of odd nonce.
 
-No valid transactions is added for this group. 
+No valid transactions is added for this group.
 
 The transaction group is dropped, it's empty, so the pool iterator drops it completely:
+
 ```
 pool: {
     transactions: {
@@ -173,9 +183,10 @@ sorted_groups: [
 The next group is for key `("A", "c")`, the pool iterator sorts transactions by nonces and returns the mutable references to the group. Sorted nonces are:
 `[2, 3, 5]`. Runtime adapter pulls `2`.
 
-It's a valid transaction, so it's added to the list of valid transactions. 
+It's a valid transaction, so it's added to the list of valid transactions.
 
 The transaction group is dropped, so the pool iterator drops it completely:
+
 ```
 pool: {
     transactions: { }
@@ -186,12 +197,11 @@ sorted_groups: [
 ],
 ```
 
-
 ##### Transaction #4
 
 The next group is pulled not from the pool, but from the sorted_groups. The key is `("A", "a")`.
 It's already sorted, so the iterator returns the mutable reference. Nonces are:
-`[2, 3]`. Runtime adapter pulls `2`, then pulls `3`. 
+`[2, 3]`. Runtime adapter pulls `2`, then pulls `3`.
 
 The transaction with nonce `2` is invalid, because we've already pulled a transaction #1 from this group and it had nonce `2`.
 The new nonce has to be larger than the previous nonce, so this transaction is invalid.
@@ -201,6 +211,7 @@ The transaction with nonce `3` is invalid because of odd nonce.
 No valid transactions is added for this group.
 
 The transaction group is dropped, it's empty, so the pool iterator drops it completely:
+
 ```
 pool: {
     transactions: { }
@@ -216,6 +227,7 @@ Runtime adapter pulls `3`, then pulls `5`. Both transactions are invalid, becaus
 No transactions are added.
 
 The transaction group is dropped, the pool iterator wrapper becomes empty:
+
 ```
 pool: {
     transactions: { }
@@ -231,7 +243,8 @@ If the iterator was not fully drained, but some transactions still remained. The
 
 ##### Chunk Transactions
 
-Transactions that were pulled from the pool: 
+Transactions that were pulled from the pool:
+
 ```
 // First batch
 ("A", "a", 1),
@@ -250,6 +263,7 @@ Transactions that were pulled from the pool:
 ```
 
 The valid transactions are:
+
 ```
 ("A", "a", 2),
 ("B", "b", 14),
@@ -273,15 +287,16 @@ If there are no transaction with the same key in the N batch, then the order is 
 We also enforce the order of the sequence of transactions for the same key, the nonces of them should be in strictly increasing order.
 
 Here is the algorithm that validates the order:
+
 ```rust
 fn validate_order(txs: &Vec<Transaction>) -> bool {
     let mut nonces: HashMap<Key, Nonce> = HashMap::new();
     let mut batches: HashMap<Key, usize> = HashMap::new();
     let mut current_batch = 1;
-    
+
     for tx in txs {
         let key = tx.key();
-        
+
         // Verifying nonce
         let nonce = tx.nonce();
         if let Some(last_nonce) = nonces.get(key) {
@@ -291,7 +306,7 @@ fn validate_order(txs: &Vec<Transaction>) -> bool {
             }
         }
         nonces.insert(key, nonce);
-        
+
         // Verifying batch
         if let Some(last_batch) = batches.get(key) {
             if last_batch == current_batch {
@@ -307,7 +322,7 @@ fn validate_order(txs: &Vec<Transaction>) -> bool {
             }
         }
         batches.insert(key, batch);
-    }  
+    }
     true
 }
 ```
