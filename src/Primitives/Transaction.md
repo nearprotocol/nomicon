@@ -50,28 +50,41 @@ pub enum Action {
 }
 ```
 
-Each transaction consists a list of actions to be performed on the `receiver_id` side. Sometimes the `singer_id` equals to `receiver_id`. There is a set of action types when `signer_id` and `receiver_id` is required to be equal. Actions requires arguments and use data from the `Transaction` itself.
+Each transaction consists a list of actions to be performed on the `receiver_id` side. Sometimes the `singer_id` equals to `receiver_id`. There is a set of action types when `signer_id` and `receiver_id` are required to be equal. Actions requires arguments and use data from the `Transaction` itself.
 
 // TODO: how to introduce the concept of `sender_id`
 
 ## CreateAccount
+_Requirements:_
 
-`CreateAccountAction` doesn't take any additional arguments, it uses `receiver_id` from Transaction. `receiver_id` is an ID for an account to be created. Account ID should be [valid](Account.md#account-id) and unique throughout the system. Usually we want to create an AccessKey with full access keys
+- _unique `tx.receiver_id`_
+- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+
+`CreateAccountAction` doesn't take any additional arguments, it uses `receiver_id` from Transaction. `receiver_id` is an ID for an account to be created. Account ID should be [valid](Account.md#account-id) and **unique** throughout the system.
+
+**Outcome**:
+- creates an account with `id` = `receiver_id`
+- sets Account `storage_usage` to `account_cost` (genesis config)
+- sets Account `storage_paid_at` to the current block height
 
 ```rust
 pub struct CreateAccountAction {}
 ```
 
-// TODO: how to add an initial access key if we don't have an account yet?
+// TODO: how to add an initial access key if we require
+// - _`tx.signer_id` to be equal to `receiver_id`_
+// - _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ## DeployContract
 
-_Requires:_
+_Requirements:_
 
-- _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess`_
+- _`tx.signer_id` to be equal to `receiver_id`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+- _
 
-`DeployContractAction` takes a WebAssembly code which will be set for account.
+**Outcome**:
+- sets a code for account
 
 ```rust
 pub struct DeployContractAction {
@@ -81,7 +94,7 @@ pub struct DeployContractAction {
 
 ## FunctionCallAction
 
-_Requires:_
+_Requirements:_
 
 - _`public_key` to be `AccessKeyPermission::FullAccess` or `AccessKeyPermission::FunctionCall`_
 
@@ -102,9 +115,9 @@ pub struct FunctionCallAction {
 
 ## TransferAction
 
-_Requires:_
+_Requirements:_
 
-- _`public_key` to be `AccessKeyPermission::FullAccess`_
+- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ```rust
 pub struct TransferAction {
@@ -115,10 +128,10 @@ pub struct TransferAction {
 
 ## StakeAction
 
-_Requires:_
+_Requirements:_
 
 - _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess`_
+- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ```rust
 pub struct StakeAction {
@@ -129,10 +142,10 @@ pub struct StakeAction {
 
 ## AddKeyAction
 
-_Requires:_
+_Requirements:_
 
 - _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess`_
+- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 Associates an [AccessKey](AccessKey) with a `public_key` provided.
 
@@ -145,10 +158,10 @@ pub struct AddKeyAction {
 
 ## DeleteKeyAction
 
-_Requires:_
+_Requirements:_
 
 - _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess`_
+- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ```rust
 pub struct DeleteKeyAction {
@@ -158,10 +171,10 @@ pub struct DeleteKeyAction {
 
 ## DeleteAccountAction
 
-_Requires:_
+_Requirements:_
 
 - _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess`_
+- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 - _`account shouldn't have any locked balance`_
 
 ```rust

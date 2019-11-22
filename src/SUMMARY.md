@@ -1,6 +1,17 @@
 # Summary
 
 - [Introduction](README.md)
+- [GenesisConfig](GenesisConfig/GenesisConfig.md)
+  - [RuntimeConfig](GenesisConfig/RuntimeConfig.md)
+    - [RuntimeFeeConfig](GenesisConfig/RuntimeFeeConfig.md)
+      - [AccessKeyCreationConfig](GenesisConfig/RuntimeFeeConfig/AccessKeyCreationConfig.md)
+      - [ActionCreationConfig](GenesisConfig/RuntimeFeeConfig/ActionCreationConfig.md)
+      - [DataReceiptCreationConfig](GenesisConfig/RuntimeFeeConfig/DataReceiptCreationConfig.md)
+      - [StorageUsageConfig](GenesisConfig/RuntimeFeeConfig/StorageUsageConfig.md)
+      - [Fee](GenesisConfig/RuntimeFeeConfig/Fee.md)
+      - [Fraction](GenesisConfig/RuntimeFeeConfig/Fraction.md)
+    - [VMConfig](GenesisConfig/VMConfig.md)
+      - [ExtCostsConfig](GenesisConfig/ExtCostsConfig.md)
 - [Blockchain Layer vs Runtime Layer](BlockchainLayerVsRuntimeLayer.md)
 - [Primitives](Primitives/Primitives.md)
   - [Account](Primitives/Account.md)
