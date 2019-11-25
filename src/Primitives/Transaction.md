@@ -67,13 +67,11 @@ _Requirements:_
 - sets Account `storage_usage` to `account_cost` (genesis config)
 - sets Account `storage_paid_at` to the current block height
 
+NOTE: for the all subsequent actions in the transaction the `signer_id` becomes `receiver_id` until [DeleteAccountAction](#DeleteAccountAction). It allows to execute actions on behalf of the just created account.
+
 ```rust
 pub struct CreateAccountAction {}
 ```
-
-// TODO: how to add an initial access key if we require
-// - _`tx.signer_id` to be equal to `receiver_id`_
-// - _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ## DeployContract
 
@@ -81,7 +79,6 @@ _Requirements:_
 
 - _`tx.signer_id` to be equal to `receiver_id`_
 - _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
-- _
 
 **Outcome**:
 - sets a code for account
@@ -96,7 +93,7 @@ pub struct DeployContractAction {
 
 _Requirements:_
 
-- _`public_key` to be `AccessKeyPermission::FullAccess` or `AccessKeyPermission::FunctionCall`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` or `AccessKeyPermission::FunctionCall`_
 
 Calls a method of a particular contract.
 
@@ -117,7 +114,10 @@ pub struct FunctionCallAction {
 
 _Requirements:_
 
-- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+
+**Outcome**:
+- transfers amount specified in `deposit` from `tx.signer` to a `tx.receiver_id` account
 
 ```rust
 pub struct TransferAction {
@@ -130,22 +130,27 @@ pub struct TransferAction {
 
 _Requirements:_
 
-- _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+- _`tx.signer_id` to be equal to `receiver_id`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ```rust
 pub struct StakeAction {
+    // Amount of tokens to stake
     pub stake: Balance,
+    // This public key is a public key of the validator node
     pub public_key: PublicKey,
 }
 ```
-
+**Outcome**:
+```
+// TODO: cover staking
+```
 ## AddKeyAction
 
 _Requirements:_
 
-- _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+- _`tx.signer_id` to be equal to `receiver_id`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 Associates an [AccessKey](AccessKey) with a `public_key` provided.
 
@@ -160,8 +165,8 @@ pub struct AddKeyAction {
 
 _Requirements:_
 
-- _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+- _`tx.signer_id` to be equal to `receiver_id`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
 
 ```rust
 pub struct DeleteKeyAction {
@@ -173,9 +178,9 @@ pub struct DeleteKeyAction {
 
 _Requirements:_
 
-- _`signer_id` to be equal to `receiver_id`_
-- _`public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
-- _`account shouldn't have any locked balance`_
+- _`tx.signer_id` to be equal to `receiver_id`_
+- _`tx.public_key` to be `AccessKeyPermission::FullAccess` for the `singer_id`_
+- _`tx.account shouldn't have any locked balance`_
 
 ```rust
 pub struct DeleteAccountAction {
