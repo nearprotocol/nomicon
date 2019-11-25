@@ -1,6 +1,8 @@
 # Data Types
 
-A data types we use in configuration
+## type CryptoHash = [u8; 32]
+
+A sha256 hash.
 
 ## AccountId = String
 

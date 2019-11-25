@@ -7,7 +7,7 @@ The structure that holds the parameters of the runtime, mostly economics.
 
 _type: Balance_
 
-The minimum number of blocks of storage rent an account has to maintain to prevent forced deletion.
+The cost to store one byte of storage per block.
 
 ### storage_cost_byte_per_block
 
