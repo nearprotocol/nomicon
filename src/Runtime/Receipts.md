@@ -109,9 +109,9 @@ _`value` = `Receipt`_
 
 Each incoming [`DataReceipt`](#datareceipt) saved it in the storage as:
 
-_key = `receiver_id: String`,`data_id: CryptoHash`_
+_`key` = `receiver_id: String`,`data_id: CryptoHash`_
 
-_value = `Option[u8]>`_
+_`value` = `Option[u8]>`_
 
 Next, runtime gets `ActionReceipt` which awaits this incoming `DataReceipt` by quiring [`Awaiting ActionReceipt`](#awaiting-actionreceipt) . If no `ActionReceipt` awaits this `DataReceipt` we expect it to arrive later. Otherwise
 

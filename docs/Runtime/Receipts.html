@@ -207,8 +207,8 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 <p><em><code>value</code> = <code>Receipt</code></em></p>
 <h2><a class="header" href="#processing-datareceipt" id="processing-datareceipt">Processing DataReceipt</a></h2>
 <p>Each incoming <a href="#datareceipt"><code>DataReceipt</code></a> saved it in the storage as:</p>
-<p><em>key = <code>receiver_id: String</code>,<code>data_id: CryptoHash</code></em></p>
-<p><em>value = <code>Option[u8]&gt;</code></em></p>
+<p><em><code>key</code> = <code>receiver_id: String</code>,<code>data_id: CryptoHash</code></em></p>
+<p><em><code>value</code> = <code>Option[u8]&gt;</code></em></p>
 <p>Next, runtime gets <code>ActionReceipt</code> which awaits this incoming <code>DataReceipt</code> by quiring <a href="#awaiting-actionreceipt"><code>Awaiting ActionReceipt</code></a> . If no <code>ActionReceipt</code> awaits this <code>DataReceipt</code> we expect it to arrive later. Otherwise</p>
 <ul>
 <li>get <code>receipt_id</code> from <a href="#awaiting-actionreceipt"><code>Awaiting ActionReceipt</code>s</a></li>
@@ -254,21 +254,6 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3001");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload(true); // force reload from server (not from cache)
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         
