@@ -76,8 +76,8 @@ Data for an single account is collocated in one shard. The account data consists
 - Balance
 - Locked balance (for staking)
 - Code of the contract
-- Key-value storage of the contract. Stored in a ordered trie.
-- Access Keys.
+- Key-value storage of the contract. Stored in a ordered trie
+- Access Keys
 
 #### Balances
 
