@@ -585,7 +585,7 @@ that the trie it works on is only a part of the overall blockchain state;</li>
 <li>Blocks or chunks -- the runtime does not know that the receipts that it processes constitute a chunk and that the output
 receipts will be used in other chunks. From the runtime perspective it consumes and outputs batches of transactions and receipts;</li>
 <li>Consensus -- the runtime does not know how consistency of the state is maintained;</li>
-<li>Communication -- the runtime does not know where transactions and receipts are coming from and where they are going to.</li>
+<li>Communication -- the runtime don't know anything about the current network topology. Receipt has only a receiver_id (a recipient account), but knows nothing about the destination shard, so it's a responsibility of a blockchain layer to to route a particular receipt.</li>
 </ul>
 <h2><a class="header" href="#runtime-layer-concepts" id="runtime-layer-concepts">Runtime Layer Concepts</a></h2>
 <ul>
@@ -1174,71 +1174,108 @@ The specification is defined in <code>near-vm-logic</code>, but it is exposed to
 }
 <span class="boring">}
 </span></code></pre></pre>
-<h1><a class="header" href="#receipts" id="receipts">Receipts</a></h1>
+<h1><a class="header" href="#receipt" id="receipt">Receipt</a></h1>
 <p>All cross-contract (we assume that each account lives in it's own shard) communication in Near happens trough Receipts.
 Receipts are stateful in a sense that they serve not only as messages between accounts but also can be stored in the account storage to await other receipts.</p>
-<p>Each Receipt has the following fields:</p>
+<p>Each <code>Receipt</code> has the following fields:</p>
 <h4><a class="header" href="#predecessor_id" id="predecessor_id">predecessor_id</a></h4>
-<p><em>type: AccountId</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>AccountId</code></li>
+</ul>
 <p>The account_id which issued a receipt.</p>
 <h4><a class="header" href="#receiver_id" id="receiver_id">receiver_id</a></h4>
-<p><em>type: AccountId</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>AccountId</code></li>
+</ul>
 <p>The destination account_id.</p>
 <h4><a class="header" href="#receipt_id" id="receipt_id">receipt_id</a></h4>
-<p><em>type: AccountId</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>AccountId</code></li>
+</ul>
 <p>An unique id for the receipt.</p>
 <h4><a class="header" href="#type" id="type">type</a></h4>
-<p>Could be either <a href="Runtime/Receipts.html#actionreceipt">ActionReceipt</a> or <a href="Runtime/Receipts.html#datareceipt">DataReceipt</a></p>
+<ul>
+<li><strong><code>type</code></strong>: <a href="Runtime/Receipts.html#actionreceipt">ActionReceipt</a> | <a href="Runtime/Receipts.html#datareceipt">DataReceipt</a></li>
+</ul>
+<p>There is a 2 types of Receipts in Near: <a href="Runtime/Receipts.html#actionreceipt">ActionReceipt</a> and <a href="Runtime/Receipts.html#datareceipt">DataReceipt</a>. ActionReceipt is a request to apply Actions, while DataReceipt is a result of application of these actions.</p>
 <h2><a class="header" href="#actionreceipt" id="actionreceipt">ActionReceipt</a></h2>
 <p><code>ActionReceipt</code> represents a request to apply actions on the <code>receiver_id</code> side. It could be a derived as a result of a <code>Transaction</code> execution or a another <code>ActionReceipt</code> processing. <code>ActionReceipt</code> consists the following fields:</p>
 <h4><a class="header" href="#signer_id" id="signer_id">signer_id</a></h4>
-<p><em>type: AccountId</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>AccountId</code></li>
+</ul>
 <p>An account_id which signed the original <a href="Runtime/Transaction.html">transaction</a>.</p>
 <h4><a class="header" href="#signer_public_key" id="signer_public_key">signer_public_key</a></h4>
-<p><em>type: PublicKey</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>PublicKey</code></li>
+</ul>
 <p>An <a href="Runtime/../Primitives/AccessKey.html">AccessKey</a> which was used to sign the original transaction.</p>
 <h4><a class="header" href="#gas_price-1" id="gas_price-1">gas_price</a></h4>
-<p><em>type: u128</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>u128</code></li>
+</ul>
 <p>Gas price is a gas price which was set in a block where original <a href="Runtime/Transaction.html">transaction</a> has been applied.</p>
 <h4><a class="header" href="#output_data_receivers" id="output_data_receivers">output_data_receivers</a></h4>
-<p><em>type: [(CryptoHash, AccountId)]</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>[(CryptoHash, AccountId)]</code></li>
+</ul>
 <p>Output data receivers will be converted to <code>DataReceipt</code>s when smart contract finish its execution with some value.</p>
 <h4><a class="header" href="#input_data_ids" id="input_data_ids">input_data_ids</a></h4>
-<p><em>type: [CryptoHash]</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>[CryptoHash]_</code></li>
+</ul>
 <p><code>input_data_ids</code> are the receipt data dependencies. We These IDs are <code>DataReceipt.data_id</code>.</p>
 <h2><a class="header" href="#datareceipt" id="datareceipt">DataReceipt</a></h2>
+<p>DataReceipt represents a final result of some contract execution.</p>
 <h4><a class="header" href="#data_id" id="data_id">data_id</a></h4>
-<p><em>type: CryptoHash</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>CryptoHash</code></li>
+</ul>
 <p>An a unique DataReceipt identifier.</p>
 <h4><a class="header" href="#data" id="data">data</a></h4>
-<p><em>type: [u8]</em></p>
+<ul>
+<li><strong><code>type</code></strong>: <code>[u8]</code></li>
+</ul>
 <p>An an associated data in bytes.</p>
 <h1><a class="header" href="#receipt-matching" id="receipt-matching">Receipt Matching</a></h1>
 <p>Runtime doesn't expect that Receipts are coming in a particular order. Each Receipt is processed individually. The goal of the <code>Receipt Matching</code> process is to match all <a href="Runtime/Receipts.html#actionreceipt"><code>ActionReceipt</code>s</a> to the corresponding <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a>.</p>
 <h2><a class="header" href="#processing-actionreceipt" id="processing-actionreceipt">Processing ActionReceipt</a></h2>
-<p>For each incoming <a href="Runtime/Receipts.html#actionreceipt"><code>ActionReceipt</code></a> runtime checks whether the storage has all data (defined by <a href="Runtime/Receipts.html#input_data_ids"><code>input_data_ids</code></a>) required for execution. If all required <code>input_data_ids</code> are in the <a href="Runtime/Receipts.html#Processing-DataReceipt">storage</a>, runtime applies the <code>ActionReceipt</code>. Otherwise runtime saves the following information:</p>
-<h4><a class="header" href="#pending-data-count" id="pending-data-count">Pending Data Count</a></h4>
-<p>The counter which counts the estimated <a href="Runtime/Receipts.html#DataReceipt"><code>DataReceipt</code>s</a> for <a href="Runtime/Receipts.html#actionreceipt">ActionReceipt</a> set to the length of <a href="Runtime/Receipts.html#input_data_ids"><code>input_data_ids</code></a>:</p>
-<p><em><code>key</code> = <code>receiver_id: AccountId</code>,<code>receipt_id: CryptoHash</code></em></p>
-<p><em><code>value</code> = <code>u32</code></em></p>
-<h4><a class="header" href="#awaiting-actionreceipt" id="awaiting-actionreceipt">Awaiting ActionReceipt</a></h4>
-<p>Stores the data_id's which <code>receipt_id</code> awaits.</p>
-<p><em><code>key</code> = <code>receiver_id: AccountId</code>,<code>data_id: CryptoHash</code></em></p>
-<p><em><code>value</code> = <code>receipt_id</code></em></p>
-<p>And the <a href="Runtime/Receipts.html#receipts"><code>Receipt</code></a> itself:</p>
-<p><em><code>key</code> = <code>receiver_id: AccountId</code>,<code>receipt_id: CryptoHash</code></em></p>
-<p><em><code>value</code> = <code>Receipt</code></em></p>
-<h2><a class="header" href="#processing-datareceipt" id="processing-datareceipt">Processing DataReceipt</a></h2>
-<p>Each incoming <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code></a> saved it in the storage as:</p>
-<p><em><code>key</code> = <code>receiver_id: String</code>,<code>data_id: CryptoHash</code></em></p>
-<p><em><code>value</code> = <code>Option[u8]&gt;</code></em></p>
-<p>Next, runtime gets <code>ActionReceipt</code> which awaits this incoming <code>DataReceipt</code> by quiring <a href="Runtime/Receipts.html#awaiting-actionreceipt"><code>Awaiting ActionReceipt</code></a> . If no <code>ActionReceipt</code> awaits this <code>DataReceipt</code> we expect it to arrive later. Otherwise</p>
+<p>For each incoming <a href="Runtime/Receipts.html#actionreceipt"><code>ActionReceipt</code></a> runtime checks whether we have all the <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> (defined as <a href="Runtime/Receipts.html#input_data_ids"><code>Receipt.input_data_ids</code></a>) required for execution. If all the required <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> are already in the <a href="Runtime/Receipts.html#received-datareceipt">storage</a>, runtime can apply this <code>ActionReceipt</code> immediately. Otherwise we save this receipt as a <a href="Runtime/Receipts.html#postponed-actionreceipt">Postponed ActionReceipt</a>. Also we save <a href="Runtime/Receipts.html#pending-datareceipt-count">Pending DataReceipts Count</a> and <a href="Runtime/Receipts.html#pending-datareceipt-for-postponed-actionreceipt">a link from pending <code>DataReceipt</code> to the <code>Postponed ActionReceipt</code></a>.</p>
+<h4><a class="header" href="#postponed-actionreceipt" id="postponed-actionreceipt">Postponed ActionReceipt</a></h4>
+<p>A Receipt which runtime stores until all the designated <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> arrive.</p>
 <ul>
-<li>get <code>receipt_id</code> from <a href="Runtime/Receipts.html#awaiting-actionreceipt"><code>Awaiting ActionReceipt</code>s</a></li>
-<li>remove itself from <a href="Runtime/Receipts.html#awaiting-actionreceipt"><code>Awaiting ActionReceipt</code>s</a></li>
-<li>decrement <a href="Runtime/Receipts.html#pending-data-count"><code>Pending Data Count</code></a></li>
+<li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code>_</li>
+<li><strong><code>value</code></strong> = <code>[u8]</code></li>
 </ul>
-<p>If the current <code>DataReceipt</code> is the last awaited <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code></a> (<a href="Runtime/Receipts.html#pending-data-count"><code>Pending Data Count</code></a> = 1) that means all the <a href="Runtime/Receipts.html#input_data_ids"><code>ActionReceipt.input_data_ids</code></a> for <a href="Runtime/Receipts.html#awaiting-actionreceipt"><code>Awaiting ActionReceipt</code></a>) are satisfied and runtime can apply this <code>ActionReceipt</code>.</p>
+<p>Where <code>account_id</code> is <a href="Runtime/Receipts.html#receiver_id"><code>Receipt.receiver_id</code></a>, <code>receipt_id</code> is <a href="Runtime/Receipts.html#receipt_id"><code>Receipt.receiver_id</code></a> and value is a serialized <a href="Runtime/Receipts.html#receipt"><code>Receipt</code></a> (which <a href="Runtime/Receipts.html#type">type</a> must be <a href="Runtime/Receipts.html#actionreceipt">ActionReceipt</a>).</p>
+<h4><a class="header" href="#pending-datareceipt-count" id="pending-datareceipt-count">Pending DataReceipt Count</a></h4>
+<p>The counter which counts pending <a href="Runtime/Receipts.html#DataReceipt"><code>DataReceipt</code>s</a> for a <a href="Runtime/Receipts.html#postponed-receipt">Postponed Receipt</a> initially set to the length of missing <a href="Runtime/Receipts.html#input_data_ids"><code>input_data_ids</code></a> of the incoming <code>ActionReceipt</code>. It's decrementing with every new received <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code></a>:</p>
+<ul>
+<li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code></li>
+<li><strong><code>value</code></strong> = <code>u32</code></li>
+</ul>
+<p>Where <code>account_id</code> is <a href="Runtime/Receipts.html#receiver_id"><code>Receipt.receiver_id</code></a>, <code>receipt_id</code> is <a href="Runtime/Receipts.html#receipt_id"><code>Receipt.receiver_id</code></a> and value is a counter.</p>
+<h4><a class="header" href="#pending-datareceipt-for-postponed-actionreceipt" id="pending-datareceipt-for-postponed-actionreceipt">Pending DataReceipt for Postponed ActionReceipt</a></h4>
+<p>We index each pending <code>DataReceipt</code>. to so when a new <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code></a> arrives we can find a <a href="Runtime/Receipts.html#postponed-receipt">Postponed Receipt</a> it belongs.</p>
+<ul>
+<li><strong><code>key</code></strong> = <code>account_id</code>,<code>data_id</code></li>
+<li><strong><code>value</code></strong> = <code>receipt_id</code></li>
+</ul>
+<p>Where <code>account_id</code> is <a href="Runtime/Receipts.html#receiver_id"><code>Receipt.receiver_id</code></a>, <code>data_id</code> is one of <a href="Runtime/Receipts.html#receipt_id"><code>Receipt.receiver_id</code></a> and value is a counter.</p>
+<h2><a class="header" href="#processing-datareceipt" id="processing-datareceipt">Processing DataReceipt</a></h2>
+<h4><a class="header" href="#received-datareceipt" id="received-datareceipt">Received DataReceipt</a></h4>
+<p>First of all, runtime saves the incoming <code>DataReceipt</code> to the storage as:</p>
+<ul>
+<li><strong><code>key</code></strong> = <code>account_id</code>,<code>data_id</code></li>
+<li><strong><code>value</code></strong> = <code>[u8]</code></li>
+</ul>
+<p>Where <code>account_id</code> is <a href="Runtime/Receipts.html#receiver_id"><code>Receipt.receiver_id</code></a>, <code>data_id</code> is <a href="Runtime/Receipts.html#data_id"><code>DataReceipt.data_id</code></a> and value is a <a href="Runtime/Receipts.html#data"><code>DataReceipt.data</code></a> (which is typically a serialized result of the call to a particular contract).</p>
+<p>Next, runtime checks if there is any <a href="Runtime/Receipts.html#postponed-actionreceipt">Postponed ActionReceipt</a> awaits for this <code>DataReceipt</code> by querying <a href="Runtime/Receipts.html#pending-datareceipt-for-postponed-actionReceipt"><code>Pending DataReceipt</code> to the Postponed Receipt</a>. If there is no postponed <code>receipt_id</code> yet, we do nothing else. If there is a postponed <code>receipt_id</code>, we do the following:</p>
+<ul>
+<li>decrement <a href="Runtime/Receipts.html#pending-datareceipt-count"><code>Pending Data Count</code></a> for the postponed <code>receipt_id</code></li>
+<li>remove found <a href="Runtime/Receipts.html#pending-datareceipt-for-postponed-actionreceipt"><code>Pending DataReceipt</code> to the <code>Postponed ActionReceipt</code></a></li>
+</ul>
+<p>If <a href="Runtime/Receipts.html#pending-datareceipt-count"><code>Pending Data Count</code></a> now is 0 then runtime can apply the <a href="Runtime/Receipts.html#postponed-receipt">Postponed Receipt</a>.</p>
 <h1><a class="header" href="#scenarios-1" id="scenarios-1">Scenarios</a></h1>
 <p>In the following sections we go over the common scenarios that runtime takes care of.</p>
 <h1><a class="header" href="#financial-transaction" id="financial-transaction">Financial Transaction</a></h1>
