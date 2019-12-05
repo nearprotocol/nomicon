@@ -585,7 +585,7 @@ that the trie it works on is only a part of the overall blockchain state;</li>
 <li>Blocks or chunks -- the runtime does not know that the receipts that it processes constitute a chunk and that the output
 receipts will be used in other chunks. From the runtime perspective it consumes and outputs batches of transactions and receipts;</li>
 <li>Consensus -- the runtime does not know how consistency of the state is maintained;</li>
-<li>Communication -- the runtime don't know anything about the current network topology. Receipt has only a receiver_id (a recipient account), but knows nothing about the destination shard, so it's a responsibility of a blockchain layer to to route a particular receipt.</li>
+<li>Communication -- the runtime don't know anything about the current network topology. Receipt has only a receiver_id (a recipient account), but knows nothing about the destination shard, so it's a responsibility of a blockchain layer to route a particular receipt.</li>
 </ul>
 <h2><a class="header" href="#runtime-layer-concepts" id="runtime-layer-concepts">Runtime Layer Concepts</a></h2>
 <ul>
