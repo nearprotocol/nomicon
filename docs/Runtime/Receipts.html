@@ -217,28 +217,27 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 <h1><a class="header" href="#receipt-matching" id="receipt-matching">Receipt Matching</a></h1>
 <p>Runtime doesn't expect that Receipts are coming in a particular order. Each Receipt is processed individually. The goal of the <code>Receipt Matching</code> process is to match all <a href="#actionreceipt"><code>ActionReceipt</code>s</a> to the corresponding <a href="#datareceipt"><code>DataReceipt</code>s</a>.</p>
 <h2><a class="header" href="#processing-actionreceipt" id="processing-actionreceipt">Processing ActionReceipt</a></h2>
-<p>For each incoming <a href="#actionreceipt"><code>ActionReceipt</code></a> runtime checks whether we have all the <a href="#datareceipt"><code>DataReceipt</code>s</a> (defined as <a href="#input_data_ids"><code>Receipt.input_data_ids</code></a>) required for execution. If all the required <a href="#datareceipt"><code>DataReceipt</code>s</a> are already in the <a href="#received-datareceipt">storage</a>, runtime can apply this <code>ActionReceipt</code> immediately. Otherwise we save this receipt as a <a href="#postponed-actionreceipt">Postponed ActionReceipt</a>. Also we save <a href="#pending-datareceipt-count">Pending DataReceipts Count</a> and <a href="#pending-datareceipt-for-postponed-actionreceipt">a link from pending <code>DataReceipt</code> to the <code>Postponed ActionReceipt</code></a>.</p>
+<p>For each incoming <a href="#actionreceipt"><code>ActionReceipt</code></a> runtime checks whether we have all the <a href="#datareceipt"><code>DataReceipt</code>s</a> (defined as <a href="#input_data_ids"><code>ActionsReceipt.input_data_ids</code></a>) required for execution. If all the required <a href="#datareceipt"><code>DataReceipt</code>s</a> are already in the <a href="#received-datareceipt">storage</a>, runtime can apply this <code>ActionReceipt</code> immediately. Otherwise we save this receipt as a <a href="#postponed-actionreceipt">Postponed ActionReceipt</a>. Also we save <a href="#pending-datareceipt-count">Pending DataReceipts Count</a> and <a href="#pending-datareceipt-for-postponed-actionreceipt">a link from pending <code>DataReceipt</code> to the <code>Postponed ActionReceipt</code></a>.</p>
 <h4><a class="header" href="#postponed-actionreceipt" id="postponed-actionreceipt">Postponed ActionReceipt</a></h4>
 <p>A Receipt which runtime stores until all the designated <a href="#datareceipt"><code>DataReceipt</code>s</a> arrive.</p>
 <ul>
 <li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code>_</li>
 <li><strong><code>value</code></strong> = <code>[u8]</code></li>
 </ul>
-<p>Where <code>account_id</code> is <a href="#receiver_id"><code>Receipt.receiver_id</code></a>, <code>receipt_id</code> is <a href="#receipt_id"><code>Receipt.receiver_id</code></a> and value is a serialized <a href="#receipt"><code>Receipt</code></a> (which <a href="#type">type</a> must be <a href="#actionreceipt">ActionReceipt</a>).</p>
+<p><em>Where <code>account_id</code> is <a href="#receiver_id"><code>Receipt.receiver_id</code></a>, <code>receipt_id</code> is <a href="#receipt_id"><code>Receipt.receiver_id</code></a> and value is a serialized <a href="#receipt"><code>Receipt</code></a> (which <a href="#type">type</a> must be <a href="#actionreceipt">ActionReceipt</a>).</em></p>
 <h4><a class="header" href="#pending-datareceipt-count" id="pending-datareceipt-count">Pending DataReceipt Count</a></h4>
-<p>The counter which counts pending <a href="#DataReceipt"><code>DataReceipt</code>s</a> for a <a href="#postponed-receipt">Postponed Receipt</a> initially set to the length of missing <a href="#input_data_ids"><code>input_data_ids</code></a> of the incoming <code>ActionReceipt</code>. It's decrementing with every new received <a href="#datareceipt"><code>DataReceipt</code></a>:</p>
+<p>A counter which counts pending <a href="#DataReceipt"><code>DataReceipt</code>s</a> for a <a href="#postponed-receipt">Postponed Receipt</a> initially set to the length of missing <a href="#input_data_ids"><code>input_data_ids</code></a> of the incoming <code>ActionReceipt</code>. It's decrementing with every new received <a href="#datareceipt"><code>DataReceipt</code></a>:</p>
 <ul>
 <li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code></li>
 <li><strong><code>value</code></strong> = <code>u32</code></li>
 </ul>
-<p>Where <code>account_id</code> is <a href="#receiver_id"><code>Receipt.receiver_id</code></a>, <code>receipt_id</code> is <a href="#receipt_id"><code>Receipt.receiver_id</code></a> and value is a counter.</p>
+<p><em>Where <code>account_id</code> is AccountId, <code>receipt_id</code> CryptoHash and value is an integer.</em></p>
 <h4><a class="header" href="#pending-datareceipt-for-postponed-actionreceipt" id="pending-datareceipt-for-postponed-actionreceipt">Pending DataReceipt for Postponed ActionReceipt</a></h4>
-<p>We index each pending <code>DataReceipt</code>. to so when a new <a href="#datareceipt"><code>DataReceipt</code></a> arrives we can find a <a href="#postponed-receipt">Postponed Receipt</a> it belongs.</p>
+<p>We index each pending <code>DataReceipt</code> so when a new <a href="#datareceipt"><code>DataReceipt</code></a> arrives we can find to which <a href="#postponed-receipt">Postponed Receipt</a> it belongs.</p>
 <ul>
 <li><strong><code>key</code></strong> = <code>account_id</code>,<code>data_id</code></li>
 <li><strong><code>value</code></strong> = <code>receipt_id</code></li>
 </ul>
-<p>Where <code>account_id</code> is <a href="#receiver_id"><code>Receipt.receiver_id</code></a>, <code>data_id</code> is one of <a href="#receipt_id"><code>Receipt.receiver_id</code></a> and value is a counter.</p>
 <h2><a class="header" href="#processing-datareceipt" id="processing-datareceipt">Processing DataReceipt</a></h2>
 <h4><a class="header" href="#received-datareceipt" id="received-datareceipt">Received DataReceipt</a></h4>
 <p>First of all, runtime saves the incoming <code>DataReceipt</code> to the storage as:</p>
@@ -246,13 +245,13 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 <li><strong><code>key</code></strong> = <code>account_id</code>,<code>data_id</code></li>
 <li><strong><code>value</code></strong> = <code>[u8]</code></li>
 </ul>
-<p>Where <code>account_id</code> is <a href="#receiver_id"><code>Receipt.receiver_id</code></a>, <code>data_id</code> is <a href="#data_id"><code>DataReceipt.data_id</code></a> and value is a <a href="#data"><code>DataReceipt.data</code></a> (which is typically a serialized result of the call to a particular contract).</p>
+<p><em>Where <code>account_id</code> is <a href="#receiver_id"><code>Receipt.receiver_id</code></a>, <code>data_id</code> is <a href="#data_id"><code>DataReceipt.data_id</code></a> and value is a <a href="#data"><code>DataReceipt.data</code></a> (which is typically a serialized result of the call to a particular contract).</em></p>
 <p>Next, runtime checks if there is any <a href="#postponed-actionreceipt">Postponed ActionReceipt</a> awaits for this <code>DataReceipt</code> by querying <a href="#pending-datareceipt-for-postponed-actionReceipt"><code>Pending DataReceipt</code> to the Postponed Receipt</a>. If there is no postponed <code>receipt_id</code> yet, we do nothing else. If there is a postponed <code>receipt_id</code>, we do the following:</p>
 <ul>
 <li>decrement <a href="#pending-datareceipt-count"><code>Pending Data Count</code></a> for the postponed <code>receipt_id</code></li>
 <li>remove found <a href="#pending-datareceipt-for-postponed-actionreceipt"><code>Pending DataReceipt</code> to the <code>Postponed ActionReceipt</code></a></li>
 </ul>
-<p>If <a href="#pending-datareceipt-count"><code>Pending Data Count</code></a> now is 0 then runtime can apply the <a href="#postponed-receipt">Postponed Receipt</a>.</p>
+<p>If <a href="#pending-datareceipt-count"><code>Pending Data Count</code></a> is now 0 that means all the <a href="#input_data_ids"><code>Receipt.input_data_ids</code></a> are in storage and runtime can safely apply the <a href="#postponed-receipt">Postponed Receipt</a>.</p>
 
                     </main>
 

@@ -85,7 +85,7 @@ Runtime doesn't expect that Receipts are coming in a particular order. Each Rece
 
 ## Processing ActionReceipt
 
-For each incoming [`ActionReceipt`](#actionreceipt) runtime checks whether we have all the [`DataReceipt`s](#datareceipt) (defined as [`Receipt.input_data_ids`](#input_data_ids)) required for execution. If all the required [`DataReceipt`s](#datareceipt) are already in the [storage](#received-datareceipt), runtime can apply this `ActionReceipt` immediately. Otherwise we save this receipt as a [Postponed ActionReceipt](#postponed-actionreceipt). Also we save [Pending DataReceipts Count](#pending-datareceipt-count) and [a link from pending `DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt).
+For each incoming [`ActionReceipt`](#actionreceipt) runtime checks whether we have all the [`DataReceipt`s](#datareceipt) (defined as [`ActionsReceipt.input_data_ids`](#input_data_ids)) required for execution. If all the required [`DataReceipt`s](#datareceipt) are already in the [storage](#received-datareceipt), runtime can apply this `ActionReceipt` immediately. Otherwise we save this receipt as a [Postponed ActionReceipt](#postponed-actionreceipt). Also we save [Pending DataReceipts Count](#pending-datareceipt-count) and [a link from pending `DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt).
 
 #### Postponed ActionReceipt
 
@@ -94,25 +94,23 @@ A Receipt which runtime stores until all the designated [`DataReceipt`s](#datare
 - **`key`** = `account_id`,`receipt_id`\_
 - **`value`** = `[u8]`
 
-Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `receipt_id` is [`Receipt.receiver_id`](#receipt_id) and value is a serialized [`Receipt`](#receipt) (which [type](#type) must be [ActionReceipt](#actionreceipt)).
+_Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `receipt_id` is [`Receipt.receiver_id`](#receipt_id) and value is a serialized [`Receipt`](#receipt) (which [type](#type) must be [ActionReceipt](#actionreceipt))._
 
 #### Pending DataReceipt Count
 
-The counter which counts pending [`DataReceipt`s](#DataReceipt) for a [Postponed Receipt](#postponed-receipt) initially set to the length of missing [`input_data_ids`](#input_data_ids) of the incoming `ActionReceipt`. It's decrementing with every new received [`DataReceipt`](#datareceipt):
+A counter which counts pending [`DataReceipt`s](#DataReceipt) for a [Postponed Receipt](#postponed-receipt) initially set to the length of missing [`input_data_ids`](#input_data_ids) of the incoming `ActionReceipt`. It's decrementing with every new received [`DataReceipt`](#datareceipt):
 
 - **`key`** = `account_id`,`receipt_id`
 - **`value`** = `u32`
 
-Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `receipt_id` is [`Receipt.receiver_id`](#receipt_id) and value is a counter.
+_Where `account_id` is AccountId, `receipt_id` CryptoHash and value is an integer._
 
 #### Pending DataReceipt for Postponed ActionReceipt
 
-We index each pending `DataReceipt`. to so when a new [`DataReceipt`](#datareceipt) arrives we can find a [Postponed Receipt](#postponed-receipt) it belongs.
+We index each pending `DataReceipt` so when a new [`DataReceipt`](#datareceipt) arrives we can find to which [Postponed Receipt](#postponed-receipt) it belongs.
 
 - **`key`** = `account_id`,`data_id`
 - **`value`** = `receipt_id`
-
-Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `data_id` is one of [`Receipt.receiver_id`](#receipt_id) and value is a counter.
 
 ## Processing DataReceipt
 
@@ -123,11 +121,11 @@ First of all, runtime saves the incoming `DataReceipt` to the storage as:
 - **`key`** = `account_id`,`data_id`
 - **`value`** = `[u8]`
 
-Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `data_id` is [`DataReceipt.data_id`](#data_id) and value is a [`DataReceipt.data`](#data) (which is typically a serialized result of the call to a particular contract).
+_Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `data_id` is [`DataReceipt.data_id`](#data_id) and value is a [`DataReceipt.data`](#data) (which is typically a serialized result of the call to a particular contract)._
 
 Next, runtime checks if there is any [Postponed ActionReceipt](#postponed-actionreceipt) awaits for this `DataReceipt` by querying [`Pending DataReceipt` to the Postponed Receipt](#pending-datareceipt-for-postponed-actionReceipt). If there is no postponed `receipt_id` yet, we do nothing else. If there is a postponed `receipt_id`, we do the following:
 
 - decrement [`Pending Data Count`](#pending-datareceipt-count) for the postponed `receipt_id`
 - remove found [`Pending DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt)
 
-If [`Pending Data Count`](#pending-datareceipt-count) now is 0 then runtime can apply the [Postponed Receipt](#postponed-receipt).
+If [`Pending Data Count`](#pending-datareceipt-count) is now 0 that means all the [`Receipt.input_data_ids`](#input_data_ids) are in storage and runtime can safely apply the [Postponed Receipt](#postponed-receipt).
