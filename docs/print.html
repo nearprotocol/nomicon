@@ -1240,11 +1240,11 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 <h1><a class="header" href="#receipt-matching" id="receipt-matching">Receipt Matching</a></h1>
 <p>Runtime doesn't expect that Receipts are coming in a particular order. Each Receipt is processed individually. The goal of the <code>Receipt Matching</code> process is to match all <a href="Runtime/Receipts.html#actionreceipt"><code>ActionReceipt</code>s</a> to the corresponding <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a>.</p>
 <h2><a class="header" href="#processing-actionreceipt" id="processing-actionreceipt">Processing ActionReceipt</a></h2>
-<p>For each incoming <a href="Runtime/Receipts.html#actionreceipt"><code>ActionReceipt</code></a> runtime checks whether we have all the <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> (defined as <a href="Runtime/Receipts.html#input_data_ids"><code>ActionsReceipt.input_data_ids</code></a>) required for execution. If all the required <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> are already in the <a href="Runtime/Receipts.html#received-datareceipt">storage</a>, runtime can apply this <code>ActionReceipt</code> immediately. Otherwise we save this receipt as a <a href="Runtime/Receipts.html#postponed-actionreceipt">Postponed ActionReceipt</a>. Also we save <a href="Runtime/Receipts.html#pending-datareceipt-count">Pending DataReceipts Count</a> and <a href="Runtime/Receipts.html#pending-datareceipt-for-postponed-actionreceipt">a link from pending <code>DataReceipt</code> to the <code>Postponed ActionReceipt</code></a>.</p>
+<p>For each incoming <a href="Runtime/Receipts.html#actionreceipt"><code>ActionReceipt</code></a> runtime checks whether we have all the <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> (defined as <a href="Runtime/Receipts.html#input_data_ids"><code>ActionsReceipt.input_data_ids</code></a>) required for execution. If all the required <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> are already in the <a href="Runtime/Receipts.html#received-datareceipt">storage</a>, runtime can apply this <code>ActionReceipt</code> immediately. Otherwise we save this receipt as a <a href="Runtime/Receipts.html#postponed-actionreceipt">Postponed ActionReceipt</a>. Also we save <a href="Runtime/Receipts.html#pending-datareceipt-count">Pending DataReceipts Count</a> and <a href="Runtime/Receipts.html#pending-datareceipt-for-postponed-actionreceipt">a link from pending <code>DataReceipt</code> to the <code>Postponed ActionReceipt</code></a>. Now runtime will wait all the missing <code>DataReceipt</code>s to apply the <code>Postponed ActionReceipt</code>.</p>
 <h4><a class="header" href="#postponed-actionreceipt" id="postponed-actionreceipt">Postponed ActionReceipt</a></h4>
 <p>A Receipt which runtime stores until all the designated <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code>s</a> arrive.</p>
 <ul>
-<li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code>_</li>
+<li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code></li>
 <li><strong><code>value</code></strong> = <code>[u8]</code></li>
 </ul>
 <p><em>Where <code>account_id</code> is <a href="Runtime/Receipts.html#receiver_id"><code>Receipt.receiver_id</code></a>, <code>receipt_id</code> is <a href="Runtime/Receipts.html#receipt_id"><code>Receipt.receiver_id</code></a> and value is a serialized <a href="Runtime/Receipts.html#receipt"><code>Receipt</code></a> (which <a href="Runtime/Receipts.html#type">type</a> must be <a href="Runtime/Receipts.html#actionreceipt">ActionReceipt</a>).</em></p>
@@ -1254,7 +1254,7 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 <li><strong><code>key</code></strong> = <code>account_id</code>,<code>receipt_id</code></li>
 <li><strong><code>value</code></strong> = <code>u32</code></li>
 </ul>
-<p><em>Where <code>account_id</code> is AccountId, <code>receipt_id</code> CryptoHash and value is an integer.</em></p>
+<p><em>Where <code>account_id</code> is AccountId, <code>receipt_id</code> is CryptoHash and value is an integer.</em></p>
 <h4><a class="header" href="#pending-datareceipt-for-postponed-actionreceipt" id="pending-datareceipt-for-postponed-actionreceipt">Pending DataReceipt for Postponed ActionReceipt</a></h4>
 <p>We index each pending <code>DataReceipt</code> so when a new <a href="Runtime/Receipts.html#datareceipt"><code>DataReceipt</code></a> arrives we can find to which <a href="Runtime/Receipts.html#postponed-receipt">Postponed Receipt</a> it belongs.</p>
 <ul>
@@ -1274,7 +1274,62 @@ Receipts are stateful in a sense that they serve not only as messages between ac
 <li>decrement <a href="Runtime/Receipts.html#pending-datareceipt-count"><code>Pending Data Count</code></a> for the postponed <code>receipt_id</code></li>
 <li>remove found <a href="Runtime/Receipts.html#pending-datareceipt-for-postponed-actionreceipt"><code>Pending DataReceipt</code> to the <code>Postponed ActionReceipt</code></a></li>
 </ul>
-<p>If <a href="Runtime/Receipts.html#pending-datareceipt-count"><code>Pending Data Count</code></a> is now 0 that means all the <a href="Runtime/Receipts.html#input_data_ids"><code>Receipt.input_data_ids</code></a> are in storage and runtime can safely apply the <a href="Runtime/Receipts.html#postponed-receipt">Postponed Receipt</a>.</p>
+<p>If <a href="Runtime/Receipts.html#pending-datareceipt-count"><code>Pending DataReceipt Count</code></a> is now 0 that means all the <a href="Runtime/Receipts.html#input_data_ids"><code>Receipt.input_data_ids</code></a> are in storage and runtime can safely apply the <a href="Runtime/Receipts.html#postponed-receipt">Postponed Receipt</a> and remove it from the store.</p>
+<h2><a class="header" href="#case-1-actionreceipt-comes-first-datareceipts-follows" id="case-1-actionreceipt-comes-first-datareceipts-follows">Case 1: ActionReceipt comes first, DataReceipts follows</a></h2>
+<p>Suppose runtime got the following <code>ActionReceipt</code> (we use a python-like pseudo code):</p>
+<pre><code class="language-python"># Non-relevant fields are omitted.
+{
+    receiver_id: &quot;alice&quot;,
+    receipt_id: &quot;5e73d4&quot;
+    type: ActionReceipt {
+        input_data_ids: [&quot;e5fa44&quot;, &quot;7448d8&quot;]
+    }
+}
+</code></pre>
+<p>We can't apply this receipt right away: there are missing DataReceipt'a with IDs: [&quot;e5fa44&quot;, &quot;7448d8&quot;]. Runtime does the following:</p>
+<pre><code class="language-python">postponed_receipts[&quot;alice,5e73d4&quot;] = borsh_serialize({
+    receiver_id: &quot;alice&quot;,
+    receipt_id: &quot;5e73d4&quot;
+    type: ActionReceipt {
+        input_data_ids: [&quot;e5fa44&quot;, &quot;7448d8&quot;]
+    }
+})
+
+pending_data_receipt_store[&quot;alice,e5fa44&quot;] = &quot;5e73d4&quot;
+pending_data_receipt_store[&quot;alice,7448d8&quot;] = &quot;5e73d4&quot;
+pending_data_receipt_count = 2
+</code></pre>
+<p><em>Note: the subsequent Receipts could arrived in the current block or next, that's why we save <a href="Runtime/Receipts.html#postponed-actionreceipt">Postponed ActionReceipt</a> in the storage</em></p>
+<p>Then the first pending <code>Pending DataReceipt</code> arrives:</p>
+<pre><code class="language-python"># Non-relevant fields are omitted.
+{
+    receiver_id: &quot;alice&quot;,
+    type: Data {
+        data_id: &quot;e5fa44&quot;,
+        data: &quot;some data for alice&quot;,
+    }
+}
+</code></pre>
+<pre><code class="language-python">pending_data_receipt_count[&quot;alice,5e73d4&quot;] = 1`
+del pending_data_receipt_store[&quot;alice,e5fa44&quot;]
+</code></pre>
+<p>And finally the last <code>Pending DataReceipt</code> arrives:</p>
+<pre><code class="language-python"># Non-relevant fields are omitted.
+{
+    receiver_id: &quot;alice&quot;,
+    type: Data {
+        data_id: &quot;7448d8&quot;,
+        data: &quot;some more data for alice&quot;,
+    }
+}
+</code></pre>
+<pre><code class="language-python">postponed_receipt_id = pending_data_receipt_store[&quot;alice,5e73d4&quot;]
+postponed_receipt = postponed_receipts[postponed_receipt_id]
+del postponed_receipts[postponed_receipt_id]
+del pending_data_receipt_count[&quot;alice,5e73d4&quot;]
+del pending_data_receipt_store[&quot;alice,7448d8&quot;]
+apply_receipt(postponed_receipt)
+</code></pre>
 <h1><a class="header" href="#scenarios-1" id="scenarios-1">Scenarios</a></h1>
 <p>In the following sections we go over the common scenarios that runtime takes care of.</p>
 <h1><a class="header" href="#financial-transaction" id="financial-transaction">Financial Transaction</a></h1>

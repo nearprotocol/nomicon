@@ -2,4 +2,4 @@
 set -e
 
 mdbook build
-git checkout -- docs/CNAME
+cp CNAME docs/CNAME

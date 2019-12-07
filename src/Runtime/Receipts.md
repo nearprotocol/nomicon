@@ -85,13 +85,13 @@ Runtime doesn't expect that Receipts are coming in a particular order. Each Rece
 
 ## Processing ActionReceipt
 
-For each incoming [`ActionReceipt`](#actionreceipt) runtime checks whether we have all the [`DataReceipt`s](#datareceipt) (defined as [`ActionsReceipt.input_data_ids`](#input_data_ids)) required for execution. If all the required [`DataReceipt`s](#datareceipt) are already in the [storage](#received-datareceipt), runtime can apply this `ActionReceipt` immediately. Otherwise we save this receipt as a [Postponed ActionReceipt](#postponed-actionreceipt). Also we save [Pending DataReceipts Count](#pending-datareceipt-count) and [a link from pending `DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt).
+For each incoming [`ActionReceipt`](#actionreceipt) runtime checks whether we have all the [`DataReceipt`s](#datareceipt) (defined as [`ActionsReceipt.input_data_ids`](#input_data_ids)) required for execution. If all the required [`DataReceipt`s](#datareceipt) are already in the [storage](#received-datareceipt), runtime can apply this `ActionReceipt` immediately. Otherwise we save this receipt as a [Postponed ActionReceipt](#postponed-actionreceipt). Also we save [Pending DataReceipts Count](#pending-datareceipt-count) and [a link from pending `DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt). Now runtime will wait all the missing `DataReceipt`s to apply the `Postponed ActionReceipt`.
 
 #### Postponed ActionReceipt
 
 A Receipt which runtime stores until all the designated [`DataReceipt`s](#datareceipt) arrive.
 
-- **`key`** = `account_id`,`receipt_id`\_
+- **`key`** = `account_id`,`receipt_id`
 - **`value`** = `[u8]`
 
 _Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `receipt_id` is [`Receipt.receiver_id`](#receipt_id) and value is a serialized [`Receipt`](#receipt) (which [type](#type) must be [ActionReceipt](#actionreceipt))._
@@ -103,7 +103,7 @@ A counter which counts pending [`DataReceipt`s](#DataReceipt) for a [Postponed R
 - **`key`** = `account_id`,`receipt_id`
 - **`value`** = `u32`
 
-_Where `account_id` is AccountId, `receipt_id` CryptoHash and value is an integer._
+_Where `account_id` is AccountId, `receipt_id` is CryptoHash and value is an integer._
 
 #### Pending DataReceipt for Postponed ActionReceipt
 
@@ -128,4 +128,78 @@ Next, runtime checks if there is any [Postponed ActionReceipt](#postponed-action
 - decrement [`Pending Data Count`](#pending-datareceipt-count) for the postponed `receipt_id`
 - remove found [`Pending DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt)
 
-If [`Pending Data Count`](#pending-datareceipt-count) is now 0 that means all the [`Receipt.input_data_ids`](#input_data_ids) are in storage and runtime can safely apply the [Postponed Receipt](#postponed-receipt).
+If [`Pending DataReceipt Count`](#pending-datareceipt-count) is now 0 that means all the [`Receipt.input_data_ids`](#input_data_ids) are in storage and runtime can safely apply the [Postponed Receipt](#postponed-receipt) and remove it from the store.
+
+
+## Case 1: ActionReceipt comes first, DataReceipts follows
+
+Suppose runtime got the following `ActionReceipt` (we use a python-like pseudo code):
+
+```python
+# Non-relevant fields are omitted.
+{
+    receiver_id: "alice",
+    receipt_id: "5e73d4"
+    type: ActionReceipt {
+        input_data_ids: ["e5fa44", "7448d8"]
+    }
+}
+```
+
+We can't apply this receipt right away: there are missing DataReceipt'a with IDs: ["e5fa44", "7448d8"]. Runtime does the following:
+
+```python
+postponed_receipts["alice,5e73d4"] = borsh_serialize({
+    receiver_id: "alice",
+    receipt_id: "5e73d4"
+    type: ActionReceipt {
+        input_data_ids: ["e5fa44", "7448d8"]
+    }
+})
+
+pending_data_receipt_store["alice,e5fa44"] = "5e73d4"
+pending_data_receipt_store["alice,7448d8"] = "5e73d4"
+pending_data_receipt_count = 2
+```
+
+*Note: the subsequent Receipts could arrived in the current block or next, that's why we save [Postponed ActionReceipt](#postponed-actionreceipt) in the storage*
+
+Then the first pending `Pending DataReceipt` arrives:
+
+```python
+# Non-relevant fields are omitted.
+{
+    receiver_id: "alice",
+    type: Data {
+        data_id: "e5fa44",
+        data: "some data for alice",
+    }
+}
+```
+
+```python
+pending_data_receipt_count["alice,5e73d4"] = 1`
+del pending_data_receipt_store["alice,e5fa44"]
+```
+
+And finally the last `Pending DataReceipt` arrives:
+
+```python
+# Non-relevant fields are omitted.
+{
+    receiver_id: "alice",
+    type: Data {
+        data_id: "7448d8",
+        data: "some more data for alice",
+    }
+}
+```
+
+```python
+postponed_receipt_id = pending_data_receipt_store["alice,5e73d4"]
+postponed_receipt = postponed_receipts[postponed_receipt_id]
+del postponed_receipts[postponed_receipt_id]
+del pending_data_receipt_count["alice,5e73d4"]
+del pending_data_receipt_store["alice,7448d8"]
+apply_receipt(postponed_receipt)
+```
