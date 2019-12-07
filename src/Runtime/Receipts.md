@@ -130,14 +130,13 @@ Next, runtime checks if there is any [Postponed ActionReceipt](#postponed-action
 
 If [`Pending DataReceipt Count`](#pending-datareceipt-count) is now 0 that means all the [`Receipt.input_data_ids`](#input_data_ids) are in storage and runtime can safely apply the [Postponed Receipt](#postponed-receipt) and remove it from the store.
 
-
 ## Case 1: ActionReceipt comes first, DataReceipts follows
 
 Suppose runtime got the following `ActionReceipt` (we use a python-like pseudo code):
 
 ```python
 # Non-relevant fields are omitted.
-{
+Receipt{
     receiver_id: "alice",
     receipt_id: "5e73d4"
     type: ActionReceipt {
@@ -149,28 +148,29 @@ Suppose runtime got the following `ActionReceipt` (we use a python-like pseudo c
 We can't apply this receipt right away: there are missing DataReceipt'a with IDs: ["e5fa44", "7448d8"]. Runtime does the following:
 
 ```python
-postponed_receipts["alice,5e73d4"] = borsh_serialize({
-    receiver_id: "alice",
-    receipt_id: "5e73d4"
-    type: ActionReceipt {
-        input_data_ids: ["e5fa44", "7448d8"]
+postponed_receipts["alice,5e73d4"] = borsh_serialize(
+    Receipt{
+        receiver_id: "alice",
+        receipt_id: "5e73d4"
+        type: ActionReceipt {
+            input_data_ids: ["e5fa44", "7448d8"]
+        }
     }
-})
-
+)
 pending_data_receipt_store["alice,e5fa44"] = "5e73d4"
 pending_data_receipt_store["alice,7448d8"] = "5e73d4"
 pending_data_receipt_count = 2
 ```
 
-*Note: the subsequent Receipts could arrived in the current block or next, that's why we save [Postponed ActionReceipt](#postponed-actionreceipt) in the storage*
+_Note: the subsequent Receipts could arrived in the current block or next, that's why we save [Postponed ActionReceipt](#postponed-actionreceipt) in the storage_
 
 Then the first pending `Pending DataReceipt` arrives:
 
 ```python
 # Non-relevant fields are omitted.
-{
+Receipt {
     receiver_id: "alice",
-    type: Data {
+    type: DataReceipt {
         data_id: "e5fa44",
         data: "some data for alice",
     }
@@ -178,6 +178,13 @@ Then the first pending `Pending DataReceipt` arrives:
 ```
 
 ```python
+data_receipts["alice,e5fa44"] = borsh_serialize(Receipt{
+    receiver_id: "alice",
+    type: DataReceipt {
+        data_id: "e5fa44",
+        data: "some data for alice",
+    }
+};
 pending_data_receipt_count["alice,5e73d4"] = 1`
 del pending_data_receipt_store["alice,e5fa44"]
 ```
@@ -186,9 +193,9 @@ And finally the last `Pending DataReceipt` arrives:
 
 ```python
 # Non-relevant fields are omitted.
-{
+Receipt{
     receiver_id: "alice",
-    type: Data {
+    type: DataReceipt {
         data_id: "7448d8",
         data: "some more data for alice",
     }
@@ -196,6 +203,13 @@ And finally the last `Pending DataReceipt` arrives:
 ```
 
 ```python
+data_receipts["alice,7448d8"] = borsh_serialize(Receipt{
+    receiver_id: "alice",
+    type: DataReceipt {
+        data_id: "7448d8",
+        data: "some more data for alice",
+    }
+};
 postponed_receipt_id = pending_data_receipt_store["alice,5e73d4"]
 postponed_receipt = postponed_receipts[postponed_receipt_id]
 del postponed_receipts[postponed_receipt_id]
