@@ -1,5 +1,5 @@
 # Function Call
-In this section we provide an explanation how the `FunctionCall` action execution works, what are the inputs and what is the outputs. Suppose runtime received the following ActionReceipt:
+In this section we provide an explanation how the `FunctionCall` action execution works, what are the inputs and what are the outputs. Suppose runtime received the following ActionReceipt:
 
 ```rust
 ActionReceipt {
@@ -32,7 +32,7 @@ A full list of the data available for the contract can be found in [Context API]
 
 First of all, runtime does prepare the Wasm binary to be executed:
 - loads the contract code from the `receiver_id` [account](../Primitives/Account.md#account) storage
-- deserializes and validate the `code` Wasm binary (see `prepare::prepare_contract`)
+- deserializes and validates the `code` Wasm binary (see `prepare::prepare_contract`)
 - injects the gas counting function `gas` which will charge gas on the beginning of the each code block
 - instantiates [Bindings Spec](Components/BindingsSpec/BindingsSpec.md) with binary and calls the `FunctionCall.method_name` exported function
 
@@ -52,7 +52,7 @@ The output of the `FunctionCall`:
 - storage updates - changes to the account trie storage which will be applied on a successful call
 - `burnt_gas` - irreversible amount of gas witch was spent on computations
 - `used_gas` - includes `burnt_gas` and gas attached to the new `ActionReceipt`s created during the method execution. In case of failure, created `ActionReceipt`s not going to be sent thus account will pay only for `burnt_gas`
-- `balance` - unspent account balance (account balance could be spent on deposits of created `FunctionCall`s or [`TransferAction`s](Actions.md#transferaction) to other contracts)
+- `balance` - unspent account balance (account balance could be spent on deposits of newly created `FunctionCall`s or [`TransferAction`s](Actions.md#transferaction) to other contracts)
 - `storage_usage` - storage_usage after ActionReceipt application
 - `logs` - during contract execution, utf8/16 string log records could be created. Logs are not persistent currently.
 - `new_receipts` - new `ActionReceipts` created during the execution. These receipts are going to be sent to the respective `receiver_id`s (see [Receipt Matching explanation](#receipt-matching))
@@ -61,7 +61,7 @@ The output of the `FunctionCall`:
 
 ### Value Result
 
-If applied `ActionReceipt` contains [`output_data_receivers`](Receitps.md#output_data_receivers) runtime will create `DataReceipt` for each of `data_id` and `receiver_id` and `data` equals returned value. Eventually, these `DataReceipt` will be delivered to the corresponding receivers.
+If applied `ActionReceipt` contains [`output_data_receivers`](Receitps.md#output_data_receivers), runtime will create `DataReceipt` for each of `data_id` and `receiver_id` and `data` equals returned value. Eventually, these `DataReceipt` will be delivered to the corresponding receivers.
 
 ### ReceiptIndex Result
 
