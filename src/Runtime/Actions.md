@@ -19,7 +19,7 @@ Each transaction consists a list of actions to be performed on the `receiver_id`
 
 // TODO: how to introduce the concept of `sender_id`
 
-## CreateAccount
+## CreateAccountAction
 _Requirements:_
 
 - _unique `tx.receiver_id`_
@@ -38,7 +38,7 @@ NOTE: for the all subsequent actions in the transaction the `signer_id` becomes 
 pub struct CreateAccountAction {}
 ```
 
-## DeployContract
+## DeployContractAction
 
 _Requirements:_
 
@@ -60,7 +60,7 @@ _Requirements:_
 
 - _`tx.public_key` to be `AccessKeyPermission::FullAccess` or `AccessKeyPermission::FunctionCall`_
 
-Calls a method of a particular contract.
+Calls a method of a particular contract. See [details](./FunctionCall.md).
 
 ```rust
 pub struct FunctionCallAction {

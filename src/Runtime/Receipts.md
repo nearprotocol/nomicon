@@ -1,7 +1,28 @@
 # Receipt
 
 All cross-contract (we assume that each account lives in it's own shard) communication in Near happens trough Receipts.
-Receipts are stateful in a sense that they serve not only as messages between accounts but also can be stored in the account storage to await other receipts.
+Receipts are stateful in a sense that they serve not only as messages between accounts but also can be stored in the account storage to await DataReceipts.
+
+Each receipt has a [`predecessor_id`](#predecessor_id) (who sent it) and [`receiver_id`](#receiver_id) the current account.
+
+Receipts are one of 2 types: action receipts or data receipts.
+
+Data Receipts are receipts that contains some data for some `ActionReceipt` with the same `receiver_id`.
+Data Receipts has 2 fields: the unique data identifier `data_id` and `data` the received result.
+`data` is an `Option` field and it indicates whether the result was a success or a failure. If it's `Some`, then it means
+the remote execution was successful and it contains the vector of bytes of the result.
+
+Each `ActionReceipt` also contains fields related to data:
+
+- [`input_data_ids`](#input_data_ids) - a vector of input data with the `data_id`s required for the execution of this receipt.
+- [`output_data_receivers`](#output_data_receivers) - a vector of output data receivers. It indicates where to send outgoing data.
+Each `DataReceiver` consists of `data_id` and `receiver_id` for routing.
+
+Before any action receipt is executed, all input data dependencies need to be satisfied.
+Which means all corresponding data receipts has to be received.
+If any of the data dependencies is missing, the action receipt is postponed until all missing data dependency arrives.
+
+Because Chain and Runtime guarantees that no receipts are missing, we can rely that every action receipt will be executed eventually ([Receipt Matching explanation](#receipt-matching)).
 
 Each `Receipt` has the following fields:
 
@@ -23,11 +44,11 @@ The destination account_id.
 
 An unique id for the receipt.
 
-#### type
+#### receipt
 
 - **`type`**: [ActionReceipt](#actionreceipt) | [DataReceipt](#datareceipt)
 
-There is a 2 types of Receipts in Near: [ActionReceipt](#actionreceipt) and [DataReceipt](#datareceipt). ActionReceipt is a request to apply Actions, while DataReceipt is a result of application of these actions.
+There is a 2 types of Receipts in Near: [ActionReceipt](#actionreceipt) and [DataReceipt](#datareceipt). ActionReceipt is a request to apply [Actions](Actions.md), while DataReceipt is a result of application of these actions.
 
 ## ActionReceipt
 
@@ -53,15 +74,19 @@ Gas price is a gas price which was set in a block where original [transaction](T
 
 #### output_data_receivers
 
-- **`type`**: `[(CryptoHash, AccountId)]`
+- **`type`**: `[DataReceiver{ data_id: CryptoHash, receiver_id: AccountId }]`
 
-Output data receivers will be converted to `DataReceipt`s when smart contract finish its execution with some value.
+If smart contract finishes its execution with some value (not Promise), runtime creates a [`DataReceipt`]s for each of the `output_data_receivers`.
 
 #### input_data_ids
 
 - **`type`**: `[CryptoHash]_`
 
-`input_data_ids` are the receipt data dependencies. We These IDs are `DataReceipt.data_id`.
+`input_data_ids` are the receipt data dependencies. `input_data_ids` correspond to `DataReceipt.data_id`.
+
+#### actions
+
+- **`type`**: [`FunctionCall`](Actions.md#functioncallaction) | [`TransferAction`](Actions.md#transferaction) | [`StakeAction`](Actions.md#stakeaction) | [`AddKeyAction`](Actions.md#addkeyaction) | [`DeleteKeyAction`](Actions.md#deletekeyaction) | [`CreateAccountAction`](Actions.md#createaccountaction) | [`DeleteAccountAction`](Actions.md#deleteaccountaction)
 
 ## DataReceipt
 
@@ -75,9 +100,13 @@ An a unique DataReceipt identifier.
 
 #### data
 
-- **`type`**: `[u8]`
+- **`type`**: `Option([u8])`
 
-An an associated data in bytes.
+An an associated data in bytes. `None` indicates an error during execution.
+
+# Creating Receipt
+
+Receipts can be generated during the execution of the [SignedTransaction](./Transactions.md#SignedTransaction) (see [example](./Scenarios/FinancialTransaction.md)) or during application of some `ActionReceipt` which contains [`FunctionCall`](#actions) action. The result of the `FunctionCall` could either
 
 # Receipt Matching
 
@@ -123,14 +152,29 @@ First of all, runtime saves the incoming `DataReceipt` to the storage as:
 
 _Where `account_id` is [`Receipt.receiver_id`](#receiver_id), `data_id` is [`DataReceipt.data_id`](#data_id) and value is a [`DataReceipt.data`](#data) (which is typically a serialized result of the call to a particular contract)._
 
-Next, runtime checks if there is any [Postponed ActionReceipt](#postponed-actionreceipt) awaits for this `DataReceipt` by querying [`Pending DataReceipt` to the Postponed Receipt](#pending-datareceipt-for-postponed-actionReceipt). If there is no postponed `receipt_id` yet, we do nothing else. If there is a postponed `receipt_id`, we do the following:
+Next, runtime checks if there is any [`Postponed ActionReceipt`](#postponed-actionreceipt) awaits for this `DataReceipt` by querying [`Pending DataReceipt` to the Postponed Receipt](#pending-datareceipt-for-postponed-actionReceipt). If there is no postponed `receipt_id` yet, we do nothing else. If there is a postponed `receipt_id`, we do the following:
 
 - decrement [`Pending Data Count`](#pending-datareceipt-count) for the postponed `receipt_id`
 - remove found [`Pending DataReceipt` to the `Postponed ActionReceipt`](#pending-datareceipt-for-postponed-actionreceipt)
 
 If [`Pending DataReceipt Count`](#pending-datareceipt-count) is now 0 that means all the [`Receipt.input_data_ids`](#input_data_ids) are in storage and runtime can safely apply the [Postponed Receipt](#postponed-receipt) and remove it from the store.
 
-## Case 1: ActionReceipt comes first, DataReceipts follows
+## Case 1: Call to multiple contracts and await responses
+
+Suppose runtime got the following `ActionReceipt`:
+
+```python
+# Non-relevant fields are omitted.
+Receipt{
+    receiver_id: "alice",
+    receipt_id: "693406"
+    receipt: ActionReceipt {
+        input_data_ids: []
+    }
+}
+```
+
+If execution return Result::Value
 
 Suppose runtime got the following `ActionReceipt` (we use a python-like pseudo code):
 
@@ -139,7 +183,7 @@ Suppose runtime got the following `ActionReceipt` (we use a python-like pseudo c
 Receipt{
     receiver_id: "alice",
     receipt_id: "5e73d4"
-    type: ActionReceipt {
+    receipt: ActionReceipt {
         input_data_ids: ["e5fa44", "7448d8"]
     }
 }
@@ -152,7 +196,7 @@ postponed_receipts["alice,5e73d4"] = borsh_serialize(
     Receipt{
         receiver_id: "alice",
         receipt_id: "5e73d4"
-        type: ActionReceipt {
+        receipt: ActionReceipt {
             input_data_ids: ["e5fa44", "7448d8"]
         }
     }
@@ -170,7 +214,7 @@ Then the first pending `Pending DataReceipt` arrives:
 # Non-relevant fields are omitted.
 Receipt {
     receiver_id: "alice",
-    type: DataReceipt {
+    receipt: DataReceipt {
         data_id: "e5fa44",
         data: "some data for alice",
     }
@@ -180,7 +224,7 @@ Receipt {
 ```python
 data_receipts["alice,e5fa44"] = borsh_serialize(Receipt{
     receiver_id: "alice",
-    type: DataReceipt {
+    receipt: DataReceipt {
         data_id: "e5fa44",
         data: "some data for alice",
     }
@@ -195,7 +239,7 @@ And finally the last `Pending DataReceipt` arrives:
 # Non-relevant fields are omitted.
 Receipt{
     receiver_id: "alice",
-    type: DataReceipt {
+    receipt: DataReceipt {
         data_id: "7448d8",
         data: "some more data for alice",
     }
@@ -205,7 +249,7 @@ Receipt{
 ```python
 data_receipts["alice,7448d8"] = borsh_serialize(Receipt{
     receiver_id: "alice",
-    type: DataReceipt {
+    receipt: DataReceipt {
         data_id: "7448d8",
         data: "some more data for alice",
     }
