@@ -18,6 +18,7 @@
 - [Blockchain Layer](BlockchainLayer/BlockchainLayer.md)
   - [Transactions in Blockchain Layer](BlockchainLayer/Transactions.md)
 - [Runtime](Runtime/Runtime.md)
+  - [FunctionCall](Runtime/FunctionCall.md)
   - [Transactions](Runtime/Transactions.md)
   - [Actions](Runtime/Actions.md)
   - [Receipts](Runtime/Receipts.md)

@@ -49,7 +49,7 @@ That is the permission of the access key is not `AccessKeyPermission::FullAccess
 where
 
 ```
-FucntionCallPermission {
+FunctionCallPermission {
     allowance: Some(3000),
     receiver_id: "travel_agency",
     method_names: [ "reserve_trip", "cancel_trip" ]
