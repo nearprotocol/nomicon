@@ -75,6 +75,26 @@ _type: Gas_
 
 Cost of getting sha256 per byte
 
+## keccak256_base
+_type: Gas_
+
+Cost of getting keccak256 base
+
+## keccak256_byte
+_type: Gas_
+
+Cost of getting keccak256 per byte
+
+## keccak512_base
+_type: Gas_
+
+Cost of getting keccak512 base
+
+## keccak512_byte
+_type: Gas_
+
+Cost of getting keccak512 per byte
+
 ## log_base
 _type: Gas_
 
