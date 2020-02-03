@@ -440,6 +440,18 @@ a contract.</p>
 <h2><a class="header" href="#sha256_byte" id="sha256_byte">sha256_byte</a></h2>
 <p><em>type: Gas</em></p>
 <p>Cost of getting sha256 per byte</p>
+<h2><a class="header" href="#keccak256_base" id="keccak256_base">keccak256_base</a></h2>
+<p><em>type: Gas</em></p>
+<p>Cost of getting keccak256 base</p>
+<h2><a class="header" href="#keccak256_byte" id="keccak256_byte">keccak256_byte</a></h2>
+<p><em>type: Gas</em></p>
+<p>Cost of getting keccak256 per byte</p>
+<h2><a class="header" href="#keccak512_base" id="keccak512_base">keccak512_base</a></h2>
+<p><em>type: Gas</em></p>
+<p>Cost of getting keccak512 base</p>
+<h2><a class="header" href="#keccak512_byte" id="keccak512_byte">keccak512_byte</a></h2>
+<p><em>type: Gas</em></p>
+<p>Cost of getting keccak512 per byte</p>
 <h2><a class="header" href="#log_base" id="log_base">log_base</a></h2>
 <p><em>type: Gas</em></p>
 <p>Cost for calling logging.</p>
@@ -981,7 +993,7 @@ The specification is defined in <code>near-vm-logic</code>, but it is exposed to
 <li>Verification</li>
 </ul>
 <h1><a class="header" href="#function-call" id="function-call">Function Call</a></h1>
-<p>In this section we provide an explanation how the <code>FunctionCall</code> action execution works, what are the inputs and what is the outputs. Suppose runtime received the following ActionReceipt:</p>
+<p>In this section we provide an explanation how the <code>FunctionCall</code> action execution works, what are the inputs and what are the outputs. Suppose runtime received the following ActionReceipt:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
@@ -1012,7 +1024,7 @@ The specification is defined in <code>near-vm-logic</code>, but it is exposed to
 <p>First of all, runtime does prepare the Wasm binary to be executed:</p>
 <ul>
 <li>loads the contract code from the <code>receiver_id</code> <a href="Runtime/../Primitives/Account.html#account">account</a> storage</li>
-<li>deserializes and validate the <code>code</code> Wasm binary (see <code>prepare::prepare_contract</code>)</li>
+<li>deserializes and validates the <code>code</code> Wasm binary (see <code>prepare::prepare_contract</code>)</li>
 <li>injects the gas counting function <code>gas</code> which will charge gas on the beginning of the each code block</li>
 <li>instantiates <a href="Runtime/Components/BindingsSpec/BindingsSpec.html">Bindings Spec</a> with binary and calls the <code>FunctionCall.method_name</code> exported function</li>
 </ul>
@@ -1031,14 +1043,14 @@ The specification is defined in <code>near-vm-logic</code>, but it is exposed to
 <li>storage updates - changes to the account trie storage which will be applied on a successful call</li>
 <li><code>burnt_gas</code> - irreversible amount of gas witch was spent on computations</li>
 <li><code>used_gas</code> - includes <code>burnt_gas</code> and gas attached to the new <code>ActionReceipt</code>s created during the method execution. In case of failure, created <code>ActionReceipt</code>s not going to be sent thus account will pay only for <code>burnt_gas</code></li>
-<li><code>balance</code> - unspent account balance (account balance could be spent on deposits of created <code>FunctionCall</code>s or <a href="Runtime/Actions.html#transferaction"><code>TransferAction</code>s</a> to other contracts)</li>
+<li><code>balance</code> - unspent account balance (account balance could be spent on deposits of newly created <code>FunctionCall</code>s or <a href="Runtime/Actions.html#transferaction"><code>TransferAction</code>s</a> to other contracts)</li>
 <li><code>storage_usage</code> - storage_usage after ActionReceipt application</li>
 <li><code>logs</code> - during contract execution, utf8/16 string log records could be created. Logs are not persistent currently.</li>
 <li><code>new_receipts</code> - new <code>ActionReceipts</code> created during the execution. These receipts are going to be sent to the respective <code>receiver_id</code>s (see <a href="Runtime/FunctionCall.html#receipt-matching">Receipt Matching explanation</a>)</li>
 <li>result could be either <a href="Runtime/FunctionCall.html#value-result"><code>ReturnData::Value(Vec&lt;u8&gt;)</code></a> or <a href="Runtime/FunctionCall.html#receiptindex-result"><code>ReturnData::ReceiptIndex(u64)</code></a>`</li>
 </ul>
 <h3><a class="header" href="#value-result" id="value-result">Value Result</a></h3>
-<p>If applied <code>ActionReceipt</code> contains <a href="Runtime/Receitps.html#output_data_receivers"><code>output_data_receivers</code></a> runtime will create <code>DataReceipt</code> for each of <code>data_id</code> and <code>receiver_id</code> and <code>data</code> equals returned value. Eventually, these <code>DataReceipt</code> will be delivered to the corresponding receivers.</p>
+<p>If applied <code>ActionReceipt</code> contains <a href="Runtime/Receitps.html#output_data_receivers"><code>output_data_receivers</code></a>, runtime will create <code>DataReceipt</code> for each of <code>data_id</code> and <code>receiver_id</code> and <code>data</code> equals returned value. Eventually, these <code>DataReceipt</code> will be delivered to the corresponding receivers.</p>
 <h3><a class="header" href="#receiptindex-result" id="receiptindex-result">ReceiptIndex Result</a></h3>
 <p>Successful result could not return any Value, but generates a bunch of new ActionReceipts instead. One example could be a callback. In this case, we assume the the new Receipt will send its Value Result to the <a href="Runtime/Receitps.html#output_data_receivers"><code>output_data_receivers</code></a> of the current <code>ActionReceipt</code>.</p>
 <h1><a class="header" href="#transactions" id="transactions">Transactions</a></h1>
@@ -2626,10 +2638,29 @@ used_gas() -&gt; u64
 <ul>
 <li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
 </ul>
-<h6><a class="header" href="#current-bugs-11" id="current-bugs-11">Current bugs</a></h6>
+<hr />
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>keccak256(value_len: u64, value_ptr: u64, register_id: u64)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Hashes the random sequence of bytes using keccak256 and returns it into <code>register_id</code>.</p>
+<h6><a class="header" href="#panics-34" id="panics-34">Panics</a></h6>
 <ul>
-<li>Current name <code>hash</code> is not specific to what hash is being used.</li>
-<li>We have <code>hash32</code> that largely duplicates the mechanics of <code>hash</code> because it returns the first 4 bytes only.</li>
+<li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
+</ul>
+<hr />
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>keccak512(value_len: u64, value_ptr: u64, register_id: u64)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Hashes the random sequence of bytes using keccak512 and returns it into <code>register_id</code>.</p>
+<h6><a class="header" href="#panics-35" id="panics-35">Panics</a></h6>
+<ul>
+<li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
 </ul>
 <h1><a class="header" href="#miscellaneous-api" id="miscellaneous-api">Miscellaneous API</a></h1>
 <pre><pre class="playpen"><code class="language-rust">
@@ -2639,7 +2670,7 @@ used_gas() -&gt; u64
 <span class="boring">}
 </span></code></pre></pre>
 <p>Sets the blob of data as the return value of the contract.</p>
-<h6><a class="header" href="#panics-34" id="panics-34">Panics</a></h6>
+<h6><a class="header" href="#panics-36" id="panics-36">Panics</a></h6>
 <ul>
 <li>If <code>value_len + value_ptr</code> exceeds the memory container or points to an unused register it panics with <code>MemoryAccessViolation</code>;</li>
 </ul>
@@ -2661,7 +2692,7 @@ used_gas() -&gt; u64
 <p>Terminates the execution of the program with panic <code>GuestPanic(s)</code>, where <code>s</code> is the given UTF-8 encoded string.</p>
 <h6><a class="header" href="#normal-behavior" id="normal-behavior">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with character <code>'\0'</code>;</p>
-<h6><a class="header" href="#panics-35" id="panics-35">Panics</a></h6>
+<h6><a class="header" href="#panics-37" id="panics-37">Panics</a></h6>
 <ul>
 <li>If string extends outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
 <li>If string is not UTF-8 returns <code>BadUtf8</code>.</li>
@@ -2677,7 +2708,7 @@ used_gas() -&gt; u64
 <p>Logs the UTF-8 encoded string.</p>
 <h6><a class="header" href="#normal-behavior-1" id="normal-behavior-1">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with character <code>'\0'</code>;</p>
-<h6><a class="header" href="#panics-36" id="panics-36">Panics</a></h6>
+<h6><a class="header" href="#panics-38" id="panics-38">Panics</a></h6>
 <ul>
 <li>If string extends outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
 <li>If string is not UTF-8 returns <code>BadUtf8</code>.</li>
@@ -2694,7 +2725,7 @@ used_gas() -&gt; u64
 See https://stackoverflow.com/a/5923961 that explains that null termination is not defined through encoding.</p>
 <h6><a class="header" href="#normal-behavior-2" id="normal-behavior-2">Normal behavior</a></h6>
 <p>If <code>len == u64::MAX</code> then treats the string as null-terminated with two-byte sequence of <code>0x00 0x00</code>.</p>
-<h6><a class="header" href="#panics-37" id="panics-37">Panics</a></h6>
+<h6><a class="header" href="#panics-39" id="panics-39">Panics</a></h6>
 <ul>
 <li>If string extends outside the memory of the guest with <code>MemoryAccessViolation</code>;</li>
 </ul>

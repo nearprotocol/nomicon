@@ -175,10 +175,29 @@
 <ul>
 <li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
 </ul>
-<h6><a class="header" href="#current-bugs" id="current-bugs">Current bugs</a></h6>
+<hr />
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>keccak256(value_len: u64, value_ptr: u64, register_id: u64)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Hashes the random sequence of bytes using keccak256 and returns it into <code>register_id</code>.</p>
+<h6><a class="header" href="#panics-2" id="panics-2">Panics</a></h6>
 <ul>
-<li>Current name <code>hash</code> is not specific to what hash is being used.</li>
-<li>We have <code>hash32</code> that largely duplicates the mechanics of <code>hash</code> because it returns the first 4 bytes only.</li>
+<li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
+</ul>
+<hr />
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>keccak512(value_len: u64, value_ptr: u64, register_id: u64)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Hashes the random sequence of bytes using keccak512 and returns it into <code>register_id</code>.</p>
+<h6><a class="header" href="#panics-3" id="panics-3">Panics</a></h6>
+<ul>
+<li>If <code>value_len + value_ptr</code> points outside the memory or the registers use more memory than the limit with <code>MemoryAccessViolation</code>.</li>
 </ul>
 
                     </main>
