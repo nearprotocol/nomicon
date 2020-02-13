@@ -2,7 +2,7 @@
 
 ## type CryptoHash = [u8; 32]
 
-A sha256 hash.
+A sha256 or keccak256 hash.
 
 ## AccountId = String
 

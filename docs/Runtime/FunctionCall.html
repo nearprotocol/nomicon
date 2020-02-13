@@ -152,7 +152,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1><a class="header" href="#function-call" id="function-call">Function Call</a></h1>
-<p>In this section we provide an explanation how the <code>FunctionCall</code> action execution works, what are the inputs and what is the outputs. Suppose runtime received the following ActionReceipt:</p>
+<p>In this section we provide an explanation how the <code>FunctionCall</code> action execution works, what are the inputs and what are the outputs. Suppose runtime received the following ActionReceipt:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
@@ -183,7 +183,7 @@
 <p>First of all, runtime does prepare the Wasm binary to be executed:</p>
 <ul>
 <li>loads the contract code from the <code>receiver_id</code> <a href="../Primitives/Account.html#account">account</a> storage</li>
-<li>deserializes and validate the <code>code</code> Wasm binary (see <code>prepare::prepare_contract</code>)</li>
+<li>deserializes and validates the <code>code</code> Wasm binary (see <code>prepare::prepare_contract</code>)</li>
 <li>injects the gas counting function <code>gas</code> which will charge gas on the beginning of the each code block</li>
 <li>instantiates <a href="Components/BindingsSpec/BindingsSpec.html">Bindings Spec</a> with binary and calls the <code>FunctionCall.method_name</code> exported function</li>
 </ul>
@@ -202,14 +202,14 @@
 <li>storage updates - changes to the account trie storage which will be applied on a successful call</li>
 <li><code>burnt_gas</code> - irreversible amount of gas witch was spent on computations</li>
 <li><code>used_gas</code> - includes <code>burnt_gas</code> and gas attached to the new <code>ActionReceipt</code>s created during the method execution. In case of failure, created <code>ActionReceipt</code>s not going to be sent thus account will pay only for <code>burnt_gas</code></li>
-<li><code>balance</code> - unspent account balance (account balance could be spent on deposits of created <code>FunctionCall</code>s or <a href="Actions.html#transferaction"><code>TransferAction</code>s</a> to other contracts)</li>
+<li><code>balance</code> - unspent account balance (account balance could be spent on deposits of newly created <code>FunctionCall</code>s or <a href="Actions.html#transferaction"><code>TransferAction</code>s</a> to other contracts)</li>
 <li><code>storage_usage</code> - storage_usage after ActionReceipt application</li>
 <li><code>logs</code> - during contract execution, utf8/16 string log records could be created. Logs are not persistent currently.</li>
 <li><code>new_receipts</code> - new <code>ActionReceipts</code> created during the execution. These receipts are going to be sent to the respective <code>receiver_id</code>s (see <a href="#receipt-matching">Receipt Matching explanation</a>)</li>
 <li>result could be either <a href="#value-result"><code>ReturnData::Value(Vec&lt;u8&gt;)</code></a> or <a href="#receiptindex-result"><code>ReturnData::ReceiptIndex(u64)</code></a>`</li>
 </ul>
 <h3><a class="header" href="#value-result" id="value-result">Value Result</a></h3>
-<p>If applied <code>ActionReceipt</code> contains <a href="Receitps.html#output_data_receivers"><code>output_data_receivers</code></a> runtime will create <code>DataReceipt</code> for each of <code>data_id</code> and <code>receiver_id</code> and <code>data</code> equals returned value. Eventually, these <code>DataReceipt</code> will be delivered to the corresponding receivers.</p>
+<p>If applied <code>ActionReceipt</code> contains <a href="Receitps.html#output_data_receivers"><code>output_data_receivers</code></a>, runtime will create <code>DataReceipt</code> for each of <code>data_id</code> and <code>receiver_id</code> and <code>data</code> equals returned value. Eventually, these <code>DataReceipt</code> will be delivered to the corresponding receivers.</p>
 <h3><a class="header" href="#receiptindex-result" id="receiptindex-result">ReceiptIndex Result</a></h3>
 <p>Successful result could not return any Value, but generates a bunch of new ActionReceipts instead. One example could be a callback. In this case, we assume the the new Receipt will send its Value Result to the <a href="Receitps.html#output_data_receivers"><code>output_data_receivers</code></a> of the current <code>ActionReceipt</code>.</p>
 

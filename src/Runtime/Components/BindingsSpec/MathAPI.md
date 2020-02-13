@@ -22,7 +22,26 @@ Hashes the random sequence of bytes using sha256 and returns it into `register_i
 
 - If `value_len + value_ptr` points outside the memory or the registers use more memory than the limit with `MemoryAccessViolation`.
 
-###### Current bugs
+---
 
-- Current name `hash` is not specific to what hash is being used.
-- We have `hash32` that largely duplicates the mechanics of `hash` because it returns the first 4 bytes only.
+```rust
+keccak256(value_len: u64, value_ptr: u64, register_id: u64)
+```
+
+Hashes the random sequence of bytes using keccak256 and returns it into `register_id`.
+
+###### Panics
+
+- If `value_len + value_ptr` points outside the memory or the registers use more memory than the limit with `MemoryAccessViolation`.
+
+---
+
+```rust
+keccak512(value_len: u64, value_ptr: u64, register_id: u64)
+```
+
+Hashes the random sequence of bytes using keccak512 and returns it into `register_id`.
+
+###### Panics
+
+- If `value_len + value_ptr` points outside the memory or the registers use more memory than the limit with `MemoryAccessViolation`.
